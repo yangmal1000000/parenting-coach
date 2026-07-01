@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { generateAdviceStream, CoachingRequest } from "@/lib/coaching";
+import { logQuery } from "@/lib/analytics";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +12,13 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Log the query (fire and forget, don't block response)
+    logQuery({
+      query: body.query.trim().slice(0, 500),
+      language: body.language || "en",
+      childAge: body.childAge,
+    }).catch(() => {});
 
     const stream = await generateAdviceStream(body);
     return new Response(stream, {

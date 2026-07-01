@@ -315,6 +315,17 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     if (!sid) return;
     setSessions(prev => prev.map(s => s.id === sid ? { ...s, rating, feedbackText: feedbackText || undefined } : s));
     setFeedbackGiven(rating);
+    // Log feedback to server (fire and forget)
+    fetch("/api/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        queryId: sid,
+        query: currentQuery,
+        rating,
+        language: lang,
+      }),
+    }).catch(() => {});
   }
 
   function toggleBookmark(sessionId: string) {
