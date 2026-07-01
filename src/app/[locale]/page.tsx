@@ -133,14 +133,14 @@ export default function Home({ params }: { params: { locale: string } }) {
     const savedSessions = loadFromStorage<Session[]>("pc_sessions", []);
     setSessions(savedSessions);
     const onboarded = loadFromStorage("pc_onboarded", false);
-    if (!onboarded) setShowOnboarding(true);
+    if (!onboarded) {
+      setShowOnboarding(true);
+      // Show How It Works on first visit after onboarding
+    }
     const dm = loadFromStorage("pc_darkmode", false);
     setDarkMode(dm);
-    // Sync any saved language preference
-    const savedLang = loadFromStorage<Language>("pc_lang", initialLang);
-    if (savedLang !== initialLang && (savedLang === "en" || savedLang === "ko")) {
-      router.push(`/${savedLang}`);
-    }
+    // Save current language preference from URL
+    saveToStorage("pc_lang", initialLang);
   }, []);
 
   // Dark mode toggle
@@ -349,6 +349,8 @@ export default function Home({ params }: { params: { locale: string } }) {
   function completeOnboarding() {
     saveToStorage("pc_onboarded", true);
     setShowOnboarding(false);
+    // Show How It Works panel after onboarding
+    setTimeout(() => setShowInfo(true), 300);
   }
 
   // === Share ===
@@ -542,7 +544,7 @@ export default function Home({ params }: { params: { locale: string } }) {
           </button>
           <div className="flex items-center gap-1">
             {/* Info button */}
-            <button onClick={() => setShowInfo(true)} className="p-2 rounded-lg text-sm font-medium" style={{ color: "var(--text-muted)" }} title={t.howItWorks}>
+            <button onClick={() => setShowInfo(true)} className="p-2 rounded-lg text-sm font-medium pulse-glow" style={{ color: "var(--primary)" }} title={t.howItWorks}>
               ℹ️
             </button>
             {/* Language selector */}
@@ -585,7 +587,10 @@ export default function Home({ params }: { params: { locale: string } }) {
             {!advice && !loading && (
               <div className="text-center mb-6">
                 <h2 className="text-lg font-semibold mb-1" style={{ color: "var(--text)" }}>{t.whatsHappening}</h2>
-                <p className="text-xs mb-6" style={{ color: "var(--text-muted)" }}>{t.speakOrType}</p>
+                <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>{t.speakOrType}</p>
+                <button onClick={() => setShowInfo(true)} className="text-xs font-medium underline" style={{ color: "var(--primary)" }}>
+                  {t.howItWorks} →
+                </button>
               </div>
             )}
 
