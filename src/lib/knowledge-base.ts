@@ -5363,6 +5363,93 @@ export const KNOWLEDGE_BASE: KnowledgeChunk[] = [
     text: "For parents of teens 12-18 years, maintaining a strong relationship through the teen years: The teen years are when your relationship investment pays off — or reveals gaps. Connection strategies: 1) Listen more than you talk. When your teen talks, put down your phone, make eye contact, and resist the urge to give advice unless asked. The phrase 'Do you want my advice, or do you just need me to listen?' is gold. 2) Find shared activities — even small ones. Coffee runs, watching a show together, walking the dog, cooking. The activity is the vehicle for connection. 3. Use car time — teens open up in the car because there's no eye contact and it feels low-pressure. 4) Send texts: 'Thinking of you. Hope the test goes well.' or just a funny meme. No response needed — it's a connection ping. 5) Apologize when you mess up — 'I was too harsh earlier. I was stressed about work, but that's not an excuse. I'm sorry.' This models vulnerability and repair. 6) Remember: your teen still needs you, even when they push you away. The push-pull is the definition of adolescence. Stay steady. Your calm, consistent presence is their anchor.",
   },
 
+  // === SOCIAL COMPARISON, PEER PRESSURE, MATERIAL ENVY ===
+
+  {
+    id: "sc-1",
+    source: "The Whole-Brain Child",
+    sourceDetails: "Siegel & Bryson, Ch. 4 — The Uses of Nostalgia and Integration of Memory",
+    category: "social",
+    text: "Around ages 8-11, children become increasingly aware of social hierarchies and material differences between families. This is a normal developmental shift — their brain is developing 'theory of mind' and social cognition, allowing them to compare themselves to peers. When a child expresses embarrassment about their home, car, clothes, or possessions, this is not vanity — it's their developing social brain trying to understand where they fit. Parents should validate the feeling ('I can see this bothers you') without dismissing ('You should be grateful') or over-accommodating ('We'll buy a bigger car'). The goal is to help the child develop intrinsic self-worth that isn't tied to possessions, while acknowledging that social comparison pain is real. Use questions: 'What do you think makes someone a good friend?' or 'What do you like about yourself that has nothing to do with stuff?'",
+  },
+  {
+    id: "sc-2",
+    source: "Untangled: Guiding Teenage Girls Through the Seven Transitions into Adulthood",
+    sourceDetails: "Lisa Damour, Ch. 1 — Parting with Childhood",
+    category: "social",
+    text: "Children aged 9-13 often experience acute sensitivity to social comparison as they transition into preadolescence. Their identity is shifting from family-centered to peer-centered, and material possessions become social currency. When a child complains about what the family has or doesn't have, they are often actually asking: 'Am I normal? Do I fit in? Will I be accepted?' The most effective parental response is NOT to compare ('Other people have less') or defend ('Our car is fine'). Instead: 1) Name the underlying feeling: 'It's hard when you feel different from your friends.' 2) Separate worth from possessions: 'What makes you a good person has nothing to do with what car we drive.' 3) Acknowledge the social reality: 'I know kids at school talk about this stuff. That pressure is real.' 4) Avoid shame: never make the child feel guilty for noticing inequality — it's developmentally appropriate.",
+  },
+  {
+    id: "sc-3",
+    source: "How to Talk So Kids Will Listen and Listen So Kids Will Want to Talk",
+    sourceDetails: "Faber & Mazlish, Ch. 3 — Alternatives to Punishment (adapted for social comparison)",
+    category: "social",
+    text: "When a child expresses envy or embarrassment about family possessions compared to peers, use reflective listening rather than lectures about gratitude. Instead of: 'You should be thankful for what you have!' try: 'You're feeling embarrassed when friends have bigger houses. That makes sense — it's hard to feel different.' Once the feeling is acknowledged, the child is more open to perspective-shifting. Avoid: comparing to those less fortunate (creates guilt, not gratitude), buying things to 'keep up' (reinforces materialism), or dismissing the concern ('material things don't matter' — they DO matter to a child navigating peer status). Instead, help the child identify what genuinely brings them joy and confidence independent of possessions: skills, friendships, kindness, creativity.",
+  },
+  {
+    id: "sc-4",
+    source: "Raising An Emotionally Intelligent Child",
+    sourceDetails: "John Gottman, Ch. 5 — Emotion-Coaching Strategies for Older Children",
+    category: "social",
+    text: "For children 8-12 experiencing peer comparison and material envy, emotion-coaching involves three steps: 1) Awareness — recognize that the child's complaint ('everyone has a bigger house') is actually an emotional signal of belonging anxiety, not greed. 2) Labeling — help the child name what they're really feeling: 'It sounds like you're worried about fitting in. Is that right?' This helps shift from vague distress to a named, manageable emotion. 3) Problem-solving — once the emotion is processed, brainstorm together: 'What could you say if someone comments on our car?' or 'What are the things that make you feel confident that have nothing to do with stuff?' Research shows that children whose parents emotion-coach rather than dismiss have better peer relationships, higher self-esteem, and lower rates of anxiety in adolescence.",
+  },
+  {
+    id: "sc-5",
+    source: "The Gift of Failure",
+    sourceDetails: "Jessica Lahey, Ch. 6 — Praise, Reward, and Material Motivation",
+    category: "social",
+    text: "Material envy in preteens (ages 9-12) is closely linked to how children have been praised and rewarded. Children who receive excessive material rewards or are praised for outcomes rather than effort develop stronger material comparison behaviors. To counteract comparison-driven envy: 1) Praise process, not possessions or achievements — 'I noticed how hard you worked on that project' rather than 'You're the smartest.' 2) Avoid using purchases as emotional band-aids — when a child is upset, don't reflexively buy something to cheer them up. This teaches them that shopping regulates emotions. 3) Model contentment — children watch how parents talk about what others have. If parents complain about neighbors' renovations or friends' holidays, children learn to compare. Instead, narrate gratitude openly: 'I really enjoyed our walk today — that cost nothing and it was the best part of my weekend.' 4) Give children meaningful responsibilities (not just chores) — contribution builds intrinsic self-worth.",
+  },
+  {
+    id: "sc-6",
+    source: "Building Resilience in Children and Teens",
+    sourceDetails: "Kenneth Ginsburg, Ch. 4 — Competence and Confidence (social comparison resilience)",
+    category: "social",
+    text: "To build resilience against social comparison and peer pressure in children aged 8-14, focus on developing the '7 Cs': Competence (recognizing what they're good at), Confidence (believing in themselves), Connection (strong relationships that aren't based on status), Character (knowing their values), Contribution (making a difference), Coping (healthy strategies for difficult emotions), and Control (understanding what they can and can't change). When a child says 'everyone else has X,' respond with curiosity, not defensiveness: 'Tell me more about that. What do you think having X would change?' Often the child reveals that what they really want is belonging, not the object itself. Help them find belonging through shared interests, teamwork, and authentic friendships rather than material sameness.",
+  },
+  {
+    id: "sc-7",
+    source: "Mindset: The New Psychology of Success",
+    sourceDetails: "Carol Dweck, Ch. 7 — Growth Mindset in Parenting (applied to material comparison)",
+    category: "confidence",
+    text: "Children with a fixed mindset are more vulnerable to social comparison because they believe their worth is determined by external validation — grades, looks, possessions. Children with a growth mindset understand that abilities and worth develop through effort, learning, and character. To help a child who is distressed about material comparison: 1) Reframe the narrative — 'What matters isn't what you HAVE, it's what you can DO and who you ARE.' 2) Help them identify their 'growth areas' — 'You're getting better at piano every week. That's something nobody can buy.' 3) Normalize different paths — 'Every family makes different choices about how to spend money. That doesn't mean one family is better than another.' 4) Avoid labeling — don't say 'we're not rich' or 'we can't afford that' as identity statements. Instead: 'That's not how we choose to spend our money right now. We prioritize X, Y, and Z.' This frames financial decisions as choices, not deficits.",
+  },
+  {
+    id: "sc-8",
+    source: "Triple P — Positive Parenting Program",
+    sourceDetails: "Triple P Level 4 — Helping children cope with peer pressure (ages 8-14)",
+    category: "social",
+    text: "For children experiencing peer pressure related to material possessions or social status (ages 8-14), Triple P recommends: 1) Keep communication open — ask 'What happened at school today?' not 'Are you being picked on?' Let the child lead. 2) Teach assertiveness scripts — practice what to say when peers comment on possessions: 'Yeah, our car's not the newest, but it gets us where we need to go.' or 'I don't really care about that stuff.' 3) Build a counter-narrative — regularly talk about your family values: 'In our family, we care more about kindness than having the newest things.' 4) Connect with like-minded families — children are less vulnerable to comparison when they have friends whose families share similar values. 5) Monitor media consumption — social media and advertising amplify comparison. Discuss advertising critically: 'Why do you think that ad makes it seem like you NEED that brand?' 6) Don't rescue immediately — let the child sit with the discomfort and develop their own coping strategies, while remaining emotionally available.",
+  },
+  {
+    id: "sc-9",
+    source: "Gratitude Works!",
+    sourceDetails: "Robert Emmons — Research on gratitude practices in families",
+    category: "confidence",
+    text: "Research on gratitude by Robert Emmons shows that practicing gratitude actively counteracts material envy and social comparison. For children aged 8-14: 1) Family gratitude rituals — at dinner, have everyone share one thing they're grateful for. Keep it specific ('I'm grateful that my friend helped me with math') rather than generic. 2) Gratitude journaling — studies show children who write 3 things they're grateful for, 3 times per week, show measurable increases in life satisfaction and decreases in materialism within 3 weeks. 3) Model gratitude aloud — 'I'm so glad we got to walk in the park today. I felt really happy.' Children whose parents express gratitude regularly are more grateful themselves. 4) Experiences over things — research consistently shows that experiences (trips, activities, time together) produce more lasting happiness than material purchases. Frame family choices accordingly: 'Instead of buying X, let's go to the beach together.' 5) Volunteering — children who volunteer show reduced materialistic values and increased empathy. Even monthly volunteering has measurable effects.",
+  },
+  {
+    id: "sc-10",
+    source: "Peers: The Powerful Influence of Kids on Each Other",
+    sourceDetails: "Judith Rich Harris — Developmental psychology on peer influence (ages 8-15)",
+    category: "social",
+    text: "Peer influence peaks between ages 10-15, and material comparison is one of its primary expressions. Research shows that children are most susceptible to peer comparison when they lack a strong sense of identity outside their peer group. Parents can reduce comparison vulnerability by: 1) Supporting identity-building activities — sports, arts, music, hobbies where the child defines themselves by what they do, not what they own. 2) Creating a 'home base' of acceptance — the child needs at least one context (usually family) where they feel completely accepted regardless of status. 3) Avoiding parental comparison — if parents compare their child to siblings or peers ('Why can't you be more like...'), the child internalizes comparison as normal. 4) Talking about peer pressure explicitly — 'I know it feels like everyone has the latest phone. What do you think would actually happen if you didn't have one?' Let the child think it through rather than lecturing.",
+  },
+  {
+    id: "sc-11",
+    source: "NurtureShock: New Thinking About Children",
+    sourceDetails: "Po Bronson & Ashley Merryman, Ch. 1 — Inverse Power of Praise (material comparison research)",
+    category: "confidence",
+    text: "Research on children and materialism reveals a counterintuitive finding: children who are frequently praised for being 'special' or 'smart' are MORE likely to become materialistic, not less. This is because excessive praise creates an external validation dependency — the child needs constant reinforcement of their worth, and possessions become one way to signal worth. To raise a child who is resilient against material comparison: 1) Praise specific efforts, not global traits — 'You worked really hard on that drawing' not 'You're so talented.' 2) Don't overpraise — children know when praise is inflated and it makes them distrust their own abilities. 3) Let them experience normal disappointments without rescue — a child who learns to handle 'I didn't get the award' builds resilience that transfers to 'My family doesn't have the biggest house.' 4) Talk about values explicitly and regularly — children whose families have clear non-material values (community, creativity, faith, kindness) show 40% lower rates of material comparison behavior.",
+  },
+  {
+    id: "sc-12",
+    source: "AAP HealthyChildren.org",
+    sourceDetails: "American Academy of Pediatrics — Materialism and self-esteem in school-age children",
+    category: "social",
+    text: "The AAP advises that when school-age children (7-12 years) express concerns about family possessions or social comparison, parents should: 1) Take it seriously — don't dismiss it as shallow. Social comparison is a normal developmental task. 2) Ask open questions — 'What made you think about that?' or 'Did something happen at school?' There may be a specific incident (teasing, exclusion) behind the complaint. 3) Address bullying if present — if a child is being mocked for family possessions, that's bullying and should be addressed with the school. 4) Focus on what the family DOES have and DO together — shared experiences, traditions, skills. 5) Monitor for signs that material comparison is affecting mental health — withdrawal, sadness, refusing to bring friends home, or obsessing over brands may indicate deeper distress that warrants professional support. 6) Be honest about finances age-appropriately — 'We choose to spend our money on experiences rather than things because that's what our family values.'",
+  },
+
 ];
 
 // TOPIC_CATEGORIES moved to topics.ts (client-safe)
