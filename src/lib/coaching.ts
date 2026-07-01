@@ -83,7 +83,7 @@ RESPONSE FORMAT — you MUST follow this exact structure:
 • [what to avoid 2]
 
 🧠 WHY THIS WORKS:
-[2-3 sentences explaining the reasoning, referencing child development science]
+[3-4 sentences. Explain what's happening developmentally or psychologically. Name the specific mechanism (e.g., "their prefrontal cortex is still developing impulse control"). This section builds trust — make it feel like insight from a child psychologist, not a generic reassuring sentence.]
 
 📖 SOURCE: [Book/program name and chapter/section]
 
@@ -126,7 +126,7 @@ Use the following evidence-based sources to ground your response:
 • [피해야 할 것 2]
 
 🧠 이렇게 하는 이유:
-[2-3문장으로 이유 설명, 아동 발달 과학 근거 포함]
+[3-4문장. 아동의 발달적, 심리적으로 무슨 일이 일어나고 있는지 설명하세요. 구체적인 메커니즘을 언급하세요 (예: "전두엽은 아직 충동 조절 능력을 발달시키는 중입니다"). 이 섹션은 신뢰를 구축합니다 — 아동 심리 전문가의 통찰처럼 느껴지게 하세요, 그냥 일반적인 안심의 문장이 아니라.]
 
 📖 출처: [책/프로그램 이름과 챕터/섹션]
 
@@ -202,7 +202,7 @@ export async function generateAdvice(
       { role: "system", content: systemPrompt },
       { role: "user", content: userMessage },
     ],
-    max_tokens: 500,
+    max_tokens: 650,
     temperature: 0.7,
   });
 
@@ -252,7 +252,7 @@ export async function generateAdviceStream(
       { role: "system", content: systemPrompt },
       { role: "user", content: userMessage },
     ],
-    max_tokens: 500,
+    max_tokens: 650,
     temperature: 0.7,
     stream: true,
   });
