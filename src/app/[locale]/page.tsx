@@ -109,6 +109,8 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [error, setError] = useState("");
   const [feedbackGiven, setFeedbackGiven] = useState<"up" | "down" | null>(null);
   const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackReasons, setFeedbackReasons] = useState<string[]>([]);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [streamError, setStreamError] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -341,16 +343,33 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   function rateSession(sessionId: string, rating: "up" | "down") {
     const sid = sessionId || currentSessionId;
     if (!sid) return;
-    setSessions(prev => prev.map(s => s.id === sid ? { ...s, rating, feedbackText: feedbackText || undefined } : s));
+    setSessions(prev => prev.map(s => s.id === sid ? { ...s, rating } : s));
     setFeedbackGiven(rating);
-    // Log feedback to server (fire and forget)
+    setFeedbackReasons([]);
+    setFeedbackText("");
+    setFeedbackSubmitted(false);
+  }
+
+  function toggleReason(reason: string) {
+    setFeedbackReasons(prev => prev.includes(reason) ? prev.filter(r => r !== reason) : [...prev, reason]);
+  }
+
+  function submitFeedback() {
+    const sid = currentSessionId;
+    if (!sid) return;
+    const reasons = feedbackReasons.join(", ");
+    const fullFeedback = [reasons, feedbackText].filter(Boolean).join(" — ");
+    setSessions(prev => prev.map(s => s.id === sid ? { ...s, feedbackText: fullFeedback || undefined } : s));
+    setFeedbackSubmitted(true);
+    // Log feedback to server with reasons
     fetch("/api/feedback", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         queryId: sid,
         query: currentQuery,
-        rating,
+        rating: feedbackGiven,
+        feedbackText: fullFeedback || undefined,
         language: lang,
       }),
     }).catch(() => {});
@@ -369,7 +388,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   function newSession() {
     abortControllerRef.current?.abort();
     setQuery(""); setAdvice(null); setStreamingAdvice("");
-    setFeedbackGiven(null); setFeedbackText("");
+    setFeedbackGiven(null); setFeedbackText(""); setFeedbackReasons([]); setFeedbackSubmitted(false);
     setCurrentSessionId(null);
   }
 
@@ -808,23 +827,55 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                   </div>
                 )}
 
-                {/* Feedback detail for thumbs down */}
-                {feedbackGiven === "down" && (
+                {/* Feedback panel — after rating, before submit */}
+                {feedbackGiven && !feedbackSubmitted && (
                   <div className="rounded-2xl p-4 slide-up" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                    <p className="text-sm mb-2" style={{ color: "var(--text)" }}>{t.whatWouldHelp}</p>
+                    <p className="text-sm font-medium mb-3" style={{ color: "var(--text)" }}>
+                      {feedbackGiven === "up" ? "👍 " + t.fbUpTitle : "👎 " + t.fbDownTitle}
+                    </p>
+                    {/* Reason chips */}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {(feedbackGiven === "up"
+                        ? [t.fbReasonSpecific, t.fbReasonPractical, t.fbReasonGentle, t.fbReasonFast, t.fbReasonClear]
+                        : [t.fbReasonGeneric, t.fbReasonConfusing, t.fbReasonUnsafe, t.fbReasonConflict, t.fbReasonNotRelevant, t.fbReasonTooLong]
+                      ).map(reason => (
+                        <button
+                          key={reason}
+                          onClick={() => toggleReason(reason)}
+                          className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                          style={{
+                            border: "1px solid var(--border)",
+                            background: feedbackReasons.includes(reason) ? "var(--primary)" : "transparent",
+                            color: feedbackReasons.includes(reason) ? "white" : "var(--text)",
+                          }}
+                        >
+                          {reason}
+                        </button>
+                      ))}
+                    </div>
+                    {/* Optional text */}
                     <textarea
                       value={feedbackText}
                       onChange={(e) => setFeedbackText(e.target.value)}
                       placeholder={t.feedbackPlaceholder}
                       rows={2}
-                      className="w-full px-3 py-2 rounded-xl text-xs resize-none focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl text-xs resize-none focus:outline-none mb-3"
                       style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)" }}
                     />
+                    <div className="flex gap-2">
+                      <button onClick={submitFeedback} className="flex-1 py-2.5 rounded-xl text-white font-medium text-sm" style={{ background: "var(--primary)" }}>
+                        {t.fbSubmit}
+                      </button>
+                      <button onClick={() => { setFeedbackSubmitted(true); }} className="px-4 py-2.5 rounded-xl text-sm font-medium" style={{ border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                        {t.fbSkip}
+                      </button>
+                    </div>
                   </div>
                 )}
 
-                {feedbackGiven === "up" && (
-                  <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>{t.gladHelped}</p>
+                {/* After submit */}
+                {feedbackGiven && feedbackSubmitted && (
+                  <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>{t.fbThanks}</p>
                 )}
 
                 {/* Actions */}

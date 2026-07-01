@@ -111,6 +111,24 @@ export interface UIStrings {
   cmpSafetyCalm: string;
   cmpSourcesFootnote: string;
   closeInfo: string;
+  // Feedback reasons
+  fbUpTitle: string;
+  fbDownTitle: string;
+  fbReasonSpecific: string;
+  fbReasonPractical: string;
+  fbReasonGentle: string;
+  fbReasonFast: string;
+  fbReasonClear: string;
+  fbReasonGeneric: string;
+  fbReasonConfusing: string;
+  fbReasonUnsafe: string;
+  fbReasonConflict: string;
+  fbReasonNotRelevant: string;
+  fbReasonTooLong: string;
+  fbReasonOther: string;
+  fbSubmit: string;
+  fbSkip: string;
+  fbThanks: string;
 }
 
 export const UI: Record<Language, UIStrings> = {
@@ -200,6 +218,24 @@ export const UI: Record<Language, UIStrings> = {
     cmpSafetyCalm: "Built-in medical triage & crisis resource routing",
     cmpSourcesFootnote: "Sources include AAP, NHS, CDC, WHO, and 40+ evidence-based parenting books.",
     closeInfo: "Got it",
+    // Feedback reasons
+    fbUpTitle: "What was most helpful?",
+    fbDownTitle: "What wasn't right?",
+    fbReasonSpecific: "Felt specific to my situation",
+    fbReasonPractical: "Easy to put into practice",
+    fbReasonGentle: "Gentle, not judging me",
+    fbReasonFast: "Quick and clear",
+    fbReasonClear: "Clear structure",
+    fbReasonGeneric: "Too generic",
+    fbReasonConfusing: "Confusing or contradictory",
+    fbReasonUnsafe: "Felt unsafe or wrong",
+    fbReasonConflict: "Advice conflicted with each other",
+    fbReasonNotRelevant: "Didn't match my situation",
+    fbReasonTooLong: "Too long or wordy",
+    fbReasonOther: "Other",
+    fbSubmit: "Submit",
+    fbSkip: "Skip",
+    fbThanks: "Thanks for the feedback! 💚",
   },
   ko: {
     appName: "다독",
@@ -287,6 +323,24 @@ export const UI: Record<Language, UIStrings> = {
     cmpSafetyCalm: "내장된 의학적 판별 및 위기 리소스 안내",
     cmpSourcesFootnote: "출처: AAP, NHS, CDC, WHO 및 40개 이상의 근거 기반 육아 책.",
     closeInfo: "확인했어요",
+    // Feedback reasons
+    fbUpTitle: "무엇이 가장 도움이 되었나요?",
+    fbDownTitle: "어떤 점이 아쉬웠나요?",
+    fbReasonSpecific: "우리 아이 상황에 딱 맞았어요",
+    fbReasonPractical: "바로 실천할 수 있었어요",
+    fbReasonGentle: "판단하지 않고 따뜻했어요",
+    fbReasonFast: "빠르고 명확했어요",
+    fbReasonClear: "구조가 깔끔했어요",
+    fbReasonGeneric: "너무 일반적인 조언이에요",
+    fbReasonConfusing: "이해하기 어렵거나 모순돼요",
+    fbReasonUnsafe: "안전하지 않거나 틀린 것 같아요",
+    fbReasonConflict: "조언들이 서로 충돌해요",
+    fbReasonNotRelevant: "우리 상황에 맞지 않아요",
+    fbReasonTooLong: "너무 길거나 말이 많아요",
+    fbReasonOther: "기타",
+    fbSubmit: "제출",
+    fbSkip: "건너뛰기",
+    fbThanks: "소중한 피드백 감사합니다! 💚",
   },
 };
 
