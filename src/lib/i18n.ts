@@ -83,7 +83,7 @@ export interface UIStrings {
 
 export const UI: Record<Language, UIStrings> = {
   en: {
-    appName: "Parenting Coach",
+    appName: "Calm Parent",
     whatsHappening: "What's happening?",
     speakOrType: "Speak or type — get evidence-based advice in seconds",
     tapToSpeak: "Tap to Speak",
@@ -141,7 +141,7 @@ export const UI: Record<Language, UIStrings> = {
     deleteAllHistory: "Clear all history",
   },
   ko: {
-    appName: "육아 코치",
+    appName: "다독",
     whatsHappening: "무슨 일이세요?",
     speakOrType: "말하거나 입력하세요 — 몇 초 안에 과학적 육아 조언을 받으세요",
     tapToSpeak: "눌러서 말하기",
