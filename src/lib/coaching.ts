@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { KNOWLEDGE_BASE, KnowledgeChunk } from "./knowledge-base";
 import { Language } from "./i18n";
+import storedEmbeddings from "../data/embeddings.json";
 
 let _openai: OpenAI | null = null;
 function getOpenAI(): OpenAI {
@@ -10,8 +11,21 @@ function getOpenAI(): OpenAI {
   return _openai;
 }
 
-// In-memory embedding cache (Phase 0 only — move to vector DB in Phase 1)
-let chunkEmbeddings: { chunk: KnowledgeChunk; embedding: number[] }[] | null = null;
+// In-memory embedding cache (loaded from pre-computed file)
+interface StoredEmbedding { id: string; embedding: number[]; }
+const storedEmbeddingsData = storedEmbeddings as StoredEmbedding[];
+
+// Build a lookup map: chunk id → embedding
+const embeddingMap = new Map<string, number[]>(
+  storedEmbeddingsData.map(e => [e.id, e.embedding])
+);
+
+// Pre-build the embedded knowledge base from file (no API calls!)
+const chunkEmbeddings: { chunk: KnowledgeChunk; embedding: number[] }[] = KNOWLEDGE_BASE
+  .filter(chunk => embeddingMap.has(chunk.id))
+  .map(chunk => ({ chunk, embedding: embeddingMap.get(chunk.id)! }));
+
+console.log(`[RAG] Loaded ${chunkEmbeddings.length} pre-computed embeddings from file`);
 
 async function getEmbeddings(text: string): Promise<number[]> {
   const response = await getOpenAI().embeddings.create({
@@ -22,18 +36,7 @@ async function getEmbeddings(text: string): Promise<number[]> {
 }
 
 async function ensureKnowledgeBaseEmbedded() {
-  if (chunkEmbeddings) return chunkEmbeddings;
-
-  console.log(`[RAG] Embedding ${KNOWLEDGE_BASE.length} knowledge chunks...`);
-  const results = await Promise.all(
-    KNOWLEDGE_BASE.map(async (chunk) => ({
-      chunk,
-      embedding: await getEmbeddings(chunk.text),
-    }))
-  );
-  chunkEmbeddings = results;
-  console.log(`[RAG] Done. Cached ${results.length} embeddings.`);
-  return results;
+  return chunkEmbeddings;
 }
 
 function cosineSimilarity(a: number[], b: number[]): number {
