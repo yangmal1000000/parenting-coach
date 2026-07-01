@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { TOPIC_CATEGORIES } from "@/lib/topics";
 import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from "@/lib/i18n";
@@ -85,9 +85,10 @@ function saveToStorage(key: string, value: unknown) {
 type Tab = "home" | "history" | "saved" | "profile";
 
 // === Main Component ===
-export default function Home({ params }: { params: { locale: string } }) {
+export default function Home({ params }: { params: Promise<{ locale: string }> }) {
   const router = useRouter();
-  const initialLang: Language = params.locale === "ko" ? "ko" : "en";
+  const { locale } = use(params);
+  const initialLang: Language = locale === "ko" ? "ko" : "en";
 
   // Language
   const [lang, setLang] = useState<Language>(initialLang);
