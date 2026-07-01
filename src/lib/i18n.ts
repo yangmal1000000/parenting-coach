@@ -79,6 +79,38 @@ export interface UIStrings {
   browseTopics: string;
   // Misc
   deleteAllHistory: string;
+  // How It Works
+  howItWorks: string;
+  howItWorksTitle: string;
+  howItWorksSubtitle: string;
+  // Step cards
+  step1Title: string;
+  step1Desc: string;
+  step2Title: string;
+  step2Desc: string;
+  step3Title: string;
+  step3Desc: string;
+  step4Title: string;
+  step4Desc: string;
+  // Comparison
+  vsGeneric: string;
+  vsGenericTitle: string;
+  vsCalmParent: string;
+  // Comparison rows
+  cmpSources: string;
+  cmpSourcesGeneric: string;
+  cmpSourcesCalm: string;
+  cmpStructure: string;
+  cmpStructureGeneric: string;
+  cmpStructureCalm: string;
+  cmpHallucination: string;
+  cmpHallucinationGeneric: string;
+  cmpHallucinationCalm: string;
+  cmpSafety: string;
+  cmpSafetyGeneric: string;
+  cmpSafetyCalm: string;
+  cmpSourcesFootnote: string;
+  closeInfo: string;
 }
 
 export const UI: Record<Language, UIStrings> = {
@@ -139,6 +171,35 @@ export const UI: Record<Language, UIStrings> = {
     profileSaved: "✓ Saved",
     browseTopics: "Browse Topics",
     deleteAllHistory: "Clear all history",
+    // How It Works
+    howItWorks: "How It Works",
+    howItWorksTitle: "Grounded in real research. Not just another chatbot.",
+    howItWorksSubtitle: "Every answer is backed by published, evidence-based parenting sources — not made up from scratch.",
+    step1Title: "🎤 You describe the situation",
+    step1Desc: "Speak or type what's happening. Takes 5 seconds.",
+    step2Title: "📚 We search our knowledge base",
+    step2Desc: "675+ passages from 100+ vetted sources — books, paediatric guidelines, and proven programs.",
+    step3Title: "🧠 AI crafts personalised advice",
+    step3Desc: "Only grounded in retrieved evidence — not hallucinated opinions.",
+    step4Title: "⚡ You get structured, actionable steps",
+    step4Desc: "Clear DO / DON'T / WHY format with cited sources. Every time.",
+    vsGeneric: "❌ Generic AI Chat",
+    vsCalmParent: "✅ Calm Parent",
+    vsGenericTitle: "What's the difference?",
+    cmpSources: "📚 Sources",
+    cmpSourcesGeneric: "Trained on the whole internet — no source citation, may include blogs & opinions",
+    cmpSourcesCalm: "675+ evidence-based passages from vetted books & paediatric guidelines",
+    cmpStructure: "🎯 Structure",
+    cmpStructureGeneric: "Long paragraphs, inconsistent format",
+    cmpStructureCalm: "Clear DO / DON'T / WHY / SOURCE every single time",
+    cmpHallucination: "🛡️ Safety",
+    cmpHallucinationGeneric: "Can make up advice that sounds right but isn't",
+    cmpHallucinationCalm: "Grounded in retrieved evidence — won't invent unsupported techniques",
+    cmpSafety: "⚠️ Crisis handling",
+    cmpSafetyGeneric: "Inconsistent — may miss medical or safety concerns",
+    cmpSafetyCalm: "Built-in medical triage & crisis resource routing",
+    cmpSourcesFootnote: "Sources include AAP, NHS, CDC, WHO, and 40+ evidence-based parenting books.",
+    closeInfo: "Got it",
   },
   ko: {
     appName: "다독",
@@ -197,6 +258,35 @@ export const UI: Record<Language, UIStrings> = {
     profileSaved: "✓ 저장됨",
     browseTopics: "주제별 보기",
     deleteAllHistory: "기록 전체 삭제",
+    // How It Works
+    howItWorks: "이용 방법",
+    howItWorksTitle: "실제 연구에 기반합니다. 그냥 챗봇이 아니에요.",
+    howItWorksSubtitle: "모든 답변은 출판된 과학적 육아 자료에 근거합니다 — 임의로 지어내지 않아요.",
+    step1Title: "🎤 상황을 설명하세요",
+    step1Desc: "말하거나 입력하세요. 5초면 충분합니다.",
+    step2Title: "📚 지식 베이스를 검색합니다",
+    step2Desc: "검증된 100개 이상의 출처에서 675개 이상의 문장 — 책, 소아과 가이드라인, 검증된 프로그램.",
+    step3Title: "🧠 AI가 맞춤 조언을 작성합니다",
+    step3Desc: "검색된 근거에만 기반하여 조언 — 근거 없는 의견을 만들지 않습니다.",
+    step4Title: "⚡ 구조화된 실행 가능한 단계를 받습니다",
+    step4Desc: "명확한 하세요 / 하지 마세요 / 이유 / 출처 형식. 매번 동일하게.",
+    vsGeneric: "❌ 일반 AI 챗",
+    vsCalmParent: "✅ 다독",
+    vsGenericTitle: "무엇이 다른가요?",
+    cmpSources: "📚 출처",
+    cmpSourcesGeneric: "인터넷 전체로 학습 — 출처 없음, 블로그나 개인 의견 포함 가능",
+    cmpSourcesCalm: "검증된 책과 소아과 가이드라인에서 675개 이상의 근거 기반 문장",
+    cmpStructure: "🎯 구조",
+    cmpStructureGeneric: "긴 단락, 일관성 없는 형식",
+    cmpStructureCalm: "매번 명확한 하세요 / 하지 마세요 / 이유 / 출처",
+    cmpHallucination: "🛡️ 안전",
+    cmpHallucinationGeneric: "그럴듯하지만 근거 없는 조언을 만들어낼 수 있음",
+    cmpHallucinationCalm: "검색된 근거에 기반 — 지원되지 않는 기법을 지어내지 않음",
+    cmpSafety: "⚠️ 위기 대응",
+    cmpSafetyGeneric: "일관성 없음 — 의학적 문제나 안전 문제를 놓칠 수 있음",
+    cmpSafetyCalm: "내장된 의학적 판별 및 위기 리소스 안내",
+    cmpSourcesFootnote: "출처: AAP, NHS, CDC, WHO 및 40개 이상의 근거 기반 육아 책.",
+    closeInfo: "확인했어요",
   },
 };
 

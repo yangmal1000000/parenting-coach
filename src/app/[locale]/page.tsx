@@ -123,6 +123,7 @@ export default function Home({ params }: { params: { locale: string } }) {
   // Data
   const [sessions, setSessions] = useState<Session[]>([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
   // Load from storage on mount
@@ -397,6 +398,141 @@ export default function Home({ params }: { params: { locale: string } }) {
         </div>
       )}
 
+      {/* How It Works Modal */}
+      {showInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.5)" }} onClick={() => setShowInfo(false)}>
+          <div
+            className="rounded-2xl max-w-lg w-full my-8 slide-up overflow-y-auto"
+            style={{ background: "var(--surface)", maxHeight: "85vh" }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-10 px-6 pt-6 pb-4" style={{ background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-bold mb-1" style={{ color: "var(--text)" }}>{t.howItWorksTitle}</h2>
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.howItWorksSubtitle}</p>
+                </div>
+                <button onClick={() => setShowInfo(false)} className="p-2 rounded-lg shrink-0" style={{ color: "var(--text-muted)" }}>✕</button>
+              </div>
+            </div>
+
+            <div className="px-6 py-5 space-y-5">
+              {/* Pipeline diagram */}
+              <div className="space-y-3">
+                {/* Step 1 */}
+                <div className="flex gap-3 items-start">
+                  <div className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg" style={{ background: "var(--primary)", color: "white" }}>1</div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{t.step1Title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{t.step1Desc}</p>
+                  </div>
+                </div>
+                {/* Arrow */}
+                <div className="ml-5 h-5 w-px" style={{ background: "var(--border)" }} />
+                {/* Step 2 */}
+                <div className="flex gap-3 items-start">
+                  <div className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg" style={{ background: "var(--primary)", color: "white" }}>2</div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{t.step2Title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{t.step2Desc}</p>
+                  </div>
+                </div>
+                {/* Arrow */}
+                <div className="ml-5 h-5 w-px" style={{ background: "var(--border)" }} />
+                {/* Step 3 */}
+                <div className="flex gap-3 items-start">
+                  <div className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg" style={{ background: "var(--primary)", color: "white" }}>3</div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{t.step3Title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{t.step3Desc}</p>
+                  </div>
+                </div>
+                {/* Arrow */}
+                <div className="ml-5 h-5 w-px" style={{ background: "var(--border)" }} />
+                {/* Step 4 */}
+                <div className="flex gap-3 items-start">
+                  <div className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg" style={{ background: "var(--emerald-600)", color: "white" }}>4</div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{t.step4Title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{t.step4Desc}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Comparison table */}
+              <div>
+                <p className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>{t.vsGenericTitle}</p>
+                <div className="space-y-2">
+                  {/* Sources */}
+                  <div className="rounded-xl p-3" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                    <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--text)" }}>{t.cmpSources}</p>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--red-700)" }}>{t.vsGeneric}</p>
+                        <p style={{ color: "var(--text-muted)" }}>{t.cmpSourcesGeneric}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsCalmParent}</p>
+                        <p style={{ color: "var(--text-muted)" }}>{t.cmpSourcesCalm}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Structure */}
+                  <div className="rounded-xl p-3" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                    <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--text)" }}>{t.cmpStructure}</p>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--red-700)" }}>{t.vsGeneric}</p>
+                        <p style={{ color: "var(--text-muted)" }}>{t.cmpStructureGeneric}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsCalmParent}</p>
+                        <p style={{ color: "var(--text-muted)" }}>{t.cmpStructureCalm}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Safety */}
+                  <div className="rounded-xl p-3" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                    <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--text)" }}>{t.cmpHallucination}</p>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--red-700)" }}>{t.vsGeneric}</p>
+                        <p style={{ color: "var(--text-muted)" }}>{t.cmpHallucinationGeneric}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsCalmParent}</p>
+                        <p style={{ color: "var(--text-muted)" }}>{t.cmpHallucinationCalm}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Crisis */}
+                  <div className="rounded-xl p-3" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                    <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--text)" }}>{t.cmpSafety}</p>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--red-700)" }}>{t.vsGeneric}</p>
+                        <p style={{ color: "var(--text-muted)" }}>{t.cmpSafetyGeneric}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsCalmParent}</p>
+                        <p style={{ color: "var(--text-muted)" }}>{t.cmpSafetyCalm}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs mt-3" style={{ color: "var(--text-muted)", opacity: 0.7 }}>{t.cmpSourcesFootnote}</p>
+              </div>
+
+              {/* Close button */}
+              <button onClick={() => setShowInfo(false)} className="w-full py-3 rounded-xl font-medium text-white text-sm" style={{ background: "var(--primary)" }}>
+                {t.closeInfo}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-30 safe-top" style={{ background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -405,6 +541,10 @@ export default function Home({ params }: { params: { locale: string } }) {
             <span className="font-semibold text-sm" style={{ color: "var(--text)" }}>{t.appName}</span>
           </button>
           <div className="flex items-center gap-1">
+            {/* Info button */}
+            <button onClick={() => setShowInfo(true)} className="p-2 rounded-lg text-sm font-medium" style={{ color: "var(--text-muted)" }} title={t.howItWorks}>
+              ℹ️
+            </button>
             {/* Language selector */}
             {LANGUAGES.map((l) => (
               <button
