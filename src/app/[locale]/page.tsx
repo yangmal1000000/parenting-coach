@@ -709,20 +709,16 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               </div>
             )}
 
-            {/* Loading / Breathing Circle */}
-            {loading && !streamingAdvice && (
+            {/* Loading / Breathing Circle — stays until advice is parsed */}
+            {loading && (
               <div className="text-center py-16">
                 <div className="inline-block breathe w-16 h-16 rounded-full mb-4" style={{ background: "var(--primary)", opacity: 0.3 }} />
                 <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t.findingBest}</p>
               </div>
             )}
 
-            {/* Streaming Advice */}
-            {loading && streamingAdvice && (
-              <div className="rounded-2xl p-5 slide-up" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans" style={{ color: "var(--text)" }}>{streamingAdvice}</pre>
-              </div>
-            )}
+            {/* Streaming Advice — hidden, only used to track progress internally */}
+            {loading && streamingAdvice && null}
 
             {/* Error */}
             {error && (
