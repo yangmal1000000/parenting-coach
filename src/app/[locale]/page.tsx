@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { TOPIC_CATEGORIES } from "@/lib/topics";
 import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from "@/lib/i18n";
 
@@ -84,9 +85,12 @@ function saveToStorage(key: string, value: unknown) {
 type Tab = "home" | "history" | "saved" | "profile";
 
 // === Main Component ===
-export default function Home() {
+export default function Home({ params }: { params: { locale: string } }) {
+  const router = useRouter();
+  const initialLang: Language = params.locale === "ko" ? "ko" : "en";
+
   // Language
-  const [lang, setLang] = useState<Language>("en");
+  const [lang, setLang] = useState<Language>(initialLang);
   const t = UI[lang];
   const topicLabels = TOPIC_LABELS[lang];
   const topicExamples = TOPIC_EXAMPLES_I18N[lang];
@@ -131,8 +135,11 @@ export default function Home() {
     if (!onboarded) setShowOnboarding(true);
     const dm = loadFromStorage("pc_darkmode", false);
     setDarkMode(dm);
-    const savedLang = loadFromStorage<Language>("pc_lang", "en");
-    setLang(savedLang);
+    // Sync any saved language preference
+    const savedLang = loadFromStorage<Language>("pc_lang", initialLang);
+    if (savedLang !== initialLang && (savedLang === "en" || savedLang === "ko")) {
+      router.push(`/${savedLang}`);
+    }
   }, []);
 
   // Dark mode toggle
@@ -146,6 +153,13 @@ export default function Home() {
 
   // Save language when changed
   useEffect(() => { saveToStorage("pc_lang", lang); }, [lang]);
+
+  // Switch language by navigating to new locale path
+  function switchLanguage(newLang: Language) {
+    setLang(newLang);
+    saveToStorage("pc_lang", newLang);
+    router.push(`/${newLang}`);
+  }
 
   // Cleanup
   useEffect(() => {
@@ -395,7 +409,7 @@ export default function Home() {
             {LANGUAGES.map((l) => (
               <button
                 key={l.code}
-                onClick={() => setLang(l.code)}
+                onClick={() => switchLanguage(l.code)}
                 className="px-2 py-1 rounded-lg text-base transition-all"
                 style={{
                   opacity: lang === l.code ? 1 : 0.4,
