@@ -5450,6 +5450,543 @@ export const KNOWLEDGE_BASE: KnowledgeChunk[] = [
     text: "The AAP advises that when school-age children (7-12 years) express concerns about family possessions or social comparison, parents should: 1) Take it seriously — don't dismiss it as shallow. Social comparison is a normal developmental task. 2) Ask open questions — 'What made you think about that?' or 'Did something happen at school?' There may be a specific incident (teasing, exclusion) behind the complaint. 3) Address bullying if present — if a child is being mocked for family possessions, that's bullying and should be addressed with the school. 4) Focus on what the family DOES have and DO together — shared experiences, traditions, skills. 5) Monitor for signs that material comparison is affecting mental health — withdrawal, sadness, refusing to bring friends home, or obsessing over brands may indicate deeper distress that warrants professional support. 6) Be honest about finances age-appropriately — 'We choose to spend our money on experiences rather than things because that's what our family values.'",
   },
 
+
+
+
+
+  // === DIGITAL LIFE & SCREENS ===
+{
+    id: "dl-1",
+    source: "American Academy of Pediatrics (AAP)",
+    sourceDetails: "AAP Media Use Guidelines for School-Aged Children and Adolescents",
+    category: "screen",
+    text: "The AAP recommends creating a personalized Family Media Plan rather than applying one-size-fits-all screen time limits. For children under 18 months, avoid screen media other than video chatting. Between 18-24 months, only high-quality programming co-viewed with an adult. For ages 2-5, limit screen use to one hour per day of high-quality content, watched together. For school-aged children and teens, consistent limits should ensure screen time doesn't displace adequate sleep (8-12 hours depending on age), physical activity (at least one hour daily), and schoolwork. The AAP emphasizes screen-free zones, particularly at the dinner table and in bedrooms, as one of the most impactful steps families can take. Parents should also designate tech-free times, especially the hour before bed. The quality of content matters as much as quantity: educational programming, creative apps, and video calls with family carry different developmental value than passive scrolling or fast-paced entertainment. Regular conversations about digital citizenship, online safety, and responsible behavior should begin early and continue through adolescence.",
+  },
+  {
+    id: "dl-2",
+    source: "Jonathan Haidt, 'The Anxious Generation'",
+    sourceDetails: "Part I: The Surge of Suffering, and the Great Rewiring",
+    category: "screen",
+    text: "Jonathan Haidt argues that the sharp rise in adolescent mental illness beginning around 2012 is directly linked to the transition from flip phones to smartphones with front-facing cameras and always-on internet access. He identifies 2010-2015 as 'the Great Rewiring of Childhood' — the period when childhood shifted from play-based, outdoor, and community-anchored to phone-based, indoor, and individually isolated. Haidt presents four key norms to reverse the trend: no smartphones before high school (age 14), no social media before age 16, phone-free schools, and far more independence and unsupervised play for children and teens. He argues that social media, particularly Instagram and TikTok, function as 'experience blockers' that displace sleep, in-person interaction, and physical activity. Girls are disproportionately harmed by visual social comparison on Instagram, while boys are more affected by gaming, pornography, and YouTube algorithmic rabbit holes. Haidt's research suggests delaying smartphone access by even one or two years can significantly reduce anxiety and depression risk.",
+  },
+  {
+    id: "dl-3",
+    source: "Jean Twenge, 'iGen'",
+    sourceDetails: "Chapters on Screen Time, Mental Health, and the Smartphone Generation",
+    category: "screen",
+    text: "Jean Twenge's research on the generation born after 1995 — dubbed 'iGen' — found that teens who spend three or more hours per day on electronic devices are 35% more likely to have at least one suicide risk factor. Her analysis of large national datasets shows that adolescent happiness and life satisfaction plummeted after 2012, exactly when smartphone ownership crossed the 50% threshold. Twenge found that eighth-graders who spend ten or more hours per week on social media are 56% more likely to report being unhappy than those who spend less time. Critically, she found that any amount of screen time beyond two hours daily is associated with lower psychological well-being for teens, and the relationship is dose-dependent — each additional hour of screen time predicts lower well-being. Twenge notes that the displacement of sleep is a primary mechanism: teens who sleep less than seven hours per night because of phone use show dramatically worse mental health. She recommends no more than two hours of recreational screen time per day for teens and keeping devices out of bedrooms overnight.",
+  },
+  {
+    id: "dl-4",
+    source: "Common Sense Media",
+    sourceDetails: "The Common Sense Census: Media Use by Tweens and Teens",
+    category: "screen",
+    text: "Common Sense Media's comprehensive census research found that US teens (ages 13-18) average over seven hours of entertainment media per day, while tweens (ages 8-12) average nearly five hours — and these figures exclude time spent on schoolwork. More than half of teens say they are 'addicted' to their phones, and nearly three-quarters say they feel distracted by their device while doing homework. The research reveals significant socioeconomic disparities: children from lower-income families spend significantly more time with screen media than their higher-income peers. Common Sense Media offers practical guidance: use screen time settings and parental controls not as punishment but as scaffolding for healthy habits. They recommend co-viewing media with younger children, discussing what you watch, and establishing device-free zones and times. Their research consistently shows that content quality matters enormously — an hour spent creating digital art or video chatting with a grandparent carries very different developmental value than an hour of algorithmic short-form video scrolling. Parents should focus on content, context, and individual child needs rather than fixating on raw hours.",
+  },
+  {
+    id: "dl-5",
+    source: "Sherry Turkle, 'Alone Together'",
+    sourceDetails: "Part II: The Robotic Moment and Networked Life",
+    category: "screen",
+    text: "MIT professor Sherry Turkle argues that digital technology has created a paradoxical state of being 'alone together' — physically present with others while psychologically absorbed in our devices. Her research, based on decades of interviews, shows that children and teens increasingly prefer screen-mediated communication to face-to-face conversation because it allows them to curate their presentation, edit their words, and avoid the vulnerability of real-time interaction. Turkle warns that this preference stunts the development of empathy, the ability to read nonverbal cues, and the capacity for deep, sustained attention — all critical social-emotional skills. Parents should actively model face-to-face conversation and create deliberate spaces for it: family meals without phones, car rides where conversation replaces earbuds, and one-on-one time where the phone is visibly put away. Turkle emphasizes that children learn more from what parents do than what they say — a parent who constantly checks their own phone teaches that the device outranks the child. She recommends establishing 'sacred spaces' in family life where devices are never present, and being intentional about reclaiming the art of conversation.",
+  },
+  {
+    id: "dl-6",
+    source: "Devorah Heitner, 'Screenwise'",
+    sourceDetails: "Chapters on Mentoring vs. Monitoring and Digital Citizenship",
+    category: "screen",
+    text: "Devorah Heitner advocates for a shift from monitoring children's digital lives to mentoring them. Rather than relying on surveillance apps and restrictive filters, Heitner argues that parents should focus on understanding what their kids are actually doing online, asking curious questions, and helping them develop their own internal judgment. She stresses that digital literacy is not just about safety — it's about helping kids become thoughtful creators, critical consumers of information, and kind digital citizens. Heitner recommends discussing the concept of a 'digital footprint' early, helping children understand that anything shared online can be permanent and forwarded. She encourages parents to ask their children to teach them about their favorite apps and games — this builds the child's confidence and the parent's understanding simultaneously. When conflicts arise (such as a child seeing inappropriate content or having an online argument), Heitner advises treating these as learning opportunities rather than occasions for punishment. Children who fear having their devices confiscated will simply hide problems rather than seek help. The goal is raising kids who make good digital choices even when no adult is watching.",
+  },
+  {
+    id: "dl-7",
+    source: "World Health Organization (WHO)",
+    sourceDetails: "WHO Guidelines on Physical Activity, Sedentary Behaviour and Sleep for Children Under 5",
+    category: "screen",
+    text: "The WHO guidelines state that children under one year should have no screen time at all. For children aged two to four, sedentary screen time should be no more than one hour per day, with less being better. The guidelines situate screen time within a broader framework of healthy 24-hour movement behaviors: infants need at least 30 minutes of tummy time and interactive floor play daily; children three to four need at least 180 minutes of physical activity per day. WHO frames these recommendations not as anti-technology but as pro-development — young children learn best through physical play, hands-on exploration, and face-to-face interaction with caring adults. Screen time displaces these essential developmental activities. WHO also emphasizes the importance of adequate, good-quality sleep: 14-17 hours per day for infants (including naps), 11-14 hours for ages one to two, and 10-13 hours for ages three to four. Screens in the sleep environment, especially in the hour before bedtime, are strongly discouraged because blue light suppresses melatonin and interactive content increases cognitive arousal, both of which delay sleep onset and reduce sleep quality.",
+  },
+  {
+    id: "dl-8",
+    source: "American Academy of Pediatrics (AAP)",
+    sourceDetails: "AAP Cyberbullying and Online Harassment Guidance",
+    category: "screen",
+    text: "The AAP advises that parents should respond to cyberbullying calmly and systematically. First, do not confiscate the device immediately — this can make the child feel punished and discourage them from reporting future incidents. Instead, document the bullying: take screenshots, save messages, and record dates and times. Block the person responsible and report the behavior to the platform. If the bullying involves threats of violence, explicit images of minors, or harassment based on protected characteristics, report it to law enforcement. If it involves a classmate, contact the school — most schools have anti-bullying policies that cover online behavior, even when it occurs off-campus. The AAP stresses the importance of regular, non-judgmental conversations about online experiences. Children should know they can come to a parent without fear of losing device access. Parents should watch for warning signs: sudden withdrawal from friends or activities, changes in mood or appetite, reluctance to go to school, hiding the screen when adults approach, or unusual distress after using a device. Mental health support should be sought if a child shows signs of anxiety, depression, or self-harm related to online harassment.",
+  },
+  {
+    id: "dl-9",
+    source: "NHS Digital Wellbeing Guidance",
+    sourceDetails: "NHS advice on Children's Screen Time and Digital Health",
+    category: "screen",
+    text: "NHS guidance emphasizes that while screen time is a normal part of modern childhood, the key to digital wellbeing is balance, boundaries, and content quality. Parents should ensure that screen use does not crowd out the three pillars of child health: adequate sleep, physical activity, and face-to-face social interaction. The NHS recommends keeping all screens out of children's bedrooms overnight — devices should be charged in a communal area. This single step dramatically improves both the quantity and quality of children's sleep. For sleep hygiene specifically, the NHS advises no screen use in the 60-90 minutes before bed, as blue light from devices suppresses melatonin production by up to 22% and interactive content keeps the brain in an alert state. Parents should use the built-in screen time monitoring tools available on iOS (Screen Time) and Android (Digital Wellbeing) not to spy on children but to start conversations about digital habits. The NHS also highlights the importance of parental modeling: children whose parents are constantly on their phones are more likely to develop problematic screen habits themselves. Lead by example.",
+  },
+  {
+    id: "dl-10",
+    source: "World Health Organization (WHO)",
+    sourceDetails: "WHO International Classification of Diseases (ICD-11): Gaming Disorder",
+    category: "screen",
+    text: "In 2019, the WHO officially recognized 'Gaming Disorder' as a mental health condition in the ICD-11. Diagnosis requires a pattern of gaming behavior (digital or video gaming) that is severe enough to cause significant impairment in personal, family, social, educational, or occupational functioning, persisting for at least 12 months. Key symptoms include: inability to control gaming, prioritizing gaming over other daily activities and interests, and continuing to game despite negative consequences. While the majority of young people who play video games do not develop the disorder, parents should be alert to warning signs: a child who loses track of time while gaming, becomes irritable or aggressive when prevented from playing, neglects basic needs like eating or sleeping to continue gaming, lies about how much time is spent gaming, or withdraws from friends and activities they previously enjoyed. If gaming disorder is suspected, seek help from a mental health professional experienced in behavioral addictions. Parents can promote healthy gaming by setting clear time limits, encouraging offline activities, keeping gaming equipment in shared family spaces, and understanding the games their children play.",
+  },
+  {
+    id: "dl-11",
+    source: "Common Sense Media",
+    sourceDetails: "When Should Kids Get a Phone? Research Review and Parent Guidance",
+    category: "screen",
+    text: "Common Sense Media reports that the average age a child gets their first smartphone in the US is now 11, with 53% of children owning one by age 11 and nearly 70% by age 12. However, age alone should not determine phone readiness. Parents should consider five factors: maturity level, ability to follow rules, the specific need (safety, logistics, communication), the child's ability to handle social media emotionally, and their willingness to report problems to a parent. A basic phone or smartwatch with calling and texting — but no apps or internet browser — can meet communication needs without the risks of a full smartphone. If a smartphone is given, parents should establish a written agreement covering: which apps are allowed, time limits, device-free zones and times, expectations about kind communication, and the parent's right to periodically check the device. Common Sense Media strongly recommends disabling in-app purchases, setting up content restrictions through the device's parental controls, and having ongoing conversations rather than one-time lectures about digital responsibility. The first phone is not a one-time milestone but the beginning of a multi-year coaching relationship.",
+  },
+  {
+    id: "dl-12",
+    source: "American Academy of Pediatrics (AAP)",
+    sourceDetails: "AAP Digital Citizenship and Online Safety Guidelines",
+    category: "screen",
+    text: "The AAP defines digital citizenship as the responsible, ethical, and safe use of technology. Key competencies for children include: understanding digital permanence (anything posted online can be screenshotted, shared, and remain accessible indefinitely), protecting personal privacy (never sharing full name, address, school, or location data with strangers), recognizing and reporting inappropriate content or contact, and treating others with respect in all online interactions. Parents should begin teaching digital citizenship as soon as a child first interacts with a device, long before they have independent access. The AAP recommends age-appropriate conversations about online predators, scams, and misinformation starting around age 8-10, when children begin independently navigating digital spaces. Parents should teach children the 'T-H-I-N-K' test for digital communication: is it True, Helpful, Inspiring, Necessary, Kind? If not, don't post it. The AAP also stresses teaching children to question information they encounter online, look for credible sources, and recognize sponsored content, clickbait, and deepfakes. Digital citizenship is an ongoing conversation, not a single talk — it should evolve as the child grows and as technology changes.",
+  },
+
+
+  // === MENTAL HEALTH ===
+{
+    id: "mh-1",
+    source: "The Anxious Generation",
+    sourceDetails: "Jonathan Haidt, Part I: The Tidal Wave",
+    category: "emotional",
+    text: "Children experience anxiety as a normal part of development — separation anxiety in preschoolers, fear of the dark in early primary school, social worries in pre-teens. The key distinction is whether anxiety interferes with daily functioning. An anxiety disorder is likely when fear persists for weeks or months, avoids normal activities like school or socialising, causes physical symptoms such as stomachaches or headaches with no medical cause, or produces disproportionate distress relative to the actual threat. The rise of smartphone-based childhood has sharply increased anxiety rates since around 2012, particularly in girls aged 10-14. If a child's worry feels constant, invisible, or disproportionate, or if they are restructuring their life to avoid triggers, seek a GP or CAMHS assessment. Early intervention prevents anxiety from becoming entrenched. Do not dismiss persistent anxiety as 'just a phase' — children rarely grow out of clinical anxiety without support.",
+  },
+  {
+    id: "mh-2",
+    source: "NIMH Child Mental Health",
+    sourceDetails: "National Institute of Mental Health, Children and Mental Health",
+    category: "emotional",
+    text: "Depression in children looks different from adult depression. Younger children may appear irritable rather than sad, lose interest in play, complain of physical pains, regress in behaviour, or cling to parents. Teenagers more typically show classic signs: persistent low mood, withdrawal from friends, changes in sleep or appetite, declining school performance, expressions of worthlessness, and loss of interest in activities they once enjoyed. For both age groups, symptoms must persist for at least two weeks to meet diagnostic criteria. A critical mistake is interpreting irritability in young children as naughtiness rather than a possible mental health signal. If a child's mood or behaviour shifts noticeably for more than a fortnight — especially with sleep disruption, social withdrawal, or talk of self-blame — consult a GP for a mental health assessment. Depression is treatable, particularly when identified early. Waiting for a child to 'snap out of it' only deepens the episode.",
+  },
+  {
+    id: "mh-3",
+    source: "NHS CAMHS",
+    sourceDetails: "NHS Child and Adolescent Mental Health Services, Getting Help",
+    category: "emotional",
+    text: "Knowing when to seek professional help can feel daunting, but the threshold is straightforward: seek help from a GP or school counsellor when emotional or behavioural difficulties persist for more than a few weeks, interfere with daily life, or cause significant distress to the child or family. Specific red flags warrant immediate attention: any mention of self-harm or suicidal thoughts, sudden drastic personality changes, eating disorder symptoms, or complete social withdrawal. You do not need a formal diagnosis to begin accessing support. Schools can provide initial counselling referrals, and GPs can route to CAMHS for specialist assessment. In a crisis, A&E departments accept mental health emergencies. Parents often delay seeking help, hoping things will improve — but early intervention consistently produces better outcomes. Trust your instinct: if something feels wrong with your child's emotional state, a professional opinion is always appropriate and never an overreaction.",
+  },
+  {
+    id: "mh-4",
+    source: "Raising An Emotionally Intelligent Child",
+    sourceDetails: "John Gottman, Chapter 4: Emotion-Coaching Strategies",
+    category: "emotional",
+    text: "Different therapeutic approaches suit different children and presenting problems. Cognitive Behavioural Therapy (CBT) is the most evidence-backed approach for anxiety and depression in children over eight. It helps children identify and reframe unhelpful thought patterns and gradually face feared situations. Play therapy is ideal for younger children (ages 5-10) who lack the verbal skills for traditional talk therapy — it uses play as a natural language for processing emotions. Family therapy addresses dynamics that may be contributing to a child's difficulties and is especially effective for behavioural problems, family transitions like divorce, or when one child's mental health is affecting the whole household. The right therapy depends on the child's age, temperament, and specific challenges. A qualified child therapist will recommend the best fit after an initial assessment. Avoid forcing a reluctant teen into therapy — engagement and rapport with the therapist predict outcomes more strongly than the specific modality used.",
+  },
+  {
+    id: "mh-5",
+    source: "Untangled",
+    sourceDetails: "Lisa Damour, Chapter 6: Drinking, Drugs, and Other Dangerous Terrain",
+    category: "emotional",
+    text: "Bullying can have devastating mental health consequences that persist into adulthood. The psychological impact includes anxiety, depression, damaged self-worth, and in severe cases, suicidal ideation. Parents should be alert to indirect signs: unexplained reluctance to attend school, damaged or missing belongings, sudden withdrawal from friendships, disrupted sleep, or unexplained mood swings after using devices. If you suspect bullying, listen without immediately problem-solving. Validate your child's feelings first — 'That sounds really hard, and I believe you.' Then work together on a response plan: document incidents, contact the school, and insist on their anti-bullying protocol. For cyberbullying, use app-blocking tools but avoid confiscating devices entirely, as this can isolate the child further from their social world. If bullying symptoms — anxiety, low mood, withdrawal — persist for more than two weeks after the bullying stops, seek professional support. Children who feel believed and supported by at least one adult recover significantly better.",
+  },
+  {
+    id: "mh-6",
+    source: "Raising An Emotionally Intelligent Child",
+    sourceDetails: "John Gottman, Chapter 5: The Five Steps of Emotion Coaching",
+    category: "emotional",
+    text: "Emotional resilience is not innate — it is built through experiencing manageable difficulty and learning to cope with the feelings that arise. Parents build resilience by allowing children to encounter age-appropriate frustration rather than removing every obstacle. When a child is upset, resist the urge to immediately fix the problem or dismiss the emotion. Instead, label the feeling ('You seem really frustrated'), validate it ('That makes sense — that was really hard'), and then help the child brainstorm a response. This three-step pattern — label, validate, problem-solve — builds the neural pathways for emotional regulation. Children also build resilience through predictable routines, consistent boundaries, and at least one secure attachment relationship. Crucially, parents should model resilient behaviour out loud: narrating their own coping ('I felt worried about that meeting, so I prepared carefully'). Children learn more from watching how adults handle adversity than from anything they are told.",
+  },
+  {
+    id: "mh-7",
+    source: "AAP Mental Health Guidance",
+    sourceDetails: "American Academy of Pediatrics, Mental Health and Sleep",
+    category: "emotional",
+    text: "Sleep and mental health are bidirectionally linked in children and adolescents. Poor sleep directly worsens anxiety, depression, irritability, and emotional reactivity. Conversely, mental health difficulties often disrupt sleep — anxious children cannot switch off at night, and depressed teens may oversleep or have fragmented sleep. School-age children (6-12) need 9-12 hours; teenagers need 8-10. Chronic sleep deprivation, extremely common in secondary school students, produces symptoms that mimic or amplify mental health conditions. Before pursuing therapy or screening for disorders, address sleep hygiene: consistent bedtimes, no screens for at least an hour before sleep, cool dark bedrooms, and reduced caffeine intake. If a child's mental health symptoms improve significantly with better sleep, the primary issue may have been sleep deprivation rather than a mood disorder. However, if a child cannot fall asleep due to racing thoughts or persistent worry, this is itself a signal to investigate underlying anxiety.",
+  },
+  {
+    id: "mh-8",
+    source: "Untangled",
+    sourceDetails: "Lisa Damour, Chapter 3: Contending with Adult Authority",
+    category: "emotional",
+    text: "Perfectionism in children is often mistaken for healthy ambition, but it frequently masks significant anxiety. Perfectionist children set impossibly high standards for themselves, become distressed by minor mistakes, avoid tasks where they might not excel, and tie their self-worth entirely to achievement. This pattern is strongly linked to generalised anxiety and, in adolescence, to eating disorders and depression. Parents unintentionally reinforce perfectionism by over-praising results rather than effort, expressing disappointment at lower grades, or conveying that success equals love. To counteract this, praise specific effort and strategy ('I noticed how long you worked on that — your persistence was impressive'), normalise mistakes by sharing your own, and avoid re-doing a child's work to make it 'better.' Emphasise that the learning process matters more than the outcome. If a child's perfectionism causes meltdowns over homework, avoidance of new activities, or sleep disruption from worry about performance, it has crossed into clinical territory and warrants professional support.",
+  },
+  {
+    id: "mh-9",
+    source: "NHS CAMHS",
+    sourceDetails: "NHS Child and Adolescent Mental Health Services, School Avoidance",
+    category: "emotional",
+    text: "School refusal — persistent reluctance to attend school that goes beyond normal truancy — is a serious mental health signal rather than behavioural defiance. It typically stems from underlying anxiety: separation anxiety in younger children, social anxiety or fear of bullying in pre-teens, or overwhelming academic pressure in teenagers. Physical symptoms are common, especially morning stomachaches, nausea, or headaches that resolve once the child is allowed to stay home. The longer school avoidance continues, the harder it becomes to reverse, so early intervention is critical. Do not treat school refusal as a discipline problem. Instead, work with the school's pastoral team or SENCO to identify the trigger, develop a graded return plan, and address the underlying anxiety — often through CBT. Maintain a calm, firm, and supportive stance: the goal is always a return to school, but the approach must acknowledge the genuine distress the child feels. Untreated school refusal can lead to long-term social and academic consequences.",
+  },
+  {
+    id: "mh-10",
+    source: "NIMH Child Mental Health",
+    sourceDetails: "National Institute of Mental Health, Warning Signs of Self-Harm",
+    category: "emotional",
+    text: "Self-harm — deliberately injuring oneself, typically through cutting, scratching, or burning — is most common in adolescents aged 12-17 and is usually a coping mechanism for overwhelming emotional distress rather than a suicide attempt. Warning signs include unexplained or frequent injuries (especially on arms, thighs, or stomach), wearing long sleeves or trousers in warm weather, keeping sharp objects in their room, withdrawing from activities, sudden mood changes, and spending excessive time alone. If you discover your child is self-harming, stay calm. Reacting with shock, anger, or punishment deepens shame and makes them less likely to seek help. Say: 'I can see you're in a lot of pain, and I want to help you through this.' Remove access to means but do not frame it as punishment. Seek professional help immediately — contact your GP for a CAMHS referral. Self-harm is treatable, but it requires professional intervention to address the underlying emotional pain and develop healthier coping strategies.",
+  },
+  {
+    id: "mh-11",
+    source: "How to Talk So Kids Will Listen & Listen So Kids Will Talk",
+    sourceDetails: "Faber & Mazlish, Chapter 6: Engaging Cooperation",
+    category: "emotional",
+    text: "Children experiencing grief — whether from the death of a loved one, parental separation, or other significant loss — need honest, age-appropriate information and permission to feel whatever they feel. Young children (5-8) may not grasp the permanence of death and may show grief through play, regression, or behavioural changes rather than tears. Pre-teens understand death but may feel responsible or fear their own mortality. Teenagers may grieve more privately and may express distress through irritability or risk-taking. Do not use euphemisms ('gone to sleep') which can confuse young children. Instead, use clear language ('Grandma died, which means her body stopped working'). Maintain routines as much as possible — predictability is deeply comforting to grieving children. Answer questions honestly, including 'I don't know' when appropriate. If grief significantly disrupts daily functioning for more than a few months, or if a child expresses a wish to join the deceased person, seek professional bereavement support or CAMHS assessment.",
+  },
+  {
+    id: "mh-12",
+    source: "The Whole-Brain Child",
+    sourceDetails: "Siegel & Bryson, Chapter 2: Two Halves of the Brain",
+    category: "emotional",
+    text: "A parent's mental health directly shapes their child's emotional development. Children are exquisitely sensitive to parental stress, anxiety, and depression — they detect it even when adults try to hide it. Parental depression increases a child's risk of mental health difficulties by roughly two to three times. Parental anxiety teaches children, through observational learning, that the world is dangerous. This is not about blame; it is about recognising that caring for yourself is caring for your child. If you are struggling with persistent low mood, overwhelming anxiety, or chronic exhaustion, seeking treatment is one of the most powerful interventions you can make for your child's wellbeing. Be honest with children in age-appropriate ways: 'Mummy is feeling a bit low at the moment, so I'm getting some help — it's not your fault, and I love you.' Children need to know that mental health difficulties are real, treatable, and nothing to be ashamed of — and they learn that from watching you.",
+  },
+
+
+  // === NEURODIVERGENCE ===
+{
+    id: "nd-1",
+    source: "Driven to Distraction (Hallowell & Ratey)",
+    sourceDetails: "Chapter 2: Diagnosis and Assessment of ADHD",
+    category: "behavior",
+    text: "ADHD is one of the most researched conditions in child psychiatry, yet diagnosis requires careful evaluation by a qualified professional. According to AAP guidelines and DSM-5 criteria, a child must show six or more symptoms of inattention or hyperactivity-impulsivity that persist for at least six months, appear before age 12, and cause significant impairment in two or more settings (such as home and school). Diagnosis is never made from a single observation or checklist—it requires comprehensive history-taking, input from parents and teachers, and ruling out other causes such as sleep disorders, anxiety, hearing problems, or thyroid conditions. Many bright children with ADHD mask their difficulties in early years, only to struggle when academic demands increase around third or fourth grade. Parents who suspect ADHD should document specific behaviors across settings, request a psychoeducational evaluation through their school district, and consult a pediatrician or child psychiatrist. Early identification matters: untreated ADHD increases risk for academic failure, low self-esteem, injuries, and later substance use. The good news is that with proper diagnosis, ADHD is highly manageable through behavioral strategies, educational support, and, when appropriate, medication.",
+  },
+  {
+    id: "nd-2",
+    source: "American Academy of Pediatrics (AAP) ADHD Guidelines",
+    sourceDetails: "AAP Clinical Practice Guideline for ADHD (2019 Update)",
+    category: "behavior",
+    text: "The AAP recommends a multimodal approach to ADHD treatment, meaning the most effective plans combine multiple strategies rather than relying on one. For children aged 4-5, first-line treatment is behavioral parent training and classroom interventions; medication is reserved for cases where behavioral approaches alone do not produce sufficient improvement. For children 6 and older, the AAP recommends a combination of FDA-approved medication (typically stimulants such as methylphenidate or amphetamine-based formulations) plus behavioral therapy, with ongoing monitoring and dose adjustments. Parent training programs like Parent-Child Interaction Therapy (PCIT) and Triple P have strong evidence for reducing disruptive behaviors in young children with ADHD. The AAP emphasizes that treatment should be individualized—what works for one child may not work for another—and that clinicians should regularly reassess effectiveness, side effects, and growth. Follow-up visits every 3-6 months are recommended. Parents should understand that ADHD is a chronic condition requiring long-term management, not a one-time fix, and that treatment plans will evolve as the child grows and demands change.",
+  },
+  {
+    id: "nd-3",
+    source: "Smart but Scattered (Dawson & Guare)",
+    sourceDetails: "Chapters 3-5: Executive Skills Assessment and Intervention",
+    category: "behavior",
+    text: "Executive function challenges are the hidden engine behind many ADHD struggles. These are the brain-based skills that allow us to plan, organize, initiate tasks, sustain attention, manage time, and regulate emotions. Dawson and Guare identify eleven core executive skills including response inhibition, working memory, emotional control, flexibility, sustained attention, task initiation, planning and prioritization, organization, time management, goal-directed persistence, and metacognition. Children are not born with these skills—they develop gradually through childhood and into the mid-twenties, with the prefrontal cortex maturing last. When a child has weak executive skills, parents often misread the behavior as laziness or defiance. The most effective interventions follow a sequence: first, modify the environment (create structure, reduce distractions, establish routines); second, teach the skill directly (break tasks into steps, use visual checklists); third, provide practice with fading support. External scaffolding—planners, timer apps, body-doubling, visual schedules—works far better than simply telling a child to 'try harder.' The goal is gradual transfer of responsibility: the parent provides heavy support initially, then systematically fades it as the child builds competence and independence.",
+  },
+  {
+    id: "nd-4",
+    source: "Uniquely Human (Barry Prizant)",
+    sourceDetails: "Chapter 1: Understanding Autism as a Different Way of Being",
+    category: "behavior",
+    text: "Dr. Barry Prizant reframes autism not as a checklist of deficits to be corrected, but as a different way of experiencing and interacting with the world. This neurodiversity-affirming perspective recognizes that autistic behaviors—repetitive movements, intense special interests, sensitivity to sensory input, need for routine—are not problems to eliminate but strategies the child uses to cope, communicate, and find meaning. The key question shifts from 'How do we stop this behavior?' to 'What is this behavior telling us about what the child needs?' Prizant emphasizes that so-called challenging behaviors often arise when the child is overwhelmed, anxious, or unable to communicate effectively. By focusing on understanding the underlying trigger rather than suppressing the behavior, parents can address root causes. Building on strengths is central: an autistic child's deep interest in trains or dinosaurs can be a pathway to learning, social connection, and even future career paths. Early intervention matters, but the best programs build on the child's natural motivations rather than imposing external agendas. Acceptance does not mean giving up on growth—it means growing from a foundation of respect rather than correction.",
+  },
+  {
+    id: "nd-5",
+    source: "The Out-of-Sync Child (Carol Kranowitz)",
+    sourceDetails: "Part One: Recognizing Sensory Processing Disorder",
+    category: "behavior",
+    text: "Sensory Processing Disorder (SPD) occurs when the brain has difficulty receiving and responding to information coming through the senses. A child with SPD may be over-responsive—finding normal sounds painfully loud, clothing tags unbearable, or certain food textures intolerable—or under-responsive, seeming not to notice pain, temperature, or their own body position. Some children are sensory-seeking, craving intense movement, deep pressure, or strong flavors. These differences are neurological, not behavioral choices. A child who melts down in a noisy grocery store is not being difficult—their nervous system is genuinely overwhelmed. Common signs include clumsy movements, resistance to messy activities, extreme reactions to transitions, unusually high or low activity levels, and difficulty with fine or gross motor tasks. SPD frequently co-occurs with ADHD and autism but can also exist independently. Occupational therapy with a sensory integration approach is the primary treatment, helping the child's nervous system process sensory input more adaptively through carefully designed activities. Parents can help by identifying triggers, creating sensory-friendly environments at home, building in 'sensory diet' activities throughout the day (e.g., jumping on a trampoline, using weighted blankets), and advocating for accommodations at school.",
+  },
+  {
+    id: "nd-6",
+    source: "The Explosive Child (Ross Greene)",
+    sourceDetails: "Chapter 2: Meltdowns vs. Tantrums and the CPS Model",
+    category: "behavior",
+    text: "A critical distinction for parents of neurodivergent children: a tantrum is goal-directed behavior—a child wants something and uses behavior to get it. A meltdown is a neurological overload response—the child's brain is overwhelmed by unmet demands exceeding their capacity to cope, and the behavior is not purposeful. This distinction changes everything about how we respond. Dr. Ross Greene's Collaborative & Proactive Solutions (CPS) model starts from the premise that 'kids do well if they can,' not 'kids do well if they wanna.' When a neurodivergent child melts down, they lack the skills—flexibility, frustration tolerance, problem-solving—to handle the situation, not the motivation to behave. Greene's approach involves three steps: first, identify the specific unsolved problems (not vague labels like 'defiant'); second, gather the child's perspective through empathic conversation; third, collaborate on a realistic solution that addresses both the child's and adult's concerns. Punishment, exclusion, and consequences do not build missing skills and often escalate the situation. Prevention through proactive problem-solving—identifying and addressing lagging skills before they trigger crises—is far more effective than reactive discipline after a meltdown has begun.",
+  },
+  {
+    id: "nd-7",
+    source: "CDC Developmental Disabilities Resources / CHADD Guidance",
+    sourceDetails: "School Accommodations: IEPs and 504 Plans",
+    category: "behavior",
+    text: "For neurodivergent children, appropriate school accommodations can be the difference between thriving and failing—not because the child cannot learn, but because standard classroom demands may not match their neurological profile. In the United States, two primary legal frameworks provide support. A 504 Plan (under the Rehabilitation Act) provides accommodations for students whose disability substantially limits learning but who do not require specialized instruction—examples include extended time on tests, preferential seating, movement breaks, reduced homework volume, and assistive technology. An IEP (Individualized Education Program, under IDEA) provides specialized instruction and related services tailored to the child's specific needs, with annual goals and regular progress monitoring. IEPs are more comprehensive and legally enforceable. Parents are equal members of the IEP team and should come prepared with documentation, specific goals, and data. Common accommodations for ADHD include extended time, chunked assignments, fidget tools, and check-in systems. For autism, accommodations might include visual schedules, social narratives, a quiet break space, and paraprofessional support. Requesting evaluations in writing triggers legal timelines schools must follow. Parents should know their rights, bring an advocate if needed, and review the plan at least annually.",
+  },
+  {
+    id: "nd-8",
+    source: "Driven to Distraction (Hallowell & Ratey) / AAP Guidelines",
+    sourceDetails: "Chapter 9: Medication and Treatment Decisions",
+    category: "behavior",
+    text: "The decision to medicate a child for ADHD is deeply personal and should be made collaboratively by parents, the child's physician, and—when age-appropriate—the child themselves. Stimulant medications (such as methylphenidate-based Concerta, Ritalin, or amphetamine-based Vyvanse, Adderall) have the strongest evidence base of any treatment in child psychiatry, with response rates of 70-80%. They work by increasing dopamine and norepinephrine availability in the prefrontal cortex, improving focus, impulse control, and working memory. Non-stimulant options (atomoxetine, guanfacine, clonidine) may be preferred when stimulants cause side effects or if the child has co-occurring anxiety or tics. Common side effects include appetite suppression, sleep disruption, and mild growth concerns—all of which should be monitored. The AAP emphasizes starting with the lowest effective dose and titrating carefully. Importantly, medication does not cure ADHD; it manages symptoms while the child builds skills and compensatory strategies. Many families combine medication with behavioral therapy, school accommodations, and parent training for best results. Parents should avoid the extremes of either rejecting medication out of fear or viewing it as a standalone solution. Regular follow-up with the prescribing physician is essential, especially during growth spurts, school transitions, and adolescence.",
+  },
+  {
+    id: "nd-9",
+    source: "Uniquely Human (Prizant) / The Whole-Brain Child (Siegel & Bryson)",
+    sourceDetails: "Social Skills and Connection for Neurodivergent Children",
+    category: "behavior",
+    text: "Social skills development for neurodivergent children should not be about forcing neurotypical behavior, but about building genuine connection and communication competence. Autistic children, for example, often socialize differently—preferring parallel play, connecting over shared interests, and communicating more comfortably in predictable, low-demand settings. Prizant warns against social skills programs that train 'normalcy' (mandatory eye contact, scripted conversations) which can increase anxiety and mask the child's authentic self. Instead, effective approaches build on the child's natural motivation: using special interests as bridges to peer connection, practicing social scenarios through role-play or video modeling, and providing structured social opportunities with clearly defined expectations. Siegel and Bryson's whole-brain approach complements this by emphasizing 'name it to tame it'—helping children identify and articulate their emotions as a foundation for social problem-solving. For children with ADHD, social challenges often stem from impulsivity (interrupting, difficulty waiting turns) rather than a lack of social understanding. Explicit coaching, immediate feedback, and small-group practice settings are most effective. Peer mentoring programs, where a socially skilled peer is paired with a neurodivergent child, also show promising results. The goal is meaningful relationships on the child's terms, not performance of neurotypical social norms.",
+  },
+  {
+    id: "nd-10",
+    source: "The Whole-Brain Child (Siegel & Bryson) / CHADD Family Resources",
+    sourceDetails: "Sibling Dynamics in Neurodivergent Families",
+    category: "behavior",
+    text: "When one child is neurodivergent, sibling relationships require intentional attention. Typically developing siblings often experience a complex mix of feelings: love and protectiveness alongside resentment (over attention imbalance), embarrassment (especially in adolescence), guilt (for having negative feelings), and anxiety about their sibling's future. Siegel and Bryson emphasize acknowledging all feelings rather than dismissing them—siblings need permission to feel frustrated without being labeled as unsupportive. Parents can help by carving out one-on-one time with each sibling, explaining the neurodivergent child's condition in age-appropriate language, and avoiding the trap of making the sibling a 'third parent.' CHADD recommends being explicit about fairness versus equality: 'Fair doesn't mean everyone gets the same thing—it means everyone gets what they need.' Sibling support groups and camps can be invaluable, providing a space where children connect with peers who share similar family experiences. Parents should also be honest about challenges rather than presenting a perfect-family image. When siblings understand that challenging behaviors stem from neurological differences—not from being unloved—they develop greater empathy and resilience. Open, ongoing family communication about the neurodivergent child's needs—updated as siblings mature cognitively and emotionally—is protective for the entire family system.",
+  },
+  {
+    id: "nd-11",
+    source: "Smart but Scattered (Dawson & Guare) / Driven to Distraction (Hallowell)",
+    sourceDetails: "Twice-Exceptional (2e): Giftedness and ADHD",
+    category: "behavior",
+    text: "Twice-exceptional (2e) children are those who are gifted in one or more areas while also having a learning, attention, or processing difference such as ADHD. These children are frequently misunderstood because their strengths mask their challenges and their challenges mask their strengths. A 2e child might read three grade levels ahead but cannot organize a backpack or complete a worksheet. They may solve complex math problems mentally but forget to write down homework. Teachers may see a 'lazy but smart' student; parents see a frustrated, underperforming child. Hallowell notes that undiagnosed 2e children are at high risk for depression and low self-esteem because they internalize the gap between their obvious intelligence and their inconsistent performance as personal failure. Key strategies: pursue comprehensive psychoeducational assessment to identify both giftedness and deficits; advocate for dual differentiation at school (enrichment plus accommodations); explicitly teach executive function skills rather than assuming giftedness transfers to organization; and address the emotional toll of asynchronous development—the child who discusses black holes at dinner but cannot tie their shoes. Dawson and Guare stress that 2e children need both challenge and support: reducing expectations without enrichment leads to boredom and underachievement, while pushing for high performance without scaffolding leads to burnout and meltdowns.",
+  },
+  {
+    id: "nd-12",
+    source: "The Explosive Child (Ross Greene) / The Out-of-Sync Child (Kranowitz)",
+    sourceDetails: "Preventing and Managing Sensory-Driven Meltdowns",
+    category: "behavior",
+    text: "For children with sensory processing differences and ADHD, meltdowns are often predictable and therefore preventable. The first step is building a behavioral and sensory inventory: what are the specific triggers—crowded hallways, unexpected transitions, loud cafeterias, itchy clothing tags, hunger, sleep disruption? Most parents discover a pattern once they begin tracking antecedents rather than focusing only on the meltdown itself. Greene's CPS approach recommends proactively solving these predictable problems before they escalate. Practical prevention strategies include: giving advance warning of transitions with visual timers or countdown warnings; creating a sensory-friendly morning routine (laying out clothes the night before, reducing auditory clutter); building sensory breaks into the day (heavy work activities like carrying books, wall pushes, or movement breaks every 60-90 minutes); and teaching the child to recognize and communicate their own escalation signs ('My body feels buzzy') using a 5-point emotional scale. During an active meltdown, the goal is not teaching or discipline—it is regulation. Reduce sensory input (quiet space, dimmed lights), avoid verbal overload (use short phrases, not lectures), offer deep pressure if the child seeks it, and wait for the nervous system to reset. Post-meltdown, when the child is calm, is the time for collaborative problem-solving about what happened and what to try differently next time.",
+  },
+
+
+  // === FAMILY DIVERSITY ===
+{
+    id: "fs-1",
+    source: "Two Homes, One Childhood",
+    sourceDetails: "Robert Emery, Chapter 2: Two Homes, One Life",
+    category: "co-parent",
+    text: "Children adjust to divorce best when parents establish a predictable rhythm between two households rather than striving for exact equality. Research consistently shows that it is not the 50/50 schedule itself that matters, but the quality of the child's relationships in each home and the absence of conflict between parents. Children need to know that both homes are truly theirs — not that one is 'real' and the other is a visit. Give children a dedicated space in each home, even if modest. Avoid the language of 'visiting' a parent; instead, say 'living with Mom' and 'living with Dad.' Children who feel they belong in both homes show better emotional regulation and fewer anxiety symptoms. When transitions are handled calmly and on time, children internalize that the family is still intact, just reorganized. The goal is not perfection but reliability: consistent routines, clear expectations, and the repeated message that neither parent is going anywhere.",
+  },
+  {
+    id: "fs-2",
+    source: "The Co-Parenting Handbook",
+    sourceDetails: "Mager & Deer, Chapter 4: The Transition Plan",
+    category: "co-parent",
+    text: "Effective co-parenting across two households requires a detailed parenting plan that anticipates everyday decisions and conflict points. Cover specifics: drop-off times and locations, how sick days are handled, who attends school events, how new partners will be introduced, and what happens on holidays that fall on non-scheduled days. The most resilient plans include a dispute-resolution clause — using a mediator or parenting coordinator before returning to court. Research from the American Academy of Matrimonial Lawyers shows that vague plans are the leading cause of repeated litigation. Children caught in ongoing scheduling disputes score higher on measures of stress and behavioral problems. Keep communication with your co-parent businesslike: brief, factual, and child-focused. Use shared calendars and parenting apps rather than texting arguments. Never use your child as a messenger; studies show children in messenger roles develop increased anxiety and resentment toward both parents. The plan should be reviewed annually and adjusted as developmental needs change.",
+  },
+  {
+    id: "fs-3",
+    source: "Peaceful Parent, Happy Kids",
+    sourceDetails: "Laura Markham, Chapter 7: Connecting Through Change",
+    category: "co-parent",
+    text: "Helping children adjust to divorce begins with managing your own nervous system. Children are exquisitely attuned to their parents' emotional states; a dysregulated parent cannot calm a dysregulated child. Before telling children about the separation, process your own grief with a therapist or support system so you can deliver the news with steadiness. Use age-appropriate, blame-free language: 'Mom and Dad have decided to live in separate homes, but we both love you exactly the same.' Reassure children that the divorce is not their fault — this is the single most common fear among children of separating parents and persists across developmental stages. Expect regression: younger children may return to bedwetting or clinginess, older children may withdraw or act out. Meet these behaviors with connection rather than correction. Maintain existing bedtime and mealtime routines as much as possible during the first months. Consistency in daily rhythms provides the scaffolding children need to process larger structural changes without becoming overwhelmed.",
+  },
+  {
+    id: "fs-4",
+    source: "The Whole-Brain Child",
+    sourceDetails: "Siegel & Bryson, Chapter 5: The United States of Me",
+    category: "co-parent",
+    text: "When introducing a new partner to children after divorce, timing and pacing are critical. Wait until the relationship is stable and likely long-term — typically at least six months of exclusivity. Research indicates that rapid introductions of multiple partners correlate with increased anxiety and behavioral regression in children. Start with brief, low-stakes encounters in neutral settings: meeting at a park or community event where the focus is the activity, not the introduction. Do not expect or force immediate warmth. Children may feel loyalty conflicts — being kind to a new partner can feel like betraying their other parent. Name this explicitly: 'You don't have to choose between anyone. It's okay to have mixed feelings.' Avoid overnight stays with a new partner during the first year of integration, as this is consistently linked to children's adjustment difficulties. Communicate with your co-parent before the introduction; surprise introductions undermine trust and co-parenting cooperation. The child's comfort level should drive the pace, not the adults' relationship timeline.",
+  },
+  {
+    id: "fs-5",
+    source: "Two Homes, One Childhood",
+    sourceDetails: "Robert Emery, Chapter 6: Siblings and New Families",
+    category: "co-parent",
+    text: "Blended family sibling dynamics require patience and deliberate structuring. Do not expect stepsiblings to love each other immediately — forced affection creates resistance and resentment. Instead, create shared low-pressure activities: cooking together, board games, or outdoor adventures where interaction is natural but not forced. Give each child private space and alone time with their biological parent; losing exclusive access to a parent is a primary grief in blended families. Research on stepfamily integration shows that it typically takes two to four years for a blended family to develop genuine cohesion. During the early period, let the biological parent handle primary discipline while the stepparent builds connection through shared activities and emotional support. Stepparents who attempt to enforce rules before establishing relational trust consistently meet resistance. Validate all the children's feelings, including jealousy and frustration, without rushing to fix them. Family meetings where everyone can voice concerns — with ground rules of respect — help blended families negotiate shared space and norms collaboratively.",
+  },
+  {
+    id: "fs-6",
+    source: "AAP Guidance on Family Structure",
+    sourceDetails: "American Academy of Pediatrics, Promoting Healthy Families",
+    category: "co-parent",
+    text: "Talking to children about family differences starts with your own grounded framing. Children notice early that families look different; by age four or five, most children compare their family to peers'. Rather than waiting for a difficult moment, proactively use books and everyday conversations to normalize diversity: 'Some kids live with their mom and dad, some live with grandparents, some have two moms, and every family is built on love.' Research from the AAP confirms that family structure itself — single parent, same-sex parents, adoptive, blended — is far less predictive of children's wellbeing than family stability, warmth, and the absence of chronic conflict. When children encounter questions or teasing, role-play responses at home: 'My family is my family, and families come in all kinds.' Avoid defensiveness; model calm confidence. If a child comes home upset about a comment, validate the hurt and explore it together rather than rushing to resolve it. Children whose parents handle these conversations with openness show stronger identity development and peer confidence.",
+  },
+  {
+    id: "fs-7",
+    source: "Family Process Journal Research",
+    sourceDetails: "Family Process, Vol. 58: Adoptive Identity Development",
+    category: "co-parent",
+    text: "Adoptive children's identity development depends on honest, age-appropriate disclosure of their adoption story from the earliest years. Research published in Family Process shows that children who learn of their adoption after age seven show significantly higher rates of identity distress and trust issues. Make adoption a normal part of family narrative from toddlerhood: 'You grew in someone else's tummy, and then you came to be our child.' Use the child's actual adoption story, not a sanitized version. As children grow, their questions evolve — from 'Why didn't she keep me?' to 'Do I look like my birth parents?' to identity questions in adolescence. Answer honestly, acknowledging what you don't know. Maintain birth culture connections for transracial and international adoptions: food, language, community, and cultural mentors. Studies consistently show that transracial adoptees with strong cultural socialization show higher self-esteem and lower depression rates. Avoid framing adoption as rescue or charity; this places an unhealthy burden on the child. The healthiest narrative is one of love and belonging, not debt.",
+  },
+  {
+    id: "fs-8",
+    source: "AAP Guidance on Family Structure",
+    sourceDetails: "American Academy of Pediatrics, Children of Same-Sex Parents",
+    category: "co-parent",
+    text: "Decades of research reviewed by the AAP and major psychological associations confirm that children raised by same-sex parents show social, emotional, and cognitive outcomes equivalent to those raised by different-sex parents. What matters is not the parents' gender configuration but the presence of stable, warm, responsive caregiving. Children of same-sex families typically demonstrate strong empathy and acceptance of diversity, likely reflecting their early exposure to navigating difference. However, these families should not be treated as symbols or political arguments — the children are simply children. Same-sex parents should proactively connect with affirming community networks, as social isolation and exposure to stigma are the primary risk factors, not anything about the family structure itself. Prepare children for potential questions from peers by practicing simple, confident explanations: 'I have two dads. That's just how my family is.' When children encounter exclusionary language from peers or adults, process it together: validate the hurt, reinforce that their family is whole and valid, and decide together whether to respond or let it go.",
+  },
+  {
+    id: "fs-9",
+    source: "Peaceful Parent, Happy Kids",
+    sourceDetails: "Laura Markham, Chapter 9: Culture, Language, and Belonging",
+    category: "co-parent",
+    text: "Multicultural and bilingual families thrive when both cultures are given genuine, lived presence rather than symbolic acknowledgment. Research shows that children in bilingual homes where both languages are actively used develop stronger executive function and metalinguistic awareness. Assign languages thoughtfully — the 'one parent, one language' approach works well, but any consistent system is effective as long as each language gets sufficient daily exposure. Celebrate both cultural traditions meaningfully: not just food and holidays, but values, communication styles, and family roles. Children who feel pressure to choose one identity over the other show increased anxiety and lower self-esteem. Name the complexity openly: 'You get to be both, and that's a gift.' When extended family members criticize the bicultural approach — pressuring assimilation or rejecting the second language — present a unified front as parents. Children need to see that both parents value both cultures. Connect with other multicultural families for community support; isolation magnifies the challenges of navigating cultural differences within a single household.",
+  },
+  {
+    id: "fs-10",
+    source: "The Co-Parenting Handbook",
+    sourceDetails: "Mager & Deer, Chapter 8: Extended Family Boundaries",
+    category: "co-parent",
+    text: "Managing extended family boundaries is one of the most under-discussed challenges in diverse family structures. Grandparents, aunts, and uncles may hold strong opinions about divorce, same-sex parenting, adoption, or blended families — and their commentary can undermine children's security. Set clear boundaries early and enforce them consistently: 'In our family, we don't speak negatively about other family members in front of the children. If you can't respect that, visits will be shorter.' Children who hear extended family criticize their family structure internalize that their family is somehow wrong or lesser. Research shows that perceived family stigma from relatives is associated with increased child anxiety and lower family cohesion. Conversely, supportive extended family is a powerful protective factor. Distinguish between family members who need education and those who are persistently undermining. For the first group, a calm conversation about your family's values can shift behavior. For the second, limit children's exposure. Your job is to protect your child's sense of home and belonging, not to manage everyone else's comfort.",
+  },
+  {
+    id: "fs-11",
+    source: "Dinosaurs Divorce",
+    sourceDetails: "Marc Brown & Laurie Krasny Brown, A Guide for Changing Families",
+    category: "co-parent",
+    text: "Helping children handle questions about their family structure requires giving them concrete, developmentally appropriate language. Children as young as five can learn to say, 'My parents are divorced, so I have two houses' or 'I was adopted, which means my parents chose me.' The key is brief, factual statements that don't over-explain or invite debate. Practice through role-play before birthday parties, school events, or new friendships where questions may arise. Children who have rehearsed responses feel confident rather than caught off guard. If a peer asks an intrusive question, teach your child that it's okay to say 'That's private' or simply change the subject. Not every question deserves an answer. Monitor for signs that questions are turning into teasing or bullying: withdrawal, school refusal, or sudden behavioral changes. In those cases, involve teachers and school counselors proactively. Children whose parents equip them with both language and permission to decline questions show significantly greater confidence in navigating social situations about family differences.",
+  },
+  {
+    id: "fs-12",
+    source: "Two Homes, One Childhood",
+    sourceDetails: "Robert Emery, Chapter 4: Consistency Without Rigidity",
+    category: "co-parent",
+    text: "Maintaining consistency across two households does not mean identical rules. It means shared core values and coordinated expectations on the issues that matter most: homework completion, bedtime range, screen time limits, and behavioral standards. Research shows that children adapt readily to household differences in meals, chores, and weekend routines — these are experienced as variety, not instability. What children struggle with is contradictory messaging about values: one parent enforcing kindness and respect while the other models hostility toward the co-parent. Align on three to five core family rules and communicate them to both homes. Let go of micro-managing the other household; attempting to control what happens during the other parent's time is the single greatest source of co-parenting conflict. When disagreements about rules arise, discuss them privately, never in front of the children. Use the phrase 'In our house, we...' rather than 'Your mom/dad is wrong.' Children who experience their parents as a cooperative team — even across distance — show better academic performance, stronger peer relationships, and lower anxiety than those living in ongoing conflict.",
+  },
+
+
+  // === FINANCIAL STRESS ===
+{
+    id: "fc-1",
+    source: "Scarcity",
+    sourceDetails: "Mullainathan & Shafir, Chapters 1-3",
+    category: "parent",
+    text: "Financial stress creates a 'cognitive tax' — research shows that worrying about money consumes mental bandwidth equivalent to losing roughly 13 IQ points. This helps explain why parents under financial strain may snap at their children, forget appointments, or struggle with patience. Recognizing this is not personal failure; it's a documented psychological response to scarcity. The first step is self-compassion. Build 'slack' into your day wherever possible: prepare meals in advance, lay out clothes the night before, create simple routines that reduce decision fatigue. When you feel overwhelm rising, name it internally: 'I'm under stress, this isn't about my child.' Taking a brief pause — even 30 seconds of deep breathing — can interrupt the stress cycle. Tag-team with a partner, friend, or neighbor when you need a reset moment. Your child doesn't need a perfect parent; they need one who can mostly regulate their nervous system, even under pressure. Protecting your own emotional capacity is not selfish — it's the foundation of effective parenting under scarcity.",
+  },
+  {
+    id: "fc-2",
+    source: "How to Talk So Kids Will Listen",
+    sourceDetails: "Faber & Mazlish, Chapter 6",
+    category: "parent",
+    text: "Children are perceptive. They notice when parents argue about money, when groceries are different, when activities are declined. Rather than hiding financial reality, reframe it age-appropriately. For children under 6, keep it simple: 'We're choosing to spend our money on what we need most right now, like food and our home.' For ages 7-11, be more specific but reassuring: 'Money is a bit tight this month, so we can't do that activity, but we always have what we need.' Avoid burdening children with adult-level details — they cannot process mortgage stress or debt. Instead of 'We can't afford that,' try 'That's not in our budget this month,' which frames it as a choice rather than a deprivation. Never use phrases like 'You're costing us too much' — children will internalize that they are a burden. The goal is honesty without anxiety: acknowledge reality, model problem-solving, and always reassure them that the family is safe and will be okay.",
+  },
+  {
+    id: "fc-3",
+    source: "American Academy of Pediatrics",
+    sourceDetails: "AAP Policy Statement: Child Poverty and Toxic Stress",
+    category: "parent",
+    text: "Food insecurity affects roughly 1 in 6 children in many developed nations, and its developmental impact is significant. Children who experience consistent hunger or inadequate nutrition show higher rates of behavioral problems, anxiety, and difficulty concentrating in school. Iron deficiency alone, common in food-insecure households, is linked to lasting cognitive deficits. If your family is facing food insecurity, accessing support is not a sign of failure — it is an act of good parenting. Programs like SNAP, WIC, school meal programs, food banks, and community pantries exist precisely for this purpose. Prioritize nutrient-dense foods when possible: beans, eggs, frozen vegetables, and whole grains are affordable staples. If your child complains of being hungry at school, speak with administrators about free meal programs — many schools offer them without requiring visible stigma. Protecting your child's access to adequate nutrition is one of the most powerful interventions for their long-term cognitive and emotional development.",
+  },
+  {
+    id: "fc-4",
+    source: "American Journal of Public Health",
+    sourceDetails: "Housing Instability and Child Wellbeing Research",
+    category: "parent",
+    text: "Housing instability — frequent moves, overcrowding, eviction threats, or living in substandard conditions — is associated with elevated rates of childhood anxiety, depression, and academic disruption. Each school change mid-year can set a child back academically by months. If your family is facing housing uncertainty, focus on what you can control: maintaining routines, keeping familiar objects (a blanket, books, toys) with you, and preserving bedtime rituals even in temporary living situations. Children's security comes more from relational stability than from the physical house. Be honest in age-appropriate terms: 'We're going to stay with Grandma for a little while so we can figure out our living situation. We're safe, and we're together.' Maintain school enrollment if at all possible — consistency in education is a powerful protective factor. Connect with school counselors who can provide additional support and may know of resources. If you rent, familiarize yourself with tenant rights; many communities have legal aid services that help families facing wrongful eviction at no cost.",
+  },
+  {
+    id: "fc-5",
+    source: "Peaceful Parent, Happy Kids",
+    sourceDetails: "Markham, Section on Emotional Regulation",
+    category: "parent",
+    text: "When parents carry financial anxiety, it often leaks out as irritability, impatience, or emotional distance — and children absorb it. Research on Adverse Childhood Experiences (ACEs) shows that chronic parental stress is one of the most significant risk factors for long-term child health outcomes. This means managing your own stress is not a luxury; it's a parenting intervention. Free stress-regulation practices are effective: 5 minutes of deep breathing daily, walking outdoors, journaling, or talking with a trusted friend. Many communities offer free or sliding-scale counseling through community mental health centers, faith-based organizations, or university training clinics. Online resources like 7 Cups, Crisis Text Line, or local warmlines provide free emotional support. Sleep is critical — sleep deprivation dramatically reduces emotional resilience. If financial worries are keeping you awake, try a 'worry dump' before bed: write down every concern, then close the notebook. Tomorrow's you can address them; tonight's you needs rest to parent well.",
+  },
+  {
+    id: "fc-6",
+    source: "Mindset",
+    sourceDetails: "Dweck, Chapters 5-7",
+    category: "parent",
+    text: "Children's self-worth should never be tied to material wealth. Research on growth mindset shows that children who base their identity on effort, character, and relationships — rather than possessions or social status — are more resilient and emotionally secure. To build this foundation, praise what children control: 'I noticed how hard you worked on that drawing,' 'You were really kind to your sister today,' 'You didn't give up on that math problem.' Avoid equating gifts with love. Instead of 'I bought this because I love you,' try 'I love spending time with you.' Normalize non-material expressions of value: family game nights, nature walks, cooking together, telling stories. When your child compares themselves to wealthier peers, validate the feeling first: 'It can feel hard when friends have things we don't.' Then redirect: 'What makes you proud of who you are that has nothing to do with money?' Help them name their strengths — loyalty, creativity, humor, kindness. These are identity anchors that material scarcity cannot shake.",
+  },
+  {
+    id: "fc-7",
+    source: "The Gift of Failure",
+    sourceDetails: "Lahey, Chapters on Resilience and Overprotection",
+    category: "parent",
+    text: "Some of the most meaningful enrichment activities for children cost nothing. Research consistently shows that unstructured play, time in nature, and family connection build cognitive and emotional skills more effectively than expensive programs. Public libraries offer free books, audiobooks, movie rentals, story times, and STEM activities. Most museums have free or 'pay-what-you-wish' days. National and local parks provide free outdoor education. Cooking together teaches math, science, and life skills. Gardening — even in containers on a windowsill — teaches patience, biology, and responsibility. Community centers, Boys & Girls Clubs, YMCA financial assistance programs, and local recreation departments often offer sports and arts at reduced or no cost. Free online resources like Khan Academy, Code.org, and PBS Kids provide high-quality educational content. The goal isn't to replicate what wealthier families purchase — it's to provide rich, engaging experiences that foster curiosity. Children remember how they felt during activities far more than what those activities cost.",
+  },
+  {
+    id: "fc-8",
+    source: "How to Talk So Kids Will Listen",
+    sourceDetails: "Faber & Mazlish, Chapter 4",
+    category: "parent",
+    text: "Birthdays and holidays can trigger enormous financial pressure, but children's memories are shaped by emotion, not expense. Research on memory formation shows that novelty, surprise, and connection — not cost — create lasting positive memories. For birthdays, make the day feel special through ritual rather than spending: breakfast in bed, a 'yes day' with free activities, a handwritten letter describing what you love about them, a special homemade cake. For holidays, focus on traditions — movie nights, light tours in the neighborhood, homemade decorations, cookie baking. If your child wants a specific gift that's beyond budget, be honest: 'I know you really want that. It's not something we can do this year, but I've been thinking about something I think you'll really enjoy.' Talk to extended family about pooling resources or contributing experiences rather than multiple gifts. Avoid going into debt for holidays — the stress of that debt harms the family far more than a smaller celebration. Children feel loved through presence, not presents.",
+  },
+  {
+    id: "fc-9",
+    source: "American Academy of Pediatrics",
+    sourceDetails: "AAP Guidance: School Readiness and Peer Dynamics",
+    category: "parent",
+    text: "School costs — supplies, field trips, uniforms, technology, class parties — can create intense budget pressure and feelings of inadequacy for both parents and children. Talk with teachers and school administrators early; many schools have discretionary funds, supply closets, or fee waivers that are offered confidentially. Never let embarrassment prevent you from asking — schools expect these requests and handle them discreetly. For peer pressure around brands, technology, or experiences, help your child develop language: 'That's cool, but I'm happy with what I have.' Validate the challenge: 'It can feel hard when friends have things we don't. That's real.' Then refocus on values: 'In our family, we care more about being kind and curious than about having the newest stuff.' Encourage friendships with children from diverse economic backgrounds. Teach critical thinking about advertising and social media — help them understand that companies profit from making people feel they need things they don't. Media literacy is a protective skill that lasts a lifetime.",
+  },
+  {
+    id: "fc-10",
+    source: "The Price of Inequality",
+    sourceDetails: "Stiglitz, research on social safety nets",
+    category: "parent",
+    text: "Government assistance and community resources are not charity — they are public investments in families and children that yield documented societal returns. Every dollar spent on early childhood nutrition, for example, returns an estimated $3-10 in long-term outcomes. If your family is struggling, access every resource available without shame: SNAP/WIC for nutrition, Medicaid/CHIP for healthcare, LIHEAP for energy costs, Head Start for early education, Section 8 or public housing waitlists, TANF for temporary cash assistance, EITC at tax time (many eligible families don't claim it), school free/reduced meal programs, and local 211 helplines that connect families to resources. Community organizations — food banks, faith communities, diaper banks, clothing closets, mutual aid networks — fill gaps that government programs don't reach. Keep a list of resources on your phone. Share information with other parents; many families don't access programs simply because they don't know about them. Using these resources is using systems your tax dollars (and community) have built. It is not failure — it is accessing infrastructure designed to support families.",
+  },
+  {
+    id: "fc-11",
+    source: "Scarcity",
+    sourceDetails: "Mullainathan & Shafir, Chapters 5-6 on Scarcity Mindset",
+    category: "parent",
+    text: "Scarcity mindset — the constant mental tunneling that comes from not having enough — can become a self-reinforcing cycle that passes between generations. When parents are consumed by survival decisions, they may unconsciously transmit anxiety about money to children, who then carry scarcity beliefs into adulthood. Breaking this cycle starts with awareness. Notice language: instead of 'We'll never have enough,' try 'We're working on our situation, and we have what we need right now.' Instead of 'Money is evil,' try 'Money is a tool we're learning to manage.' Teach basic financial literacy early and age-appropriately: young children can sort coins and learn saving; older children can help comparison-shop or budget for a family meal. Include them in small financial decisions so money becomes a normal topic, not a source of fear. Model problem-solving: 'We can't afford that right now, so let's think of a creative alternative.' Healing scarcity mindset doesn't require wealth — it requires shifting from fear-based tunnel vision to possibility-based thinking. This is one of the most powerful gifts a parent can give.",
+  },
+  {
+    id: "fc-12",
+    source: "CDC",
+    sourceDetails: "CDC Adverse Childhood Experiences (ACEs) Research",
+    category: "parent",
+    text: "CDC research on Adverse Childhood Experiences identifies parental economic hardship as a significant ACE that increases lifetime risk for depression, substance use, chronic disease, and reduced life expectancy. But the research also reveals powerful protective factors. The single most important buffer against ACEs is the presence of at least one stable, caring adult relationship. That relationship doesn't require money — it requires consistency, attunement, and emotional availability. Parents under financial stress who can maintain warmth, routine, and connection are actively protecting their children's long-term health. Other protective factors include community connection (even one trusted neighbor or mentor helps), access to basic services, and children's own sense of competence and agency. If you grew up in poverty yourself, you may carry your own ACEs — be aware that financial stress can trigger intergenerational patterns. Seeking support for your own trauma (through counseling, support groups, or faith communities) is one of the most effective ways to protect your children. Healing yourself is parenting work.",
+  },
+
+
+  // === GIFTED & LEARNING DISABILITIES ===
+{
+    id: "gd-1",
+    source: "Giftedness 101",
+    sourceDetails: "Linda Kreger Silverman, Chapter on Characteristics of Gifted Children",
+    category: "school",
+    text: "Gifted children often show asynchronous development — their cognitive abilities race far ahead of their emotional or physical maturity. A six-year-old might discuss black holes in detail but melt down over a bumped knee or a lost crayon. This uneven growth is the hallmark of giftedness, not a sign something is wrong. Parents should avoid assuming a child's reasoning ability means they can handle emotional situations at the same level. Recognize that your child may need scaffolding in areas where their age peers are fine — emotional regulation, social skills, or fine motor tasks. Silverman emphasizes that the wider the gap between a child's mental age and chronological age, the more support they need, not less. Validate their intense feelings even when they seem disproportionate to the situation. Give them language for their emotions and avoid saying 'you're too smart to act like this.' Intellectual brilliance and emotional vulnerability coexist. Meeting the child where they are — in each domain separately — is far more effective than treating them as a single 'advanced' unit.",
+  },
+
+  {
+    id: "gd-2",
+    source: "NAGC",
+    sourceDetails: "National Association for Gifted Children, 'Recognizing Giftedness' Parent Resources",
+    category: "school",
+    text: "Recognizing giftedness early helps children get appropriate support. Common signs include: unusually large vocabulary and early reading; deep, sustained interest in specific topics; rapid learning with little repetition; keen observation and memory; intense curiosity and persistent questioning; sensitivity to fairness or injustice; advanced sense of humor. Giftedness is not limited to academic ability — it can manifest in creative, artistic, leadership, or athletic domains. Importantly, gifted children from underserved populations, English learners, and children with learning disabilities are frequently overlooked. If you suspect your child is gifted, document specific examples of advanced behaviors and bring them to your child's teacher. Request a formal evaluation through your school district or a private psychologist. Early identification matters because unchallenged gifted children can become bored, disengaged, or begin to underachieve — sometimes masking their abilities entirely to fit in socially.",
+  },
+
+  {
+    id: "gd-3",
+    source: "Mindset",
+    sourceDetails: "Carol S. Dweck, Chapter 'The Truth About Ability and Achievement'",
+    category: "school",
+    text: "Many gifted children tie their identity to being 'the smart one,' which makes perfectionism and fear of failure their biggest barriers. When school always came easily, the first real challenge feels like evidence they're not smart after all. Dweck's research shows that praising intelligence — 'You're so clever!' — actually increases risk avoidance. Children begin to avoid hard tasks because failing would threaten their identity as a smart person. Instead, praise effort, strategy, and persistence: 'I'm impressed by how many different approaches you tried.' Teach your child that the brain grows stronger through struggle, just like a muscle. Normalize mistakes as part of learning — share your own. When a gifted child says 'I can't do this,' add 'yet.' Help them see that easy work isn't a compliment; it means they're not growing. Encourage them to seek out challenges where they might not get an A. A child who learns to value effort over innate ability develops resilience that carries them through college, career, and life far more reliably than raw talent alone.",
+  },
+
+  {
+    id: "gd-4",
+    source: "The Mislabeled Child",
+    sourceDetails: "Brock Eide & Fernette Eide, Chapters on Twice-Exceptional Children",
+    category: "school",
+    text: "Twice-exceptional (2e) children are gifted but also have a learning difference — ADHD, autism, dyslexia, or another condition. Their giftedness can mask their difficulty, and their difficulty can mask their giftedness, leaving them poorly served by both gifted and special education programs. A child might write brilliantly creative stories but be unable to complete a worksheet. Another might solve complex math mentally but crash emotionally over a small transition. The Eides stress that these children are not contradictions — their strengths and challenges come from the same neurological wiring. If your child is gifted but struggling, push for evaluation in both directions: giftedness and learning differences. Avoid the trap of thinking a child is 'smart enough to compensate.' Compensation is exhausting and leads to burnout, anxiety, and underachievement. The goal is to support both sides: provide enrichment for their gifted abilities while giving accommodations for their challenges. These children thrive when adults see the whole child rather than forcing a single label.",
+  },
+
+  {
+    id: "gd-5",
+    source: "Overcoming Dyslexia",
+    sourceDetails: "Sally Shaywitz, Chapters on Diagnosis and Intervention",
+    category: "school",
+    text: "Dyslexia is a neurobiological difference in how the brain processes language — not a sign of low intelligence. With structured literacy instruction, dyslexic children become capable readers. Shaywitz's research confirms that early intervention is critical but improvement is possible at any age. Key strategies: use explicit, systematic phonics instruction (Orton-Gillingham or similar multi-sensory approaches); read aloud to your child daily to build vocabulary and comprehension even while decoding skills catch up; provide audiobooks so your child accesses grade-level content; break reading and writing tasks into smaller steps; reduce timed testing pressure. Advocate for an IEP or 504 plan at school that includes accommodations like extended time, assistive technology, and alternative assessment formats. Most importantly, protect your child's self-esteem. Dyslexic children often feel they're 'stupid' because reading — the one skill the world constantly measures — is hard for them. Remind them that dyslexia comes with real strengths: big-picture thinking, problem-solving, spatial reasoning, and creativity. With the right support, dyslexic children become confident, capable learners.",
+  },
+
+  {
+    id: "gd-6",
+    source: "The Dyslexic Advantage",
+    sourceDetails: "Brock Eide & Fernette Eide, Material vs Non-Material Advantages",
+    category: "school",
+    text: "Dyscalculia is a specific learning disability affecting number sense and mathematical reasoning — the numerical equivalent of dyslexia. Children with dyscalculia may struggle to recognize quantities, memorize math facts, understand place value, or grasp the logic of operations. They are not 'bad at math' due to laziness or low intelligence; their brains process numerical information differently. Effective support includes: concrete, hands-on learning with physical manipulatives before moving to abstract symbols; explicit instruction connecting visual representations to numbers; extra time and untimed assessments; reducing worksheet length to prevent overwhelm; using technology like calculators for computation once concepts are understood; and connecting math to real-world contexts. Avoid timed math drills, which create anxiety and reinforce the belief that the child 'can't do math.' Advocate for formal evaluation through your school if math difficulties persist despite extra help. Pair remediation with accommodation — teach the missing skills while providing tools that allow the child to engage with grade-level math concepts. Like dyslexia, dyscalculia comes with compensating strengths that deserve recognition and development.",
+  },
+
+  {
+    id: "gd-7",
+    source: "Smart but Scattered",
+    sourceDetails: "Peg Dawson & Richard Guare, Chapters on Executive Skills and School Engagement",
+    category: "school",
+    text: "When a gifted child says school is boring, it usually means the work isn't challenging enough — or it's repetitive beyond what their mastery requires. Boredom can quickly slide into disengagement, behavior problems, or learned helplessness. First, validate: 'I hear that this feels too easy. Let's figure out what to do.' Talk with the teacher about differentiation — compacting the curriculum (skip what's mastered), enrichment projects, cluster grouping with other advanced learners, or subject acceleration. At home, feed their passions with books, documentaries, courses, museum visits, and mentorships. Avoid framing schoolwork as something to rush through — instead, help them find depth. Encourage independent projects where they set the pace and topic. If the school cannot or will not accommodate, consider whether a different classroom, program, or grade skip is appropriate. Watch for signs that boredom has become something deeper — anxiety about standing out, fear of trying hard things, or withdrawal. A bored gifted child who stops caring about learning is harder to re-engage the longer it goes unaddressed.",
+  },
+
+  {
+    id: "gd-8",
+    source: "Wrightslaw",
+    sourceDetails: "Peter Wright & Pamela Wright, Wrightslaw Special Education Law & Advocacy",
+    category: "school",
+    text: "Effective advocacy with teachers requires preparation, documentation, and partnership — not confrontation. Start by assuming the teacher wants to help. Bring specific evidence: work samples, test scores, and written observations of your child's behavior. Request meetings in writing and keep records of every conversation. If your child needs an IEP or 504 plan, understand your rights under IDEA and Section 504 before the meeting. Wrightslaw emphasizes: put everything in writing, including follow-up emails after meetings summarizing what was agreed. Don't accept vague promises — request specific accommodations with timelines. If the school resists evaluation, cite the specific legal language requiring them to respond within their state's timeline. Bring a support person to meetings if needed. Frame requests around your child's needs, not what you think the school should do differently. Use 'I' statements: 'I've noticed my child completes math three grades above level but struggles to stay focused in reading — can we discuss options?' If you hit resistance, escalate calmly through the chain of command. You are your child's most important advocate, and persistence pays off.",
+  },
+
+  {
+    id: "gd-9",
+    source: "Raising An Emotionally Intelligent Child",
+    sourceDetails: "John Gottman, Chapter on Emotion-Coaching Gifted and Intense Children",
+    category: "school",
+    text: "Gifted children often experience emotions with unusual depth and intensity — what psychologist Kazimierz Dabrowski called 'overexcitabilities.' They may be emotionally volatile, deeply empathetic, perfectionistic, or overwhelmed by sensory input. These intensities are not pathology; they're part of the gifted profile. Gottman's emotion-coaching approach works especially well: notice the emotion, see it as an opportunity for connection, listen with empathy, help label the feeling, then problem-solve together. Avoid dismissing ('It's not a big deal') or fixing too quickly. A child who cries because a drawing isn't perfect isn't being dramatic — they're experiencing a real, intense frustration. Name it: 'That felt really important to you, and it didn't come out the way you wanted. That's so hard.' Teach calming strategies: deep breathing, movement breaks, journaling. Help your child understand that feeling things deeply is a strength, not a weakness. Over time, intense children who learn to manage their emotions become passionate, driven, empathetic adults. The goal isn't to reduce their intensity — it's to give them tools to channel it.",
+  },
+
+  {
+    id: "gd-10",
+    source: "Giftedness 101",
+    sourceDetails: "Linda Kreger Silverman, Chapter on Social and Emotional Needs",
+    category: "school",
+    text: "Gifted children often face social challenges that adults underestimate. They may struggle to find peers who share their intense interests, feel out of sync with age-mates, or deliberately hide their abilities to fit in — a phenomenon Silverman calls 'passing.' Some gifted kids prefer the company of adults or older children, which is developmentally appropriate for their mental age but can create social friction at school. Help your child find their tribe: gifted programs, online communities, special-interest clubs, summer camps, or mentorships where they can be themselves without masking. Teach social skills explicitly — how to join a game, how to disagree without lecturing, how to let others contribute — without making their natural intensity feel like a problem. Avoid pushing them to 'be normal.' Instead, broaden their social repertoire while honoring who they are. If your child is being bullied or excluded, take it seriously and involve the school. Social isolation is a significant risk for gifted children, and meaningful connection with even one like-minded peer can transform their school experience and wellbeing.",
+  },
+
+  {
+    id: "gd-11",
+    source: "The Whole-Brain Child",
+    sourceDetails: "Daniel J. Siegel & Tina Payne Bryson, Chapters on Integration and Creativity",
+    category: "school",
+    text: "Children drawn to creative and artistic pursuits — music, visual art, theater, writing — need intentional support that goes beyond talent lessons. Siegel's whole-brain approach emphasizes integration: connecting the logical left brain with the creative right brain. Encourage creative children to practice their craft regularly while also developing reflective skills — journaling about their process, articulating what their work means to them, and receiving constructive feedback without crumbling. Arts-magnet and specialized programs can provide rigorous training and like-minded peers, but watch for unhealthy pressure: intense competition, perfectionism, and identity collapse if a performance falls short. Help your child build identity beyond their art: 'You are a musician, and you are also a friend, a reader, a curious person.' Protect unstructured creative time — not every drawing needs to be a portfolio piece. If your child attends an arts-focused school, stay in regular contact with teachers about workload and emotional load. Creative kids thrive when they feel safe to experiment, fail, and try again. The goal is sustaining a lifelong creative practice, not burning out before college.",
+  },
+
+  {
+    id: "gd-12",
+    source: "Mindset",
+    sourceDetails: "Carol S. Dweck, Chapters on Giftedness, Pressure, and Healthy Achievement",
+    category: "school",
+    text: "Gifted and high-achieving children often carry enormous pressure — from parents, teachers, peers, and themselves. Left unchecked, this pressure produces anxiety, perfectionism, sleep deprivation, and sometimes a crisis of identity when they inevitably hit a wall. Balance achievement with wellbeing by modeling it yourself: talk about your own mistakes, show that your love is never contingent on grades or awards, and prioritize sleep, exercise, and family time. Dweck's research underscores that children who develop a growth mindset — valuing learning over performance — are more resilient under pressure. Help your child set goals that focus on improvement, not just outcomes. Celebrate the process: the practice session, the draft, the tutoring session. Watch for warning signs: sudden grade drops, withdrawal from activities they used to love, physical symptoms like headaches or stomachaches, or excessive self-criticism. If you see these, slow down. Consider reducing extracurricular load or seeking counseling. No achievement is worth a child's mental health. The most successful adults aren't the ones who peaked at sixteen — they're the ones who learned to sustain effort and joy over a lifetime.",
+  },
+
+
 ];
 
 // TOPIC_CATEGORIES moved to topics.ts (client-safe)
