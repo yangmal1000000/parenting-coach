@@ -59,22 +59,27 @@ export async function logFeedback(log: Omit<FeedbackLog, "timestamp">) {
 export async function getAnalytics(days = 7) {
   try {
     const [totalQueries, rawStats, recentQueries, recentFeedback] = await Promise.all([
-      redis.get<number>("total_queries") || 0,
-      redis.hgetall<Record<string, number>>("stats") || {},
+      redis.get<number>("total_queries") ?? 0,
+      (await redis.hgetall<Record<string, number>>("stats")) ?? {},
       redis.lrange<string>("queries", 0, 199),
       redis.lrange<string>("feedback", 0, 49),
     ]);
 
     const queries: QueryLog[] = recentQueries.map(s => {
-      try { return JSON.parse(s); } catch { return null; }
+      try {
+        const parsed = typeof s === "string" ? JSON.parse(s) : s;
+        console.log("[analytics] parsed query:", JSON.stringify(parsed).slice(0, 100));
+        return parsed;
+      } catch (e) { console.log("[analytics] parse failed:", s); return null; }
     }).filter(Boolean);
 
     const feedback: FeedbackLog[] = recentFeedback.map(s => {
-      try { return JSON.parse(s); } catch { return null; }
+      try { return typeof s === "string" ? JSON.parse(s) : s; } catch { return null; }
     }).filter(Boolean);
 
     // Filter queries by date range
     const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+    console.log("[analytics] cutoff:", cutoff, "queries count:", queries.length, "first timestamp:", queries[0]?.timestamp);
     const recentInPeriod = queries.filter(q => q.timestamp >= cutoff);
 
     // Daily breakdown
