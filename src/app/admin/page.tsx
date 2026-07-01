@@ -9,6 +9,10 @@ interface QueryLog {
   childAge?: string;
   topicCategory?: string;
   sources?: string[];
+  advice?: string;
+  responseMs?: number;
+  device?: string;
+  userId?: string;
   timestamp: number;
 }
 interface FeedbackLog {
@@ -22,9 +26,13 @@ interface FeedbackLog {
 interface Analytics {
   totalQueries: number;
   recentCount: number;
+  uniqueUsers: number;
   daily: Record<string, number>;
   languages: Record<string, number>;
   topics: Record<string, number>;
+  devices: Record<string, number>;
+  avgResponseMs: number | null;
+  followUpRate: number | null;
   queries: QueryLog[];
   feedback: FeedbackLog[];
   feedbackSummary: { up: number; down: number; total: number };
@@ -128,13 +136,25 @@ export default function AdminPage() {
             {/* Stats cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
-                <p className="text-xs text-zinc-500 mb-1">Total Queries (all time)</p>
+                <p className="text-xs text-zinc-500 mb-1">Total Queries</p>
                 <p className="text-2xl font-bold text-emerald-400">{data.totalQueries}</p>
+              </div>
+              <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
+                <p className="text-xs text-zinc-500 mb-1">Unique Users</p>
+                <p className="text-2xl font-bold text-white">{data.uniqueUsers ?? "—"}</p>
               </div>
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
                 <p className="text-xs text-zinc-500 mb-1">Recent ({days}d)</p>
                 <p className="text-2xl font-bold text-white">{data.recentCount}</p>
               </div>
+              <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
+                <p className="text-xs text-zinc-500 mb-1">Avg Response</p>
+                <p className="text-2xl font-bold text-white">{data.avgResponseMs ? `${(data.avgResponseMs / 1000).toFixed(1)}s` : "—"}</p>
+              </div>
+            </div>
+
+            {/* Secondary stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
                 <p className="text-xs text-zinc-500 mb-1">👍 Positive</p>
                 <p className="text-2xl font-bold text-emerald-400">{data.feedbackSummary.up}</p>
@@ -142,6 +162,19 @@ export default function AdminPage() {
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
                 <p className="text-xs text-zinc-500 mb-1">👎 Negative</p>
                 <p className="text-2xl font-bold text-red-400">{data.feedbackSummary.down}</p>
+              </div>
+              <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
+                <p className="text-xs text-zinc-500 mb-1">🔄 Follow-up Rate</p>
+                <p className="text-2xl font-bold text-white">{data.followUpRate !== null ? `${data.followUpRate}%` : "—"}</p>
+              </div>
+              <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
+                <p className="text-xs text-zinc-500 mb-1">📱 Devices</p>
+                <div className="flex gap-2 mt-1">
+                  {Object.entries(data.devices).map(([d, count]) => (
+                    <span key={d} className="text-xs text-zinc-400">{d === "mobile" ? "📱" : d === "tablet" ? "📋" : "💻"} {count}</span>
+                  ))}
+                  {Object.keys(data.devices).length === 0 && <span className="text-xs text-zinc-600">—</span>}
+                </div>
               </div>
             </div>
 
@@ -211,9 +244,20 @@ export default function AdminPage() {
                       <p className="text-sm text-white flex-1 break-words">{q.query}</p>
                       <div className="flex items-center gap-1 shrink-0">
                         <span className="text-xs">{q.language === "ko" ? "🇰🇷" : "🇬🇧"}</span>
+                        {q.device && <span className="text-xs">{q.device === "mobile" ? "📱" : q.device === "tablet" ? "📋" : "💻"}</span>}
                         {q.childAge && <span className="text-xs text-zinc-500">👶 {q.childAge}</span>}
+                        {q.responseMs && <span className="text-xs text-zinc-500">⏱ {(q.responseMs / 1000).toFixed(1)}s</span>}
                       </div>
                     </div>
+                    {q.topicCategory && (
+                      <span className="inline-block text-xs px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-300 mb-1">{q.topicCategory}</span>
+                    )}
+                    {q.advice && (
+                      <details className="mt-1">
+                        <summary className="text-xs text-zinc-500 cursor-pointer hover:text-zinc-400">View advice →</summary>
+                        <p className="text-xs text-zinc-400 mt-1 whitespace-pre-wrap">{q.advice}</p>
+                      </details>
+                    )}
                     <p className="text-xs text-zinc-600">
                       {new Date(q.timestamp).toLocaleString("en-GB", { timeZone: "Europe/London" })}
                     </p>

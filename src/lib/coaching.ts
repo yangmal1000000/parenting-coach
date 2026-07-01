@@ -156,6 +156,7 @@ export interface CoachingRequest {
   childAge?: string;
   childNotes?: string;
   language?: Language;
+  userId?: string;
 }
 
 export interface CoachingResponse {

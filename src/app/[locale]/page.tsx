@@ -182,6 +182,15 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     setCurrentQuery(query.trim());
     setTab("home");
 
+    const startTime = Date.now();
+
+    // Get or create anonymous user ID
+    let userId = loadFromStorage<string>("pc_uid", "");
+    if (!userId) {
+      userId = `u${Date.now()}${Math.random().toString(36).slice(2, 8)}`;
+      saveToStorage("pc_uid", userId);
+    }
+
     try {
       const res = await fetch("/api/coach", {
         method: "POST",
@@ -192,6 +201,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           childAge: profile.age || undefined,
           childNotes: profile.notes || undefined,
           language: lang,
+          userId,
         }),
       });
 
@@ -205,6 +215,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
       let fullAdvice = "";
       let metaSources: string[] = [];
       let metaCategory = "general";
+      let trackedQueryId = "";
 
       while (reader) {
         const { done, value } = await reader.read();
@@ -215,7 +226,9 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           if (!line.startsWith("data: ")) continue;
           try {
             const data = JSON.parse(line.slice(6));
-            if (data.type === "meta") {
+            if (data.type === "queryId") {
+              trackedQueryId = data.queryId;
+            } else if (data.type === "meta") {
               metaSources = data.sources || [];
               metaCategory = data.topicCategory || "general";
               setCurrentSources(metaSources);
@@ -227,6 +240,21 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               const parsed = parseAdvice(fullAdvice);
               setAdvice(parsed);
               setStreamingAdvice("");
+
+              const responseMs = Date.now() - startTime;
+
+              // Log completion data (advice text, topic, sources, response time)
+              fetch("/api/log-complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  queryId: trackedQueryId,
+                  advice: fullAdvice.slice(0, 2000),
+                  topicCategory: metaCategory,
+                  sources: metaSources,
+                  responseMs,
+                }),
+              }).catch(() => {});
 
               // Save session
               const newSession: Session = {
