@@ -937,6 +937,11 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               <div className="text-center py-16">
                 <div className="inline-block breathe w-16 h-16 rounded-full mb-4" style={{ background: "var(--primary)", opacity: 0.3 }} />
                 <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t.findingBest}</p>
+                {streamingAdvice && (
+                  <p className="text-xs mt-2 max-w-md mx-auto" style={{ color: "var(--text-muted)", opacity: 0.6 }}>
+                    {streamingAdvice.slice(-100)}
+                  </p>
+                )}
               </div>
             )}
 
@@ -947,6 +952,9 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             {error && (
               <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--red-50)", border: "1px solid var(--error)" }}>
                 <p className="text-sm" style={{ color: "var(--red-700)" }}>{error}</p>
+                <button onClick={() => { setError(""); setStreamError(false); handleSubmit(); }} className="mt-2 text-xs font-medium" style={{ color: "var(--primary)" }}>
+                  {lang === "ko" ? "다시 시도" : "Try again"}
+                </button>
               </div>
             )}
 

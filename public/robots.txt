@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://parenting-coach-two.vercel.app/sitemap.xml

@@ -17,7 +17,7 @@ function getPreferredLocale(acceptLang: string | null): string {
   return defaultLocale;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if the path already starts with a locale

@@ -29,7 +29,18 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Calm Parent" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="description" content="Evidence-based AI parenting coach. Real books, real advice, 24/7." />
+        <meta name="description" content="Evidence-based AI parenting coach. Get real-time advice grounded in 15+ parenting books. Free, bilingual English & Korean." />
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Calm Parent — AI Parenting Coach" />
+        <meta property="og:description" content="Get evidence-based parenting advice in seconds. Grounded in 15+ expert books. Free." />
+        <meta property="og:image" content="/icon-512.png" />
+        <meta property="og:url" content="https://parenting-coach-two.vercel.app" />
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Calm Parent — AI Parenting Coach" />
+        <meta name="twitter:description" content="Evidence-based parenting advice in seconds. Free." />
+        <meta name="twitter:image" content="/icon-512.png" />
       </head>
       <body className="min-h-full flex flex-col">{children}<Analytics /></body>
     </html>
