@@ -225,6 +225,8 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
+    // Update daily streak
+    updateStreak();
     return () => subscription.unsubscribe();
   }, []);
 
@@ -516,7 +518,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   function rateSession(sessionId: string, rating: "up" | "down") {
     const sid = sessionId || currentSessionId;
     if (!sid) return;
-    setSessions(prev => prev.map(s => s.id === sid ? { ...s, rating } : s));
+    setSessions(prev => prev.map(s => s.id === sid ? { ...s, rating, _synced: false } : s));
     setFeedbackGiven(rating);
     setFeedbackReasons([]);
     setFeedbackText("");
@@ -532,7 +534,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     if (!sid) return;
     const reasons = feedbackReasons.join(", ");
     const fullFeedback = [reasons, feedbackText].filter(Boolean).join(" — ");
-    setSessions(prev => prev.map(s => s.id === sid ? { ...s, feedbackText: fullFeedback || undefined } : s));
+    setSessions(prev => prev.map(s => s.id === sid ? { ...s, feedbackText: fullFeedback || undefined, _synced: false } : s));
     setFeedbackSubmitted(true);
     // Log feedback to server with reasons
     fetch("/api/feedback", {
@@ -551,7 +553,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   function toggleBookmark(sessionId: string) {
     const sid = sessionId || currentSessionId;
     if (!sid) return;
-    setSessions(prev => prev.map(s => s.id === sid ? { ...s, bookmarked: !s.bookmarked } : s));
+    setSessions(prev => prev.map(s => s.id === sid ? { ...s, bookmarked: !s.bookmarked, _synced: false } : s));
   }
 
   function deleteSession(sessionId: string) {
@@ -582,14 +584,48 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   function completeOnboarding() {
     saveToStorage("pc_onboarded", true);
     setShowOnboarding(false);
-    // Show How It Works panel after onboarding
     setTimeout(() => setShowInfo(true), 300);
   }
+
+  // === Streak tracking ===
+  function updateStreak() {
+    const today = new Date().toISOString().split("T")[0];
+    const streak = loadFromStorage<{lastActive: string; count: number}>("pc_streak", { lastActive: "", count: 0 });
+    if (streak.lastActive === today) return; // already counted today
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+    const newCount = streak.lastActive === yesterday ? streak.count + 1 : 1;
+    saveToStorage("pc_streak", { lastActive: today, count: newCount });
+  }
+
+  const currentStreak = loadFromStorage<{lastActive: string; count: number}>("pc_streak", { lastActive: "", count: 0 });
 
   // === Share ===
   async function shareAdvice() {
     if (!advice) return;
-    const text = `📋 ${advice.situation || currentQuery}\n\n✅ ${advice.dos.join(" ")}\n❌ ${advice.donts.join(" ")}\n\n📖 ${advice.source}\n\n— ${t.appName} 🧠`;
+    const lines: string[] = [
+      `🧠 ${t.appName}`,
+      ``,
+      `📋 ${advice.situation || currentQuery}`,
+      ``,
+    ];
+    if (advice.dos.length > 0) {
+      lines.push("✅ " + (lang === "ko" ? "하세요:" : "DO:"));
+      advice.dos.forEach(d => lines.push(`  • ${d}`));
+      lines.push("");
+    }
+    if (advice.donts.length > 0) {
+      lines.push("❌ " + (lang === "ko" ? "하지 마세요:" : "DON'T:"));
+      advice.donts.forEach(d => lines.push(`  • ${d}`));
+      lines.push("");
+    }
+    if (advice.why) {
+      lines.push("🧠 " + (lang === "ko" ? "이유:" : "WHY:"));
+      lines.push(`  ${advice.why.slice(0, 200)}${advice.why.length > 200 ? "..." : ""}`);
+      lines.push("");
+    }
+    if (advice.source) lines.push(`📖 ${advice.source}`);
+    lines.push(``, `— ${t.appName}`);
+    const text = lines.join("\n");
     try {
       if (navigator.share) {
         await navigator.share({ title: t.appName, text });
@@ -811,14 +847,19 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         {/* === HOME TAB === */}
         {tab === "home" && (
           <>
-            {/* Profile chip */}
-            {profileSaved && profile.name && (
-              <div className="flex items-center gap-2 mb-4 text-xs" style={{ color: "var(--text-muted)" }}>
+            {/* Profile chip + streak */}
+            <div className="flex items-center gap-2 mb-4 text-xs flex-wrap" style={{ color: "var(--text-muted)" }}>
+              {profileSaved && profile.name && (
                 <span className="px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                   👶 {profile.name}, {profile.age}
                 </span>
-              </div>
-            )}
+              )}
+              {currentStreak.count >= 2 && (
+                <span className="px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)" }}>
+                  🔥 {currentStreak.count} {lang === "ko" ? "일 연속" : "day streak"}
+                </span>
+              )}
+            </div>
 
             {/* Voice + Input */}
             {!advice && !loading && (
@@ -1013,14 +1054,29 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                   </div>
                 )}
 
+                {/* Conversation thread history */}
+                {!feedbackGiven && conversationThread.length > 0 && (
+                  <div className="rounded-2xl p-3 mb-2 space-y-2" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                    <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>💬 {lang === "ko" ? "대화 기록" : "Conversation"}</p>
+                    {conversationThread.map((turn, i) => (
+                      <div key={i} className="text-xs" style={{
+                        paddingLeft: turn.role === "user" ? "0" : "12px",
+                        borderLeft: turn.role === "assistant" ? "2px solid var(--border)" : "none",
+                      }}>
+                        <span style={{ color: turn.role === "user" ? "var(--primary)" : "var(--text-muted)", fontWeight: 500 }}>
+                          {turn.role === "user" ? (lang === "ko" ? "질문" : "You") : (lang === "ko" ? "코치" : "Coach")}:
+                        </span>{" "}
+                        <span style={{ color: "var(--text)" }}>
+                          {turn.role === "user" ? turn.content : turn.content.slice(0, 120) + (turn.content.length > 120 ? "..." : "")}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Follow-up input */}
                 {!feedbackGiven && (
                   <>
-                  {conversationThread.length > 0 && (
-                    <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
-                      💬 The coach remembers your conversation
-                    </p>
-                  )}
                   <input
                     id="followup-input"
                     type="text"
