@@ -179,55 +179,40 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     saveToStorage("pc_lang", initialLang);
 
     // Init Supabase auth
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser(session.user);
-        // Load cloud data
-        loadProfile().then(p => {
-          if (p?.child_name || p?.child_age) {
-            const cloudProfile: ChildProfile = {
-              name: p.child_name || "",
-              age: p.child_age || "",
-              notes: p.child_notes || "",
-            };
-            setProfile(cloudProfile);
-            setProfileSaved(true);
-          }
-        });
-        loadCloudSessions().then(cloud => {
-          if (cloud.length > 0) {
-            const mapped: Session[] = cloud.map(c => ({
-              id: c.id,
-              query: c.query,
-              advice: c.advice,
-              sources: c.sources || [],
-              topicCategory: c.topic_category || "general",
-              rating: c.rating,
-              bookmarked: c.bookmarked,
-              feedbackText: c.feedback_text,
-              createdAt: c.created_at,
-              childName: c.child_name,
-              childAge: c.child_age,
-              language: (c.language as Language) || "en",
-            }));
-            // Merge: prefer cloud, keep any local-only sessions
-            setSessions(prev => {
-              const cloudIds = new Set(mapped.map(s => s.id));
-              const localOnly = prev.filter(s => !cloudIds.has(s.id));
-              return [...mapped, ...localOnly].slice(0, 100);
-            });
-          }
-        });
-      }
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    // Update daily streak
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          setUser(session.user);
+          loadProfile().then(p => {
+            if (p?.child_name || p?.child_age) {
+              setProfile({ name: p.child_name || "", age: p.child_age || "", notes: p.child_notes || "" });
+              setProfileSaved(true);
+            }
+          });
+          loadCloudSessions().then(cloud => {
+            if (cloud.length > 0) {
+              const mapped: Session[] = cloud.map(c => ({
+                id: c.id, query: c.query, advice: c.advice, sources: c.sources || [],
+                topicCategory: c.topic_category || "general", rating: c.rating,
+                bookmarked: c.bookmarked, feedbackText: c.feedback_text,
+                createdAt: c.created_at, childName: c.child_name, childAge: c.child_age,
+                language: (c.language as Language) || "en",
+              }));
+              setSessions(prev => {
+                const cloudIds = new Set(mapped.map(s => s.id));
+                return [...mapped, ...prev.filter(s => !cloudIds.has(s.id))].slice(0, 100);
+              });
+            }
+          });
+        }
+      });
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+      updateStreak();
+      return () => subscription.unsubscribe();
+    }
     updateStreak();
-    return () => subscription.unsubscribe();
   }, []);
 
   // Dark mode toggle

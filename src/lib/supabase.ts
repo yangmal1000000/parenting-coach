@@ -1,14 +1,17 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+// Only create client if env vars are present (avoids build-time crash during prerender)
+export const supabase = supabaseUrl && supabaseAnonKey
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    })
+  : null;
 
 // === Types ===
 export interface Profile {
@@ -38,16 +41,19 @@ export interface CloudSession {
 
 // === Auth helpers ===
 export async function signUp(email: string, password: string) {
+  if (!supabase) return { data: null, error: { message: "Not configured" } as any };
   const { data, error } = await supabase.auth.signUp({ email, password });
   return { data, error };
 }
 
 export async function signIn(email: string, password: string) {
+  if (!supabase) return { data: null, error: { message: "Not configured" } as any };
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   return { data, error };
 }
 
 export async function signInWithMagicLink(email: string) {
+  if (!supabase) return { data: null, error: { message: "Not configured" } as any };
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: window.location.origin },
@@ -56,16 +62,18 @@ export async function signInWithMagicLink(email: string) {
 }
 
 export async function signOut() {
-  await supabase.auth.signOut();
+  if (supabase) await supabase.auth.signOut();
 }
 
 export async function getCurrentUser() {
+  if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
   return user;
 }
 
 // === Profile sync ===
 export async function syncProfile(profile: Profile) {
+  if (!supabase) return;
   const user = await getCurrentUser();
   if (!user) return;
 
@@ -83,6 +91,7 @@ export async function syncProfile(profile: Profile) {
 }
 
 export async function loadProfile(): Promise<Profile | null> {
+  if (!supabase) return null;
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -98,6 +107,7 @@ export async function loadProfile(): Promise<Profile | null> {
 
 // === Session sync ===
 export async function syncSession(session: CloudSession) {
+  if (!supabase) return;
   const user = await getCurrentUser();
   if (!user) return;
 
@@ -111,6 +121,7 @@ export async function syncSession(session: CloudSession) {
 }
 
 export async function loadCloudSessions(): Promise<CloudSession[]> {
+  if (!supabase) return [];
   const user = await getCurrentUser();
   if (!user) return [];
 
@@ -126,6 +137,7 @@ export async function loadCloudSessions(): Promise<CloudSession[]> {
 }
 
 export async function deleteCloudSession(sessionId: string) {
+  if (!supabase) return;
   const user = await getCurrentUser();
   if (!user) return;
 
