@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { TOPIC_CATEGORIES } from "@/lib/topics";
+import { TOPIC_CATEGORIES, parseAgeYears, topicsForAge } from "@/lib/topics";
 import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from "@/lib/i18n";
 
 // === Types ===
@@ -84,6 +84,12 @@ function saveToStorage(key: string, value: unknown) {
 // === Tab type ===
 type Tab = "home" | "history" | "saved" | "profile";
 
+// === Conversation turn for follow-up memory ===
+interface ConversationTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
 // === Main Component ===
 export default function Home({ params }: { params: Promise<{ locale: string }> }) {
   const router = useRouter();
@@ -101,6 +107,10 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [query, setQuery] = useState("");
   const [profile, setProfile] = useState<ChildProfile>({ name: "", age: "", notes: "" });
   const [profileSaved, setProfileSaved] = useState(false);
+
+  // Age-filtered topics based on child profile
+  const childAgeYears = parseAgeYears(profile.age);
+  const visibleTopics = topicsForAge(TOPIC_CATEGORIES, childAgeYears);
   const [loading, setLoading] = useState(false);
   const [streamingAdvice, setStreamingAdvice] = useState("");
   const [advice, setAdvice] = useState<AdviceSection | null>(null);
@@ -125,6 +135,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
 
   // Data
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [conversationThread, setConversationThread] = useState<ConversationTurn[]>([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -171,9 +182,11 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   }, []);
 
   // === Submit (streaming) ===
-  async function handleSubmit(e?: React.FormEvent) {
+  async function handleSubmit(e?: React.FormEvent, overrideQuery?: string, deepDive = false) {
     e?.preventDefault();
-    if (!query.trim()) return;
+    const q = (overrideQuery ?? query).trim();
+    if (!q) return;
+    if (overrideQuery) setQuery(overrideQuery);
 
     setLoading(true);
     setError("");
@@ -181,7 +194,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     setStreamingAdvice("");
     setFeedbackGiven(null);
     setFeedbackText("");
-    setCurrentQuery(query.trim());
+    setCurrentQuery(q);
     setTab("home");
 
     const startTime = Date.now();
@@ -198,12 +211,14 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          query: query.trim(),
+          query: q,
           childName: profile.name || undefined,
           childAge: profile.age || undefined,
           childNotes: profile.notes || undefined,
           language: lang,
+          deepDive,
           userId,
+          conversationHistory: conversationThread.length > 0 ? conversationThread : undefined,
         }),
       });
 
@@ -261,7 +276,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               // Save session
               const newSession: Session = {
                 id: `s${Date.now()}`,
-                query: query.trim(),
+                query: q,
                 advice: fullAdvice,
                 sources: metaSources,
                 topicCategory: metaCategory,
@@ -272,6 +287,13 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               };
               setSessions(prev => [newSession, ...prev].slice(0, 100));
               setCurrentSessionId(newSession.id);
+
+              // Add to conversation thread for follow-up memory
+              setConversationThread(prev => [
+                ...prev,
+                { role: "user", content: q },
+                { role: "assistant", content: fullAdvice.slice(0, 1500) },
+              ]);
             } else if (data.type === "error") {
               throw new Error(data.error);
             }
@@ -390,6 +412,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     setQuery(""); setAdvice(null); setStreamingAdvice("");
     setFeedbackGiven(null); setFeedbackText(""); setFeedbackReasons([]); setFeedbackSubmitted(false);
     setCurrentSessionId(null);
+    setConversationThread([]);
   }
 
   function loadSession(s: Session) {
@@ -602,6 +625,10 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             <span className="font-semibold text-sm" style={{ color: "var(--text)" }}>{t.appName}</span>
           </button>
           <div className="flex items-center gap-1">
+            {/* Telegram button */}
+            <a href="https://t.me/CalmParent1Bot" target="_blank" rel="noopener" className="p-2 rounded-lg flex items-center justify-center" style={{ color: "#0088cc" }} title="Telegram">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+            </a>
             {/* Info button */}
             <button onClick={() => setShowInfo(true)} className="p-2 rounded-lg text-sm font-medium pulse-glow" style={{ color: "var(--primary)" }} title={t.howItWorks}>
               ℹ️
@@ -714,7 +741,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               <div className="mb-6">
                 <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>{t.quickExamples}</p>
                 <div className="grid grid-cols-2 gap-2">
-                  {TOPIC_CATEGORIES.slice(0, 8).map((topic) => (
+                  {visibleTopics.slice(0, 8).map((topic) => (
                     <button
                       key={topic.id}
                       onClick={() => setQuery(topicExamples[topic.id] || "")}
@@ -810,6 +837,50 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                       <span key={i} className="px-2 py-0.5 rounded-md text-xs" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>{s}</span>
                     ))}
                   </div>
+                )}
+
+                {/* Go Deeper & Ask Follow-up */}
+                {!feedbackGiven && (
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleSubmit(undefined, currentQuery || query, true)}
+                      className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors"
+                      style={{ background: "var(--primary)", color: "white" }}
+                    >
+                      🔍 Go Deeper
+                    </button>
+                    <button
+                      onClick={() => {
+                        const input = document.getElementById('followup-input');
+                        if (input) input.focus();
+                      }}
+                      className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors"
+                      style={{ border: "1px solid var(--primary)", color: "var(--primary)" }}
+                    >
+                      💬 Ask Follow-up
+                    </button>
+                  </div>
+                )}
+
+                {/* Follow-up input */}
+                {!feedbackGiven && (
+                  <>
+                  {conversationThread.length > 0 && (
+                    <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
+                      💬 The coach remembers your conversation
+                    </p>
+                  )}
+                  <input
+                    id="followup-input"
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && query.trim()) handleSubmit(e as any); }}
+                    placeholder={lang === "ko" ? "추가 질문을 입력하세요..." : "Type a follow-up question..."}
+                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
+                  />
+                  </>
                 )}
 
                 {/* Feedback */}
@@ -978,7 +1049,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             {/* Topic Browser */}
             <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>{t.browseTopics}</h3>
             <div className="space-y-2 mb-4">
-              {TOPIC_CATEGORIES.map(topic => (
+              {visibleTopics.map(topic => (
                 <button key={topic.id} onClick={() => { setQuery(topicExamples[topic.id] || ""); setTab("home"); }} className="w-full text-left rounded-xl p-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                   <p className="text-sm font-medium" style={{ color: "var(--text)" }}>{topicLabels[topic.id]?.label || topic.label}</p>
                   <p className="text-xs" style={{ color: "var(--text-muted)" }}>{topicLabels[topic.id]?.description || topic.description}</p>

@@ -1,0 +1,26 @@
+{
+  "name": "Calm Parent — AI Parenting Coach",
+  "short_name": "Calm Parent",
+  "description": "Evidence-based AI parenting coach. Real books, real advice, 24/7.",
+  "start_url": "/en",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "categories": ["lifestyle", "health", "education"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

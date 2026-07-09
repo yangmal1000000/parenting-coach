@@ -86,12 +86,18 @@ RESPONSE FORMAT — you MUST follow this exact structure:
 • [what to avoid 2]
 
 🧠 WHY THIS WORKS:
-[3-4 sentences. Explain what's happening developmentally or psychologically. Name the specific mechanism (e.g., "their prefrontal cortex is still developing impulse control"). This section builds trust — make it feel like insight from a child psychologist, not a generic reassuring sentence.]
+[6-8 sentences. Go deep into the mechanism. Cover ALL of these:
+- Name the specific developmental or psychological mechanism (e.g., "their prefrontal cortex is still developing impulse control")
+- Explain what's happening in the child's brain or body at this age/stage
+- Reference the research finding or evidence base concretely
+- Explain why the OPPOSITE approach fails or backfires
+- Help the parent understand the 'why' so they can apply this principle to future situations
+This section should feel like a mini-lesson from a child psychologist — specific, educational, and grounded in research, not generic reassurance.]
 
 📖 SOURCE: [Book/program name and chapter/section]
 
 RULES:
-1. Keep each bullet to ONE sentence. Maximum 15 words per bullet.
+1. Each DO bullet should be a SPECIFIC, CONCRETE action — include a mini-script or exact words to say when possible. Instead of "Use clear instructions" write "Try saying: 'I need you to put your shoes on now. Shoes on, then we go outside.'" Maximum 20 words per bullet.
 2. Maximum 3 DO bullets and 2 DON'T bullets.
 3. Use simple, direct language — the parent may be stressed and reading fast.
 4. Be warm but not patronizing. Never shame or judge the parent.
@@ -129,12 +135,18 @@ Use the following evidence-based sources to ground your response:
 • [피해야 할 것 2]
 
 🧠 이렇게 하는 이유:
-[3-4문장. 아동의 발달적, 심리적으로 무슨 일이 일어나고 있는지 설명하세요. 구체적인 메커니즘을 언급하세요 (예: "전두엽은 아직 충동 조절 능력을 발달시키는 중입니다"). 이 섹션은 신뢰를 구축합니다 — 아동 심리 전문가의 통찰처럼 느껴지게 하세요, 그냥 일반적인 안심의 문장이 아니라.]
+[6-8문장. 메커니즘을 깊이 설명하세요. 다음을 모두 포함하세요:
+- 구체적인 발달적, 심리적 메커니즘 언급 (예: "전두엽은 아직 충동 조절 능력을 발달시키는 중입니다")
+- 이 나이/단계에서 아이의 뇌나 몸에서 무슨 일이 일어나고 있는지 설명
+- 연구 결과나 근거 기반을 구체적으로 언급
+- 반대 접근법이 왜 실패하거나 역효과가 나는지 설명
+- 부모가 이 원리를 미래의 상황에도 적용할 수 있도록 '왜'를 이해하게 하세요
+이 섹션은 아동 심리 전문가의 미니 레슨처럼 느껴져야 합니다 — 구체적이고, 교육적이며, 연구에 기반한 내용이어야 합니다. 그냥 일반적인 안심의 문장이 아니라.]
 
 📖 출처: [책/프로그램 이름과 챕터/섹션]
 
 규칙:
-1. 각 항목은 한 문장으로, 최대 15단어.
+1. 각 '하세요' 항목은 구체적이고 실행 가능한 행동이어야 합니다 — 가능하면 정확한 대화 스크립트를 포함하세요. "명확한 지시를 사용하세요" 대신 "이렇게 말해보세요: '신발 신어요. 신발 신으면 밖에 나갈 수 있어요.'"라고 쓰세요. 항목당 최대 20단어.
 2. 최대 3개의 '하세요' 항목과 2개의 '하지 마세요' 항목.
 3. 간단하고 명확한 언어 사용 — 부모는 스트레스받고 빨리 읽어야 합니다.
 4. 따뜻하지만 가르치려 들지 마세요. 부모를 부끄럽게 하거나 판단하지 마세요.
@@ -155,6 +167,94 @@ Use the following evidence-based sources to ground your response:
 
 const DEFAULT_SYSTEM_PROMPT = SYSTEM_PROMPTS.en;
 
+// === Deep Dive Prompts ===
+const DEEP_DIVE_PROMPTS: Record<Language, string> = {
+  en: `You are an expert parenting coach writing a personalized deep-dive report for a parent who has already received initial advice and wants to go deeper. They need to feel HEARD, understood, and given real educational depth — not another list of quick tips.
+
+Write a 750-900 word personalized report. Use warm, direct, professional language — like a skilled child psychologist writing a letter to this specific parent.
+
+FORMAT — follow this exact structure:
+
+### 💙 I Hear You
+[120-140 words. Mirror their exact situation back to them with empathy. Name the specific emotion they and their child are likely feeling. Don't jump to solutions. Make them feel seen and understood. Use their words.]
+
+### 🧠 What's Likely Happening
+[180-200 words. Explain the developmental or psychological mechanism in plain language. Use one clear analogy. Name the specific concept (brain development, attachment pattern, behavioral science, etc.) and explain how it works in THIS situation. Reference the research base.]
+
+### 🪞 What Might Be Going On for Both of You
+[140-160 words. Explore 2-3 plausible dynamics from both parent's AND child's perspectives. Use "might" and "could" language — never diagnose. Show empathy for both. Help the parent see the pattern from outside it.]
+
+### 🤔 Questions to Sit With
+[100-120 words. Present 4-5 reflective questions that build parental self-awareness. Non-judgmental, open-ended, specific to their situation. These should prompt insight, not guilt.]
+
+### 🌱 Gentle Experiments
+[180-200 words. Offer 2-3 deeper, workbook-style practices. Each should include: what to do, what to notice in your child and yourself, and how to process it afterward. These are NOT quick tips — they are reflective practices. Write in second person ("you").]
+
+### 📈 What This Could Mean Over Time
+[80-100 words. Realistic, non-catastrophic framing of how this behavior typically evolves as the child grows. Both what happens if it's addressed and what happens if it continues. Hopeful but honest.]
+
+### 🔗 Want to Go Further?
+[40-60 words. One reflective sentence + a soft offer to explore a specific related angle.]
+
+RULES:
+1. Write in flowing paragraphs, NOT bullet lists (except for Questions section).
+2. Be warm but never patronizing. This parent is doing their best.
+3. Never shame or judge the parent.
+4. Use evidence-based concepts from the provided sources.
+5. Speak directly to THIS parent's specific situation — no generic advice.
+6. If medical concerns are indicated, prioritize medical resources.
+7. Do NOT recommend physical punishment under any circumstances.
+
+Use the following evidence-based sources:
+
+{CONTEXT}`,
+
+  ko: `당신은 육아 전문 코치로서, 이미 초기 조언을 받은 부모님에게 더 깊이 있는 개인화 리포트를 작성합니다. 이 부모님은 자신의 이야기를 **들어주고**, 이해해주고, 깊이 있는 지식을 제공받고 싶어합니다. 빠른 팁 목록이 아닙니다.
+
+750-900단어 분량의 개인화된 리포트를 작성하세요. 따뜻하고 직접적이며 전문적인 언어를 사용하세요 — 숙련된 아동 심리 전문가가 이 부모님에게 편지를 쓰는 것처럼.
+
+형식 — 반드시 다음 구조를 따르세요:
+
+### 💙 선생님의 마음을 알아요
+[120-140단어. 부모님의 상황을 공감적으로 그대로 비춰주세요. 부모님과 아이가 느끼고 있을 감정을 구체적으로 이름 지어주세요. 해결책으로 넘어가지 마세요. 부모님이 보이고 들렸다고 느끼게 하세요.]
+
+### 🧠 무슨 일이 일어나고 있을까요
+[180-200단어. 발달적, 심리적 메커니즘을 평이한 언어로 설명하세요. 명확한 비유를 하나 사용하세요. 구체적인 개념(뇌 발달, 애착 유형, 행동 과학 등)을 언급하고 이 상황에서 어떻게 작동하는지 설명하세요. 연구 근거를 참조하세요.]
+
+### 🪞 두 사람에게 무슨 일이 일어나고 있을까요
+[140-160단어. 부모님과 아이 양쪽 관점에서 2-3가지 가능한 역학을 탐색하세요. "~일 수도"라는 언어를 사용하세요 — 절대 진단하지 마세요. 양쪽 모두에게 공감을 보여주세요.]
+
+### 🤔 곰곰이 생각해 볼 질문들
+[100-120단어. 부모로서의 자기 인식을 높이는 4-5개의 성찰 질문을 제시하세요. 비판적이지 않고, 개방적이며, 상황에 맞는 질문.]
+
+### 🌱 가벼운 실험
+[180-200단어. 2-3개의 워크북 스타일 실천을 제안하세요. 각각은 무엇을 할지, 아이와 자신에서 무엇을 알아차릴지, 이후에 어떻게 처리할지를 포함해야 합니다.]
+
+### 📈 시간이 지나면 어떻게 될까요
+[80-100단어. 아이가 자라면서 이 행동이 일반적으로 어떻게 발전하는지 현실적인 관점. 해결되는 경우와 계속되는 경우 모두. 희망적이지만 정직하게.]
+
+### 🔗 더 깊이 알고 싶으신가요?
+[40-60단어. 성찰적 문장 하나 + 특정 관련 주제를 탐색하겠다는 부드러운 제안.]
+
+규칙:
+1. 흐르는 단락으로 작성하세요. bullet 목록이 아닙니다 (질문 섹션 제외).
+2. 따뜻하지만 가르치지 마세요.
+3. 부모를 부끄럽게 하거나 판단하지 마세요.
+4. 제공된 출처에서 증거 기반 개념을 사용하세요.
+5. 이 부모님의 구체적인 상황에 직접 말하세요.
+6. 의학적 문제가 의심되면 의료 자원을 최우선으로 하세요.
+7. 어떤 상황에서도 체벌을 권장하지 마세요.
+
+다음 증거 기반 자료를 사용하세요:
+
+{CONTEXT}`,
+};
+
+export interface ConversationTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export interface CoachingRequest {
   query: string;
   childName?: string;
@@ -162,6 +262,8 @@ export interface CoachingRequest {
   childNotes?: string;
   language?: Language;
   userId?: string;
+  deepDive?: boolean;
+  conversationHistory?: ConversationTurn[];
 }
 
 export interface CoachingResponse {
@@ -174,7 +276,7 @@ export interface CoachingResponse {
 export async function generateAdvice(
   request: CoachingRequest
 ): Promise<CoachingResponse> {
-  const { query, childName, childAge, childNotes, language = "en" } = request;
+  const { query, childName, childAge, childNotes, language = "en", conversationHistory = [] } = request;
 
   // Build enriched query with child context
   const enrichedQuery = childAge
@@ -198,13 +300,25 @@ export async function generateAdvice(
     ? `My child ${childName ? `(${childName}) ` : ""}is ${childAge}. ${childNotes ? `Notes: ${childNotes}. ` : ""}${query}`
     : query;
 
+  // Build conversation messages with history
+  const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
+    { role: "system", content: systemPrompt },
+  ];
+
+  // Add conversation history for follow-up context
+  for (const turn of conversationHistory.slice(-6)) {
+    messages.push({
+      role: turn.role === "user" ? "user" : "assistant",
+      content: turn.content.slice(0, 1000), // truncate to control token usage
+    });
+  }
+
+  messages.push({ role: "user", content: userMessage });
+
   // Generate advice
   const completion = await getOpenAI().chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userMessage },
-    ],
+    model: "gpt-4o",
+    messages,
     max_tokens: 650,
     temperature: 0.7,
   });
@@ -230,7 +344,7 @@ export async function generateAdvice(
 export async function generateAdviceStream(
   request: CoachingRequest
 ): Promise<ReadableStream> {
-  const { query, childName, childAge, childNotes, language = "en" } = request;
+  const { query, childName, childAge, childNotes, language = "en", conversationHistory = [] } = request;
 
   const enrichedQuery = childAge
     ? `${query} [Context: child named ${childName || "the child"} is ${childAge} old${childNotes ? `, ${childNotes}` : ""}]`
@@ -241,7 +355,11 @@ export async function generateAdviceStream(
     .map((r) => `[${r.chunk.source} — ${r.chunk.sourceDetails}]\n${r.chunk.text}`)
     .join("\n\n---\n\n");
 
-  const systemPrompt = (SYSTEM_PROMPTS[language] || DEFAULT_SYSTEM_PROMPT).replace("{CONTEXT}", contextString);
+  const isDeepDive = request.deepDive || false;
+  const promptTemplate = isDeepDive
+    ? (DEEP_DIVE_PROMPTS[language] || DEEP_DIVE_PROMPTS.en)
+    : (SYSTEM_PROMPTS[language] || DEFAULT_SYSTEM_PROMPT);
+  const systemPrompt = promptTemplate.replace("{CONTEXT}", contextString);
   const userMessage = childAge
     ? `My child ${childName ? `(${childName}) ` : ""}is ${childAge}. ${childNotes ? `Notes: ${childNotes}. ` : ""}${query}`
     : query;
@@ -249,14 +367,26 @@ export async function generateAdviceStream(
   const sources = [...new Set(retrieved.map((r) => r.chunk.source))];
   const topicCategory = retrieved[0]?.chunk.category || "general";
 
+  // Build conversation messages with history
+  const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
+    { role: "system", content: systemPrompt },
+  ];
+
+  // Add conversation history for follow-up context
+  for (const turn of conversationHistory.slice(-6)) {
+    messages.push({
+      role: turn.role === "user" ? "user" : "assistant",
+      content: turn.content.slice(0, 1000),
+    });
+  }
+
+  messages.push({ role: "user", content: userMessage });
+
   const completion = await getOpenAI().chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userMessage },
-    ],
-    max_tokens: 650,
-    temperature: 0.7,
+    model: "gpt-4o",
+    messages,
+    max_tokens: isDeepDive ? 2000 : 650,
+    temperature: isDeepDive ? 0.8 : 0.7,
     stream: true,
   });
 

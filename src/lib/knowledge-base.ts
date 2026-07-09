@@ -10,7 +10,11 @@ export interface KnowledgeChunk {
   text: string;
 }
 
+import { NEW_CHUNKS } from "./new-chunks";
+
 export const KNOWLEDGE_BASE: KnowledgeChunk[] = [
+  ...NEW_CHUNKS,
+  // === Original chunks below ===
   // === TANTRUMS / MELTDOWNS ===
   {
     id: "wb-1",
@@ -8818,70 +8822,70 @@ export const KNOWLEDGE_BASE: KnowledgeChunk[] = [
 
   // === HARD CONVERSATIONS (DEEP) ===
 {
-    id: "hard-1",
+    id: "hard-21",
     source: "The Whole-Brain Child",
     sourceDetails: "Siegel & Bryson, Ch. 3 — Name It to Tame It",
     category: "honest",
     text: "When talking to preschool-age children about death, use clear, honest language rather than euphemisms. Saying 'Grandpa died' is healthier than 'Grandpa went to sleep' or 'Grandpa passed away,' which can confuse or frighten a young child who thinks literally. Preschoolers don't yet understand that death is permanent — they may ask when the person is coming back, and this is developmentally normal, not denial. Answer their repeated questions with patience and consistency. Avoid offering more detail than they ask for; follow their lead. It is okay to say 'I don't know' when children ask why someone died. Name your own emotions — 'I feel sad because I miss Grandma' — so the child sees that grief is survivable and expressible. Siegel and Bryson emphasize the 'name it to tame it' principle: helping a child put words to their feelings calms the emotional center of the brain. Keep routines stable, offer physical comfort, and reassure the child that they are safe and cared for even when sad things happen.",
   },
   {
-    id: "hard-2",
+    id: "hard-22",
     source: "How to Talk So Kids Will Listen",
     sourceDetails: "Faber & Mazlish, Ch. 4 — Engaging Cooperation",
     category: "honest",
     text: "When explaining divorce or separation to school-age children (ages 6–11), the goal is to be truthful without making the child a confidant. Children this age can understand that two adults may no longer be able to live together happily, but they cannot — and should not — process adult relationship details. Faber and Mazlish stress avoiding blame: say 'Mom and Dad have been having a hard time getting along, and we've decided to live in separate homes,' rather than 'Your father left.' Reassure the child that the divorce is not their fault, as school-age children often secretly believe they caused it through bad behavior or wishes. Give concrete information about what will change and what will stay the same: where they will sleep, who will take them to school, that their friends and school will likely remain. Acknowledge that it is okay to feel angry, sad, or confused, and that both parents still love them unconditionally. Never use the child as a messenger between households, and never disparage the other parent in the child's presence.",
   },
   {
-    id: "hard-3",
+    id: "hard-23",
     source: "Raising An Emotionally Intelligent Child",
     sourceDetails: "Gottman, Ch. 5 — Emotion-Coaching Strategies",
     category: "honest",
     text: "When discussing racism and discrimination with children, Gottman's emotion-coaching approach applies: do not avoid the topic just because it is uncomfortable. Research shows that children as young as three notice racial differences, and silence from parents leaves children to form conclusions from media and peers. Start early with simple, matter-of-fact statements about fairness: 'Some people are treated unfairly because of their skin color, and that is wrong.' With school-age children, name specific examples and invite their feelings: 'How does that make you feel? What do you think we should do when we see someone being treated unfairly?' With teenagers, go deeper into systemic issues, historical context, and the role of bystanders versus upstanders. Validate the full range of their emotional responses — anger, confusion, guilt, sadness — and resist minimizing or rushing to fix. Encourage questions and admit when you don't have answers. Model anti-racist behavior in your own life, because children learn far more from what you do than what you say. Reading diverse books and watching films together can open natural conversations about discrimination and empathy.",
   },
   {
-    id: "hard-4",
+    id: "hard-24",
     source: "It's Perfectly Normal",
     sourceDetails: "Harris & Emberley, Ch. 1 — Changing Bodies",
     category: "honest",
     text: "When talking to young children (ages 4–8) about sex and reproduction, Harris's approach is to answer questions honestly with age-appropriate, bite-sized information. Use correct anatomical terms — penis, vulva, uterus — rather than cutesy nicknames, which helps children develop body literacy and recognize inappropriate touch. When a preschooler asks 'Where do babies come from?', a simple answer like 'A baby grows inside a person's body in a place called a uterus' is sufficient. They will ask follow-up questions when they are ready for more. Do not assume a question about where babies come from is really about sexual intercourse — it often isn't, at this age. Avoid shame-based messaging: communicate that bodies and body parts are normal. If a child catches you off guard with a question, it is perfectly acceptable to say 'That's a great question — let me think about how to explain it' and return to it later that day. The most important message at this age is that curiosity about bodies is healthy and welcome.",
   },
   {
-    id: "hard-5",
+    id: "hard-25",
     source: "The Care and Keeping of You",
     sourceDetails: "Schaefer & Natterson, Body Book for Younger Girls",
     category: "honest",
     text: "Preparing children for puberty before it begins reduces anxiety and builds confidence. For children ages 8–10, introduce the idea that their body will change during the next few years and that these changes are completely normal and healthy. Discuss specific changes — body odor, breast development or chest changes, hair growth under arms and in pubic areas, growth spurts, and eventually menstruation or voice changes — using clear, non-alarming language. Avoid framing puberty as something scary or that 'you'll understand when you're older.' Instead, present it as a sign of growing up. Discuss menstruation with all children, not just girls, so that it is demystified and normalized. Provide practical supplies and show how they work before they are needed. Schaefer emphasizes that the goal is to replace fear and shame with knowledge and preparedness. If your child seems embarrassed, respect that, but keep the door open: 'You don't have to talk about this right now, but I'm always here when you have questions.' Reading a body book together can make the conversation feel less intense than a face-to-face sit-down.",
   },
   {
-    id: "hard-6",
+    id: "hard-26",
     source: "Daring Greatly",
     sourceDetails: "Brené Brown, Ch. 4 — Vulnerability and Parenting",
     category: "honest",
     text: "When families face financial stress, children sense the tension even when nothing is said. Brown's research on vulnerability shows that age-appropriate honesty builds trust more than pretending everything is fine. With young children (ages 4–7), keep it simple: 'We need to be careful about spending money right now, so we're going to focus on the things we already have that we love.' Avoid burdening them with numbers or adult worries. With school-age children (8–11), you can be slightly more specific: 'Money is a little tight, so we're choosing our needs over wants for a while. This isn't your fault and our home is safe.' With teenagers, you can share more: 'We've had some changes with work, and we need to adjust our budget. We'll still take care of what you need.' The key across all ages is to name the reality without transferring panic. Brown emphasizes that children are remarkably perceptive shame-detectors — they know when adults are hiding something. Reassure children that the adults are handling it and that their job is just to be a kid. Avoid saying 'we can't afford anything' and instead model that scarcity is temporary and manageable.",
   },
   {
-    id: "hard-7",
+    id: "hard-27",
     source: "AAP Guidance on Difficult Conversations",
     sourceDetails: "American Academy of Pediatrics — Talking to Children About Tragedies",
     category: "honest",
     text: "When talking to children about terrorism, war, or scary news events, the AAP recommends limiting exposure first — turn off the news when children are present, especially for children under 8 who cannot distinguish between repeated footage and ongoing danger. Start by asking what they have already heard, because misinformation spreads quickly among peers. Correct inaccuracies calmly. With young children, emphasize safety: 'The people in charge are working hard to keep us safe.' With school-age children, offer basic context without graphic detail and focus on helpers — firefighters, doctors, neighbors who step up. With teenagers, you can discuss the geopolitical context, civil liberties, and media literacy, encouraging them to evaluate sources critically. Validate their fear — say 'It makes sense that this feels scary' — rather than dismissing it with 'Don't worry.' Maintain routines as much as possible, because predictability is calming. If a child regresses (bedwetting, clinginess, sleep trouble) after exposure to frightening news, this is a normal stress response and usually resolves with reassurance and time. Limit your own news consumption around children; your anxious presence is more frightening to them than the event itself.",
   },
   {
-    id: "hard-8",
+    id: "hard-28",
     source: "Raising An Emotionally Intelligent Child",
     sourceDetails: "Gottman, Ch. 3 — The Five Steps of Emotion Coaching",
     category: "honest",
     text: "When explaining mental illness in the family to children, Gottman's framework of awareness and validation is essential. Choose a calm, quiet moment and use age-appropriate honesty. For younger children (4–7): 'Sometimes Mom's brain gets tired and it makes her feel very sad or confused. It's not because of anything you did, and doctors are helping her.' For school-age children (8–11): 'Dad has an illness that affects his mood and how he thinks. It's called depression. He's seeing a doctor who helps people with this.' For teenagers, you can name the diagnosis, discuss treatment, and invite questions about genetics and their own risk. Across all ages, emphasize three things: it's not the child's fault, it's a medical condition being treated, and there are other adults who will always take care of them. Reduce stigma by treating mental illness like any other health condition. If a parent is hospitalized, be honest about where they are and when they will likely return. Children imagine far worse when left in the dark. Encourage them to express all feelings — including anger at the affected parent — without guilt.",
   },
   {
-    id: "hard-9",
+    id: "hard-29",
     source: "NurtureShock",
     sourceDetails: "Bronson & Merryman, Ch. 1 — The Inverse Power of Praise (and related research on honesty)",
     category: "honest",
     text: "When talking to children about a family member's addiction or substance abuse, Bronson and Merryman's research underscores that children are far more aware of the problem than adults assume. With children ages 6–10, use simple, non-shaming language: 'Uncle has a sickness that makes it hard for him to stop drinking alcohol. It's not your fault and you can't fix it.' With preteens (11–13), explain addiction as a disease, not a moral failure: 'Your brother's brain is tricked into needing the substance, and he needs professional help.' For teenagers, you can discuss genetic risk factors, the science of dependency, and treatment options, and you should explicitly invite questions. Avoid two extremes: demonizing the person (which creates fear and shame) or minimizing the problem (which distorts reality and can enable denial). Reassure children that they are not responsible for the person's behavior or recovery. Teach the age-appropriate version of the 'Three Cs' from Al-Anon: you didn't Cause it, you can't Control it, and you can't Cure it. Maintain open communication and consider professional support or a peer group for the child if the addiction significantly affects their daily life.",
   },
   {
-    id: "hard-10",
+    id: "hard-30",
     source: "AAP Guidance on Difficult Conversations",
     sourceDetails: "American Academy of Pediatrics — Media and Children: Guidelines for Parents",
     category: "honest",
