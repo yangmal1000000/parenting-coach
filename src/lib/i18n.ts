@@ -44,6 +44,19 @@ export interface UIStrings {
   newAdvice: string;
   // Disclaimer
   disclaimer: string;
+  // Auth
+  signedInAs: string;
+  signOut: string;
+  cloudSync: string;
+  login: string;
+  createAccount: string;
+  checkEmail: string;
+  password: string;
+  sendLink: string;
+  signUp: string;
+  noAccount: string;
+  haveAccount: string;
+  syncDesc: string;
   // Onboarding
   onboardingTitle: string;
   onboardingSubtitle: string;
@@ -160,6 +173,19 @@ export const UI: Record<Language, UIStrings> = {
     saved: "★ Saved",
     newAdvice: "↩ New",
     disclaimer: "Educational guidance based on international research. Adapt to your family's cultural context. Always consult your pediatrician for medical concerns.",
+    // Auth
+    signedInAs: "Signed in",
+    signOut: "Sign Out",
+    cloudSync: "Your advice is synced across devices",
+    login: "Log In",
+    createAccount: "Create Account",
+    checkEmail: "Check your email for a sign-in link!",
+    password: "Password (min 6 chars)",
+    sendLink: "Send Magic Link",
+    signUp: "Sign Up",
+    noAccount: "No account? Sign up →",
+    haveAccount: "Already have an account? Log in →",
+    syncDesc: "Create an account to sync your saved advice across devices",
     onboardingTitle: "Instant Parenting Help",
     onboardingSubtitle: "Evidence-based advice in seconds. Just speak or type what's happening.",
     onboardingSpeak: "Tap to speak",
@@ -265,6 +291,19 @@ export const UI: Record<Language, UIStrings> = {
     saved: "★ 저장됨",
     newAdvice: "↩ 새로운 질문",
     disclaimer: "국제 연구를 기반으로 한 교육 자료입니다. 가족의 문화적 상황에 맞게 활용하세요. 의학적 문제는 소아과 의사에게 문의하세요.",
+    // Auth
+    signedInAs: "로그인됨",
+    signOut: "로그아웃",
+    cloudSync: "저장한 조언이 기기 간 동기화됩니다",
+    login: "로그인",
+    createAccount: "계정 만들기",
+    checkEmail: "이메일에서 로그인 링크를 확인하세요!",
+    password: "비밀번호 (최소 6자)",
+    sendLink: "매직 링크 보내기",
+    signUp: "회원가입",
+    noAccount: "계정이 없으신가요? 회원가입 →",
+    haveAccount: "이미 계정이 있으신가요? 로그인 →",
+    syncDesc: "계정을 만들면 저장한 조언이 기기 간 동기화됩니다",
     onboardingTitle: "즉각적인 육아 도움",
     onboardingSubtitle: "몇 초 안이면 과학적 조언을 받으세요. 상황을 말하거나 입력하세요.",
     onboardingSpeak: "눌러서 말하기",

@@ -4,6 +4,20 @@ import { useState, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { TOPIC_CATEGORIES, parseAgeYears, topicsForAge } from "@/lib/topics";
 import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from "@/lib/i18n";
+import {
+  supabase,
+  signUp,
+  signIn,
+  signInWithMagicLink,
+  signOut,
+  getCurrentUser,
+  syncProfile,
+  loadProfile,
+  syncSession,
+  loadCloudSessions,
+  deleteCloudSession,
+} from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 // === Types ===
 interface AdviceSection {
@@ -26,6 +40,7 @@ interface Session {
   childName?: string;
   childAge?: string;
   language?: Language;
+  _synced?: boolean;
 }
 interface ChildProfile {
   name: string;
@@ -140,6 +155,15 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [showInfo, setShowInfo] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
+  // Auth state
+  const [user, setUser] = useState<User | null>(null);
+  const [authMode, setAuthMode] = useState<"none" | "login" | "signup">("none");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+
   // Load from storage on mount
   useEffect(() => {
     const savedProfile = loadFromStorage<ChildProfile | null>("pc_profile", null);
@@ -149,12 +173,59 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     const onboarded = loadFromStorage("pc_onboarded", false);
     if (!onboarded) {
       setShowOnboarding(true);
-      // Show How It Works on first visit after onboarding
     }
     const dm = loadFromStorage("pc_darkmode", false);
     setDarkMode(dm);
-    // Save current language preference from URL
     saveToStorage("pc_lang", initialLang);
+
+    // Init Supabase auth
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(session.user);
+        // Load cloud data
+        loadProfile().then(p => {
+          if (p?.child_name || p?.child_age) {
+            const cloudProfile: ChildProfile = {
+              name: p.child_name || "",
+              age: p.child_age || "",
+              notes: p.child_notes || "",
+            };
+            setProfile(cloudProfile);
+            setProfileSaved(true);
+          }
+        });
+        loadCloudSessions().then(cloud => {
+          if (cloud.length > 0) {
+            const mapped: Session[] = cloud.map(c => ({
+              id: c.id,
+              query: c.query,
+              advice: c.advice,
+              sources: c.sources || [],
+              topicCategory: c.topic_category || "general",
+              rating: c.rating,
+              bookmarked: c.bookmarked,
+              feedbackText: c.feedback_text,
+              createdAt: c.created_at,
+              childName: c.child_name,
+              childAge: c.child_age,
+              language: (c.language as Language) || "en",
+            }));
+            // Merge: prefer cloud, keep any local-only sessions
+            setSessions(prev => {
+              const cloudIds = new Set(mapped.map(s => s.id));
+              const localOnly = prev.filter(s => !cloudIds.has(s.id));
+              return [...mapped, ...localOnly].slice(0, 100);
+            });
+          }
+        });
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   // Dark mode toggle
@@ -164,7 +235,44 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   }, [darkMode]);
 
   // Save sessions when changed
-  useEffect(() => { saveToStorage("pc_sessions", sessions); }, [sessions]);
+  useEffect(() => {
+    saveToStorage("pc_sessions", sessions);
+    // Sync to cloud if logged in
+    if (user) {
+      const latest = sessions[0];
+      if (latest && !latest._synced) {
+        syncSession({
+          id: latest.id,
+          query: latest.query,
+          advice: latest.advice,
+          sources: latest.sources,
+          topic_category: latest.topicCategory,
+          rating: latest.rating,
+          bookmarked: latest.bookmarked,
+          feedback_text: latest.feedbackText,
+          language: latest.language,
+          child_name: latest.childName,
+          child_age: latest.childAge,
+          created_at: latest.createdAt,
+        }).then(() => {
+          // Mark as synced to avoid re-syncing
+          setSessions(prev => prev.map((s, i) => i === 0 ? { ...s, _synced: true } : s));
+        });
+      }
+    }
+  }, [sessions, user]);
+
+  // Sync profile when it changes
+  useEffect(() => {
+    if (user && profileSaved) {
+      syncProfile({
+        child_name: profile.name,
+        child_age: profile.age,
+        child_notes: profile.notes,
+        preferred_language: lang,
+      });
+    }
+  }, [profile, profileSaved, user, lang]);
 
   // Save language when changed
   useEffect(() => { saveToStorage("pc_lang", lang); }, [lang]);
@@ -356,6 +464,49 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   }
 
   // === Profile ===
+  // === Auth ===
+  async function handleAuth(e: React.FormEvent) {
+    e.preventDefault();
+    setAuthLoading(true);
+    setAuthError("");
+    try {
+      if (authMode === "signup") {
+        const { error } = await signUp(email, password);
+        if (error) throw error;
+        setAuthMode("none");
+      } else if (authMode === "login") {
+        const { error } = await signIn(email, password);
+        if (error) throw error;
+        setAuthMode("none");
+      }
+    } catch (err) {
+      setAuthError(err instanceof Error ? err.message : "Authentication failed");
+    } finally {
+      setAuthLoading(false);
+    }
+  }
+
+  async function handleMagicLink(e: React.FormEvent) {
+    e.preventDefault();
+    setAuthLoading(true);
+    setAuthError("");
+    try {
+      const { error } = await signInWithMagicLink(email);
+      if (error) throw error;
+      setMagicLinkSent(true);
+    } catch (err) {
+      setAuthError(err instanceof Error ? err.message : "Failed to send magic link");
+    } finally {
+      setAuthLoading(false);
+    }
+  }
+
+  async function handleSignOut() {
+    await signOut();
+    setUser(null);
+    setAuthMode("none");
+  }
+
   function saveProfile() {
     saveToStorage("pc_profile", profile);
     setProfileSaved(true);
@@ -1033,6 +1184,86 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         {/* === PROFILE TAB === */}
         {tab === "profile" && (
           <div>
+            {/* Auth section */}
+            {user ? (
+              <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: "var(--text)" }}>
+                      {t.signedInAs || "Signed in"}
+                    </p>
+                    <p className="text-xs" style={{ color: "var(--text-muted)" }}>{user.email}</p>
+                  </div>
+                  <button onClick={handleSignOut} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ border: "1px solid var(--border)", color: "var(--text)" }}>
+                    {t.signOut || "Sign Out"}
+                  </button>
+                </div>
+                <p className="text-xs mt-2" style={{ color: "var(--emerald-700)" }}>☁️ {t.cloudSync || "Your advice is synced across devices"}</p>
+              </div>
+            ) : authMode !== "none" ? (
+              <div className="rounded-2xl p-5 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                    {authMode === "login" ? (t.login || "Log In") : (t.createAccount || "Create Account")}
+                  </h3>
+                  <button onClick={() => setAuthMode("none")} className="text-xs" style={{ color: "var(--text-muted)" }}>✕</button>
+                </div>
+                {magicLinkSent ? (
+                  <p className="text-sm text-center py-4" style={{ color: "var(--text)" }}>✉️ {t.checkEmail || "Check your email for a sign-in link!"}</p>
+                ) : (
+                  <form onSubmit={authMode === "login" ? handleMagicLink : handleAuth} className="space-y-3">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="email@example.com"
+                      required
+                      className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none"
+                      style={{ border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)" }}
+                    />
+                    {authMode === "signup" && (
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        placeholder={t.password || "Password (min 6 chars)"}
+                        required
+                        minLength={6}
+                        className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none"
+                        style={{ border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)" }}
+                      />
+                    )}
+                    {authError && <p className="text-xs" style={{ color: "var(--error)" }}>{authError}</p>}
+                    <button type="submit" disabled={authLoading} className="w-full py-2.5 rounded-xl text-white font-medium text-sm disabled:opacity-50" style={{ background: "var(--primary)" }}>
+                      {authLoading ? "..." : authMode === "login" ? (t.sendLink || "Send Magic Link") : (t.signUp || "Sign Up")}
+                    </button>
+                    {authMode === "login" && (
+                      <button type="button" onClick={() => setAuthMode("signup")} className="w-full text-xs" style={{ color: "var(--primary)" }}>
+                        {t.noAccount || "No account? Sign up →"}
+                      </button>
+                    )}
+                    {authMode === "signup" && (
+                      <button type="button" onClick={() => setAuthMode("login")} className="w-full text-xs" style={{ color: "var(--primary)" }}>
+                        {t.haveAccount || "Already have an account? Log in →"}
+                      </button>
+                    )}
+                  </form>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{t.syncDesc || "Create an account to sync your saved advice across devices"}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => setAuthMode("signup")} className="flex-1 py-2.5 rounded-xl text-white font-medium text-sm" style={{ background: "var(--primary)" }}>
+                    {t.createAccount || "Create Account"}
+                  </button>
+                  <button onClick={() => setAuthMode("login")} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ border: "1px solid var(--border)", color: "var(--text)" }}>
+                    {t.login || "Log In"}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text)" }}>{t.childProfile}</h2>
             <div className="rounded-2xl p-5 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
               <label className="text-xs font-medium mb-1 block" style={{ color: "var(--text-muted)" }}>{t.childName}</label>
