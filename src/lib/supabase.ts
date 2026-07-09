@@ -52,6 +52,14 @@ export async function signIn(email: string, password: string) {
   return { data, error };
 }
 
+export async function signInWithGoogle() {
+  if (!supabase) return;
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: window.location.origin },
+  });
+}
+
 export async function signInWithMagicLink(email: string) {
   if (!supabase) return { data: null, error: { message: "Not configured" } as any };
   const { data, error } = await supabase.auth.signInWithOtp({
