@@ -1162,6 +1162,35 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                   </button>
                 </div>
 
+                {/* Related topics */}
+                {(() => {
+                  const currentCat = sessions.find(s => s.id === currentSessionId)?.topicCategory;
+                  if (!currentCat) return null;
+                  const related = visibleTopics
+                    .filter(t => t.id !== currentCat)
+                    .slice(0, 4);
+                  if (related.length === 0) return null;
+                  return (
+                    <div className="rounded-2xl p-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                      <p className="text-xs font-medium mb-2" style={{ color: "var(--text-muted)" }}>
+                        {lang === "ko" ? "관련 주제" : "Related topics"}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {related.map(t => (
+                          <button
+                            key={t.id}
+                            onClick={() => { setQuery(topicExamples[t.id] || ""); setTab("home"); newSession(); }}
+                            className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                            style={{ border: "1px solid var(--border)", color: "var(--text)" }}
+                          >
+                            {(lang === "ko" ? topicLabels[t.id]?.label : topicLabels[t.id]?.label) || t.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* Disclaimer */}
                 <p className="text-xs text-center pt-2" style={{ color: "var(--text-muted)", opacity: 0.6 }}>
                   {t.disclaimer}
@@ -1174,7 +1203,14 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         {/* === HISTORY TAB === */}
         {tab === "history" && (
           <div>
-            <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text)" }}>{t.recentSessions}</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>{t.recentSessions}</h2>
+              {sessions.length > 0 && (
+                <span className="text-xs px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                  {sessions.length} {lang === "ko" ? "개" : "total"}
+                </span>
+              )}
+            </div>
             {sessions.length === 0 ? (
               <p className="text-sm text-center py-12" style={{ color: "var(--text-muted)" }}>{t.noSessions}</p>
             ) : (
