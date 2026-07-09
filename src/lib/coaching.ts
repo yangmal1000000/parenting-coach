@@ -51,7 +51,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-export async function retrieveRelevantChunks(query: string, topK: number = 5) {
+export async function retrieveRelevantChunks(query: string, topK: number = 6) {
   const embedded = await ensureKnowledgeBaseEmbedded();
   const queryEmbedding = await getEmbeddings(query);
 
@@ -61,7 +61,19 @@ export async function retrieveRelevantChunks(query: string, topK: number = 5) {
   }));
 
   scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, topK);
+
+  // Source diversity boost: don't return more than 3 chunks from the same source
+  // This ensures the LLM sees multiple perspectives
+  const result: typeof scored = [];
+  const sourceCount: Record<string, number> = {};
+  for (const item of scored) {
+    const src = item.chunk.source;
+    if ((sourceCount[src] || 0) >= 3) continue;
+    sourceCount[src] = (sourceCount[src] || 0) + 1;
+    result.push(item);
+    if (result.length >= topK) break;
+  }
+  return result;
 }
 
 const SYSTEM_PROMPTS: Record<Language, string> = {
@@ -284,7 +296,7 @@ export async function generateAdvice(
     : query;
 
   // RAG: retrieve relevant knowledge chunks
-  const retrieved = await retrieveRelevantChunks(enrichedQuery, 5);
+  const retrieved = await retrieveRelevantChunks(enrichedQuery, 6);
   const contextString = retrieved
     .map(
       (r) =>
@@ -293,7 +305,10 @@ export async function generateAdvice(
     .join("\n\n---\n\n");
 
   // Build system prompt with context
-  const systemPrompt = (SYSTEM_PROMPTS[language] || DEFAULT_SYSTEM_PROMPT).replace("{CONTEXT}", contextString);
+  const basePrompt = (SYSTEM_PROMPTS[language] || DEFAULT_SYSTEM_PROMPT).replace("{CONTEXT}", contextString);
+  const systemPrompt = conversationHistory.length > 0
+    ? basePrompt + (language === "ko" ? "\n\n중요: 이전 대화의 맥락을 고려하여 답변하세요. 부모가 추가 질문을 하면 이전 조언을 참고하고 일관성을 유지하세요." : "\n\nIMPORTANT: Consider the conversation history. When the parent asks a follow-up, reference and build on previous advice. Maintain consistency with earlier guidance.")
+    : basePrompt;
 
   // Build user message
   const userMessage = childAge
@@ -315,9 +330,10 @@ export async function generateAdvice(
 
   messages.push({ role: "user", content: userMessage });
 
-  // Generate advice
+  // Generate advice — use gpt-4o-mini for standard, gpt-4o for deep dive
+  const model = request.deepDive ? "gpt-4o" : "gpt-4o-mini";
   const completion = await getOpenAI().chat.completions.create({
-    model: "gpt-4o",
+    model,
     messages,
     max_tokens: 650,
     temperature: 0.7,
@@ -350,7 +366,7 @@ export async function generateAdviceStream(
     ? `${query} [Context: child named ${childName || "the child"} is ${childAge} old${childNotes ? `, ${childNotes}` : ""}]`
     : query;
 
-  const retrieved = await retrieveRelevantChunks(enrichedQuery, 5);
+  const retrieved = await retrieveRelevantChunks(enrichedQuery, 6);
   const contextString = retrieved
     .map((r) => `[${r.chunk.source} — ${r.chunk.sourceDetails}]\n${r.chunk.text}`)
     .join("\n\n---\n\n");
@@ -359,7 +375,10 @@ export async function generateAdviceStream(
   const promptTemplate = isDeepDive
     ? (DEEP_DIVE_PROMPTS[language] || DEEP_DIVE_PROMPTS.en)
     : (SYSTEM_PROMPTS[language] || DEFAULT_SYSTEM_PROMPT);
-  const systemPrompt = promptTemplate.replace("{CONTEXT}", contextString);
+  const baseStreamPrompt = promptTemplate.replace("{CONTEXT}", contextString);
+  const systemPrompt = conversationHistory.length > 0
+    ? baseStreamPrompt + (language === "ko" ? "\n\n중요: 이전 대화의 맥락을 고려하여 답변하세요. 부모가 추가 질문을 하면 이전 조언을 참고하고 일관성을 유지하세요." : "\n\nIMPORTANT: Consider the conversation history. When the parent asks a follow-up, reference and build on previous advice. Maintain consistency with earlier guidance.")
+    : baseStreamPrompt;
   const userMessage = childAge
     ? `My child ${childName ? `(${childName}) ` : ""}is ${childAge}. ${childNotes ? `Notes: ${childNotes}. ` : ""}${query}`
     : query;
@@ -382,8 +401,10 @@ export async function generateAdviceStream(
 
   messages.push({ role: "user", content: userMessage });
 
+  // Use gpt-4o-mini for standard queries, gpt-4o for deep dive
+  const model = isDeepDive ? "gpt-4o" : "gpt-4o-mini";
   const completion = await getOpenAI().chat.completions.create({
-    model: "gpt-4o",
+    model,
     messages,
     max_tokens: isDeepDive ? 2000 : 650,
     temperature: isDeepDive ? 0.8 : 0.7,
