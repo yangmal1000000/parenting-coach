@@ -67,9 +67,9 @@ export default function LandingPage() {
             src="/calm-parent-hero.png"
             alt="A calm mother embracing her child"
             style={{
-              width: "100%",
-              maxWidth: 280,
-              height: "auto",
+              width: 260,
+              height: 260,
+              objectFit: "cover",
               borderRadius: 20,
             }}
           />
@@ -77,9 +77,9 @@ export default function LandingPage() {
             src="/calm-parent-hero-father.png"
             alt="A calm father playing with his child"
             style={{
-              width: "100%",
-              maxWidth: 280,
-              height: "auto",
+              width: 260,
+              height: 260,
+              objectFit: "cover",
               borderRadius: 20,
             }}
           />
