@@ -20,6 +20,11 @@ function getPreferredLocale(acceptLang: string | null): string {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Don't redirect the root path — it's the landing page
+  if (pathname === "/") {
+    return NextResponse.next();
+  }
+
   // Check if the path already starts with a locale
   const hasLocale = locales.some(l => pathname === `/${l}` || pathname.startsWith(`/${l}/`));
 
