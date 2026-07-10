@@ -55,18 +55,35 @@ export default function LandingPage() {
         maxWidth: 680,
         margin: "0 auto",
       }}>
-        {/* Hero illustration */}
-        <img
-          src="/calm-parent-hero.png"
-          alt="A calm parent embracing their child"
-          style={{
-            width: "100%",
-            maxWidth: 400,
-            height: "auto",
-            borderRadius: 24,
-            marginBottom: 32,
-          }}
-        />
+        {/* Hero illustrations */}
+        <div style={{
+          display: "flex",
+          gap: 12,
+          justifyContent: "center",
+          marginBottom: 32,
+          flexWrap: "wrap",
+        }}>
+          <img
+            src="/calm-parent-hero.png"
+            alt="A calm mother embracing her child"
+            style={{
+              width: "100%",
+              maxWidth: 280,
+              height: "auto",
+              borderRadius: 20,
+            }}
+          />
+          <img
+            src="/calm-parent-hero-father.png"
+            alt="A calm father playing with his child"
+            style={{
+              width: "100%",
+              maxWidth: 280,
+              height: "auto",
+              borderRadius: 20,
+            }}
+          />
+        </div>
         <div style={{
           display: "inline-block",
           padding: "6px 14px",
