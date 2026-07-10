@@ -41,7 +41,7 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip API routes, admin, static files, public assets, etc.
-    "/((?!api|admin|_next/static|_next/image|favicon.ico|manifest.json|robots.txt|sitemap.xml|icon-.*|apple-touch-icon.*|file.svg|globe.svg|next.svg|vercel.svg|window.svg).*)",
+    // Skip API, admin, Next internals, and all static file extensions in public/
+    "/((?!api|admin|_next|favicon.ico|manifest.json|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|css|js|txt|xml)|icon-.*|apple-touch-icon.*|file.svg|globe.svg|next.svg|vercel.svg|window.svg).*)",
   ],
 };
