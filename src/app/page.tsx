@@ -1,5 +1,6 @@
 import { Geist } from "next/font/google";
 import Link from "next/link";
+import { WebOnboarding } from "@/components/WebOnboarding";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
@@ -17,6 +18,8 @@ export const metadata = {
 
 export default function LandingPage() {
   return (
+    <>
+    <WebOnboarding />
     <div className={`${geist.variable} min-h-screen`} style={{
       background: "var(--bg)",
       color: "var(--text)",
@@ -66,22 +69,17 @@ export default function LandingPage() {
           <img
             src="/calm-parent-hero.png"
             alt="A calm mother embracing her child"
-            style={{
-              width: 260,
-              height: 260,
-              objectFit: "cover",
-              borderRadius: 20,
-            }}
+            style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 16 }}
+          />
+          <img
+            src="/calm-parent-community.png"
+            alt="Diverse parents in a warm community"
+            style={{ width: 280, height: 200, objectFit: "cover", borderRadius: 16 }}
           />
           <img
             src="/calm-parent-hero-father.png"
             alt="A calm father playing with his child"
-            style={{
-              width: 260,
-              height: 260,
-              objectFit: "cover",
-              borderRadius: 20,
-            }}
+            style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 16 }}
           />
         </div>
         <div style={{
@@ -299,5 +297,6 @@ export default function LandingPage() {
         </p>
       </footer>
     </div>
+    </>
   );
 }
