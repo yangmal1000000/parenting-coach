@@ -1,4 +1,5 @@
 "use client";
+import { buildChildContext } from '@/lib/childProfile';
 
 import { useState, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
@@ -308,6 +309,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: q,
+          childContext: buildChildContext({ id: "web", name: profile.name, ageLabel: profile.age, temperament: [], conditions: [], notes: profile.notes, createdAt: 0 }),
           childName: profile.name || undefined,
           childAge: profile.age || undefined,
           childNotes: profile.notes || undefined,
