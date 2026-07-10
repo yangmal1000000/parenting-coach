@@ -11,6 +11,7 @@ export const metadata = {
     description: "Get practical, research-backed parenting advice in seconds. Free.",
     type: "website",
     url: "https://parenting-coach-two.vercel.app",
+    images: ["/calm-parent-hero.png"],
   },
 };
 
@@ -50,10 +51,22 @@ export default function LandingPage() {
       {/* Hero */}
       <section style={{
         textAlign: "center",
-        padding: "80px 24px 60px",
+        padding: "60px 24px 60px",
         maxWidth: 680,
         margin: "0 auto",
       }}>
+        {/* Hero illustration */}
+        <img
+          src="/calm-parent-hero.png"
+          alt="A calm parent embracing their child"
+          style={{
+            width: "100%",
+            maxWidth: 400,
+            height: "auto",
+            borderRadius: 24,
+            marginBottom: 32,
+          }}
+        />
         <div style={{
           display: "inline-block",
           padding: "6px 14px",
