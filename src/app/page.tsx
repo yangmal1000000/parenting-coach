@@ -1,6 +1,7 @@
 import { Geist } from "next/font/google";
 import Link from "next/link";
 import { WebOnboarding } from "@/components/WebOnboarding";
+import ScrollGrowLogo from "@/components/ScrollGrowLogo";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
@@ -78,6 +79,7 @@ export default function LandingPage() {
   return (
     <>
     <WebOnboarding />
+    <ScrollGrowLogo />
     <div className={`${geist.variable} min-h-screen`} style={{
       background: "var(--bg)",
       color: "var(--text)",
@@ -93,7 +95,7 @@ export default function LandingPage() {
         margin: "0 auto",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 22 }}>🌿</span>
+          <img src="/logo/logo-original.jpg" alt="Calm Parent logo" style={{ height: 28, width: "auto", borderRadius: 4 }} />
           <span style={{ fontWeight: 600, fontSize: 17, letterSpacing: -0.3 }}>Calm Parent</span>
         </div>
         <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
@@ -737,7 +739,7 @@ export default function LandingPage() {
       }}>
         <div style={{ marginBottom: 16 }}>
           <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 18 }}>🌿</span>
+            <img src="/logo/logo-original.jpg" alt="Calm Parent logo" style={{ height: 18, width: "auto", borderRadius: 3 }} />
             <span style={{ fontWeight: 600, fontSize: 15, color: "var(--text)" }}>Calm Parent</span>
           </Link>
         </div>
