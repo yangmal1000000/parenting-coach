@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: topic.metaTitle,
       description: topic.metaDescription,
       type: "article",
-      url: `https://parenting-coach-two.vercel.app/learn/${topic.slug}`,
-      images: ["/calm-parent-hero.png"],
+      url: `https://parentkin.com/learn/${topic.slug}`,
+      images: ["/parentkin-hero.png"],
     },
   };
 }
@@ -83,7 +83,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
       }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <span style={{ fontSize: 22 }}>🌿</span>
-          <span style={{ fontWeight: 600, fontSize: 17, color: "var(--text)", letterSpacing: -0.3 }}>Calm Parent</span>
+          <span style={{ fontWeight: 600, fontSize: 17, color: "var(--text)", letterSpacing: -0.3 }}>ParentKin</span>
         </Link>
         <Link href="/en" style={{
           padding: "8px 20px",
@@ -307,10 +307,10 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
         textAlign: "center",
       }}>
         <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>
-          🌿 Calm Parent — Educational guidance, not medical advice.
+          🌿 ParentKin — Educational guidance, not medical advice.
         </p>
         <p style={{ fontSize: 11, color: "var(--text-muted)", opacity: 0.6 }}>
-          <Link href="/privacy" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Privacy Policy</Link> · <Link href="/learn" style={{ color: "var(--text-muted)", textDecoration: "none" }}>All guides</Link> · © 2026 Calm Parent.
+          <Link href="/privacy" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Privacy Policy</Link> · <Link href="/learn" style={{ color: "var(--text-muted)", textDecoration: "none" }}>All guides</Link> · © 2026 ParentKin.
         </p>
       </footer>
     </div>

@@ -745,7 +745,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                         <p style={{ color: "var(--text-muted)" }}>{t.cmpSourcesGeneric}</p>
                       </div>
                       <div>
-                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsCalmParent}</p>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsApp}</p>
                         <p style={{ color: "var(--text-muted)" }}>{t.cmpSourcesCalm}</p>
                       </div>
                     </div>
@@ -759,7 +759,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                         <p style={{ color: "var(--text-muted)" }}>{t.cmpStructureGeneric}</p>
                       </div>
                       <div>
-                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsCalmParent}</p>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsApp}</p>
                         <p style={{ color: "var(--text-muted)" }}>{t.cmpStructureCalm}</p>
                       </div>
                     </div>
@@ -773,7 +773,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                         <p style={{ color: "var(--text-muted)" }}>{t.cmpHallucinationGeneric}</p>
                       </div>
                       <div>
-                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsCalmParent}</p>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsApp}</p>
                         <p style={{ color: "var(--text-muted)" }}>{t.cmpHallucinationCalm}</p>
                       </div>
                     </div>
@@ -787,7 +787,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                         <p style={{ color: "var(--text-muted)" }}>{t.cmpSafetyGeneric}</p>
                       </div>
                       <div>
-                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsCalmParent}</p>
+                        <p className="font-medium mb-0.5" style={{ color: "var(--emerald-700)" }}>{t.vsApp}</p>
                         <p style={{ color: "var(--text-muted)" }}>{t.cmpSafetyCalm}</p>
                       </div>
                     </div>

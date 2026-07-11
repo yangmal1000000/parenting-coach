@@ -1,4 +1,4 @@
-# Korean ASO Metadata — Calm Parent / 다독
+# Korean ASO Metadata — ParentKin / 다독
 
 ## App Name (30 char max)
 다독 - AI 육아 코치
@@ -56,7 +56,7 @@
 다독은 영국에서 개발된 AI 육아 코치입니다. 
 모든 조언은 실제 출판된 육아 전문서를 기반으로 합니다.
 
-문의: help@calmparent.app
+문의: help@parentkin.com
 
 ## Keywords (100 char max, comma separated)
 육아,아이,육아코치,육아조언,아이교육,태교,신생아,유아,초등,사춘기,태어,분유,수면,밥,떼쓰기,성장,발달,부모,맘,아빠
@@ -66,7 +66,7 @@
 ## English ASO Metadata (for reference)
 
 ### App Name
-Calm Parent — AI Parenting Coach
+ParentKin — AI Parenting Coach
 
 ### Short Description
 Evidence-based AI parenting coach. Real books, real advice, 24/7.

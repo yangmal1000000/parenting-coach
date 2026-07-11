@@ -6,29 +6,29 @@ import ScrollGrowLogo from "@/components/ScrollGrowLogo";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata = {
-  title: "Calm Parent — AI Parenting Coach for Ages 1-8",
+  title: "ParentKin — AI Parenting Coach for Ages 1-8",
   description: "Get practical, research-backed parenting advice for toddlers and young children. Tantrums, sleep, picky eating, behavior — grounded in 1,300+ sources. Free.",
   openGraph: {
-    title: "Calm Parent — AI Parenting Coach for Ages 1-8",
+    title: "ParentKin — AI Parenting Coach for Ages 1-8",
     description: "Get practical, research-backed parenting advice for toddlers and young children. Free.",
     type: "website",
-    url: "https://parenting-coach-two.vercel.app",
-    images: ["/calm-parent-hero.png"],
+    url: "https://parentkin.com",
+    images: ["/parentkin-hero.png"],
   },
 };
 
 const FAQS = [
   {
-    q: "Is Calm Parent free?",
+    q: "Is ParentKin free?",
     a: "Yes — completely free. No subscription, no ads, no paywalls. The web app is free to use right now, and the mobile app will also be free."
   },
   {
     q: "Is this advice medically reviewed?",
-    a: "Calm Parent provides educational guidance drawn from published parenting books and research. It is not a substitute for professional medical advice. Always consult your pediatrician for your child's specific needs."
+    a: "ParentKin provides educational guidance drawn from published parenting books and research. It is not a substitute for professional medical advice. Always consult your pediatrician for your child's specific needs."
   },
   {
     q: "How is this different from asking ChatGPT?",
-    a: "Calm Parent is specifically trained on 1,300+ knowledge chunks from 15+ evidence-based parenting books. Every response cites its sources. You also get structured dos, don'ts, and the developmental psychology — not just a wall of text."
+    a: "ParentKin is specifically trained on 1,300+ knowledge chunks from 15+ evidence-based parenting books. Every response cites its sources. You also get structured dos, don'ts, and the developmental psychology — not just a wall of text."
   },
   {
     q: "Is my data private?",
@@ -95,8 +95,8 @@ export default function LandingPage() {
         margin: "0 auto",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <img src="/logo/logo-original.jpg" alt="Calm Parent logo" style={{ height: 28, width: "auto", borderRadius: 4 }} />
-          <span style={{ fontWeight: 600, fontSize: 17, letterSpacing: -0.3 }}>Calm Parent</span>
+          <img src="/logo/logo-original.jpg" alt="ParentKin logo" style={{ height: 28, width: "auto", borderRadius: 4 }} />
+          <span style={{ fontWeight: 600, fontSize: 17, letterSpacing: -0.3 }}>ParentKin</span>
         </div>
         <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
           <Link href="/learn" style={{
@@ -210,7 +210,7 @@ export default function LandingPage() {
               boxShadow: "0 20px 60px rgba(0, 0, 0, 0.12)",
             }}>
               <img
-                src="/calm-parent-hero.png"
+                src="/parentkin-hero.png"
                 alt="A calm mother embracing her child"
                 style={{
                   width: "100%",
@@ -651,7 +651,7 @@ export default function LandingPage() {
             textDecoration: "none",
             boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
           }}>
-            Try Calm Parent Free →
+            Try ParentKin Free →
           </Link>
         </div>
       </section>
@@ -739,8 +739,8 @@ export default function LandingPage() {
       }}>
         <div style={{ marginBottom: 16 }}>
           <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <img src="/logo/logo-original.jpg" alt="Calm Parent logo" style={{ height: 18, width: "auto", borderRadius: 3 }} />
-            <span style={{ fontWeight: 600, fontSize: 15, color: "var(--text)" }}>Calm Parent</span>
+            <img src="/logo/logo-original.jpg" alt="ParentKin logo" style={{ height: 18, width: "auto", borderRadius: 3 }} />
+            <span style={{ fontWeight: 600, fontSize: 15, color: "var(--text)" }}>ParentKin</span>
           </Link>
         </div>
         <div style={{ display: "flex", gap: 20, justifyContent: "center", marginBottom: 16, flexWrap: "wrap" }}>
@@ -753,7 +753,7 @@ export default function LandingPage() {
           Educational guidance, not medical advice. Always consult your pediatrician.
         </p>
         <p style={{ fontSize: 11, color: "var(--text-muted)", opacity: 0.6 }}>
-          © 2026 Calm Parent. Grounded in 1,300+ research sources.
+          © 2026 ParentKin. Grounded in 1,300+ research sources.
         </p>
       </footer>
 

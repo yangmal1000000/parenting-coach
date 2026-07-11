@@ -108,7 +108,7 @@ export interface UIStrings {
   // Comparison
   vsGeneric: string;
   vsGenericTitle: string;
-  vsCalmParent: string;
+  vsApp: string;
   // Comparison rows
   cmpSources: string;
   cmpSourcesGeneric: string;
@@ -146,7 +146,7 @@ export interface UIStrings {
 
 export const UI: Record<Language, UIStrings> = {
   en: {
-    appName: "Calm Parent",
+    appName: "ParentKin",
     whatsHappening: "What's happening?",
     speakOrType: "Speak or type — get evidence-based advice in seconds",
     tapToSpeak: "Tap to Speak",
@@ -228,7 +228,7 @@ export const UI: Record<Language, UIStrings> = {
     step4Title: "⚡ You get structured, actionable steps",
     step4Desc: "Clear DO / DON'T / WHY format with cited sources. Every time.",
     vsGeneric: "❌ Generic AI Chat",
-    vsCalmParent: "✅ Calm Parent",
+    vsApp: "✅ ParentKin",
     vsGenericTitle: "What's the difference?",
     cmpSources: "📚 Sources",
     cmpSourcesGeneric: "Trained on the whole internet — no source citation, may include blogs & opinions",
@@ -346,7 +346,7 @@ export const UI: Record<Language, UIStrings> = {
     step4Title: "⚡ 구조화된 실행 가능한 단계를 받습니다",
     step4Desc: "명확한 하세요 / 하지 마세요 / 이유 / 출처 형식. 매번 동일하게.",
     vsGeneric: "❌ 일반 AI 챗",
-    vsCalmParent: "✅ 다독",
+    vsApp: "✅ 다독",
     vsGenericTitle: "무엇이 다른가요?",
     cmpSources: "📚 출처",
     cmpSourcesGeneric: "인터넷 전체로 학습 — 출처 없음, 블로그나 개인 의견 포함 가능",

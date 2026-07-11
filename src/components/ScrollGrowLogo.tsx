@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * ScrollGrowLogo
- * Fixed-position background watermark of the Calm Parent logo.
+ * Fixed-position background watermark of the ParentKin logo.
  * Grows and slightly fades as the user scrolls — like a plant growing from the hand.
  * Sits behind all content (zIndex: -1), pointer-events: none.
  */

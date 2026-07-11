@@ -2,13 +2,13 @@ import Link from "next/link";
 import { LEARN_TOPICS } from "@/lib/learn-topics";
 
 export const metadata = {
-  title: "Learn — Evidence-Based Parenting Guides | Calm Parent",
+  title: "Learn — Evidence-Based Parenting Guides | ParentKin",
   description: "Practical, research-backed parenting guides. Strategies for tantrums, sleep, eating, behavior, sibling conflict, screen time, and more.",
   openGraph: {
-    title: "Learn — Evidence-Based Parenting Guides | Calm Parent",
+    title: "Learn — Evidence-Based Parenting Guides | ParentKin",
     description: "Practical, research-backed parenting guides for every challenge.",
     type: "website",
-    url: "https://parenting-coach-two.vercel.app/learn",
+    url: "https://parentkin.com/learn",
   },
 };
 
@@ -30,7 +30,7 @@ export default function LearnHubPage() {
       }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
           <span style={{ fontSize: 22 }}>🌿</span>
-          <span style={{ fontWeight: 600, fontSize: 17, color: "var(--text)", letterSpacing: -0.3 }}>Calm Parent</span>
+          <span style={{ fontWeight: 600, fontSize: 17, color: "var(--text)", letterSpacing: -0.3 }}>ParentKin</span>
         </Link>
         <Link href="/en" style={{
           padding: "8px 20px",
@@ -163,7 +163,7 @@ export default function LearnHubPage() {
           fontWeight: 600,
           textDecoration: "none",
         }}>
-          Try Calm Parent Free →
+          Try ParentKin Free →
         </Link>
       </section>
 
@@ -174,10 +174,10 @@ export default function LearnHubPage() {
         textAlign: "center",
       }}>
         <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>
-          🌿 Calm Parent — Educational guidance, not medical advice.
+          🌿 ParentKin — Educational guidance, not medical advice.
         </p>
         <p style={{ fontSize: 11, color: "var(--text-muted)", opacity: 0.6 }}>
-          <Link href="/privacy" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Privacy Policy</Link> · © 2026 Calm Parent.
+          <Link href="/privacy" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Privacy Policy</Link> · © 2026 ParentKin.
         </p>
       </footer>
     </div>

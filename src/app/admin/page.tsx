@@ -116,7 +116,7 @@ export default function AdminPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">📊 Calm Parent — Dashboard</h1>
+          <h1 className="text-2xl font-bold">📊 ParentKin — Dashboard</h1>
           <div className="flex gap-2">
             {[1, 7, 30].map(d => (
               <button

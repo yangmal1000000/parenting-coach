@@ -31,7 +31,7 @@ export function CtaBlock({ variant = "mid" }: { variant?: "mid" | "end" }) {
           fontWeight: 600,
           textDecoration: "none",
         }}>
-          Try Calm Parent Free →
+          Try ParentKin Free →
         </Link>
       </div>
     );
@@ -67,7 +67,7 @@ export function CtaBlock({ variant = "mid" }: { variant?: "mid" | "end" }) {
         fontWeight: 700,
         textDecoration: "none",
       }}>
-        Try Calm Parent Free →
+        Try ParentKin Free →
       </Link>
     </div>
   );
@@ -209,13 +209,13 @@ export function ArticleSchema({ topic, faqs }: { topic: LearnTopic; faqs: { q: s
     "@type": "Article",
     headline: topic.h1,
     description: topic.metaDescription,
-    author: { "@type": "Organization", name: "Calm Parent" },
+    author: { "@type": "Organization", name: "ParentKin" },
     publisher: {
       "@type": "Organization",
-      name: "Calm Parent",
-      url: "https://parenting-coach-two.vercel.app",
+      name: "ParentKin",
+      url: "https://parentkin.com",
     },
-    mainEntityOfPage: `https://parenting-coach-two.vercel.app/learn/${topic.slug}`,
+    mainEntityOfPage: `https://parentkin.com/learn/${topic.slug}`,
   };
 
   const faqSchema = {
@@ -232,9 +232,9 @@ export function ArticleSchema({ topic, faqs }: { topic: LearnTopic; faqs: { q: s
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://parenting-coach-two.vercel.app" },
-      { "@type": "ListItem", position: 2, name: "Learn", item: "https://parenting-coach-two.vercel.app/learn" },
-      { "@type": "ListItem", position: 3, name: topic.title, item: `https://parenting-coach-two.vercel.app/learn/${topic.slug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://parentkin.com" },
+      { "@type": "ListItem", position: 2, name: "Learn", item: "https://parentkin.com/learn" },
+      { "@type": "ListItem", position: 3, name: topic.title, item: `https://parentkin.com/learn/${topic.slug}` },
     ],
   };
 

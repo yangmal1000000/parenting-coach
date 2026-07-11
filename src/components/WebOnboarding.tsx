@@ -9,7 +9,7 @@ const STORAGE_KEY = "pc_onboarded";
 const SLIDES = [
   {
     emoji: "🌿",
-    title: "Welcome to Calm Parent",
+    title: "Welcome to ParentKin",
     body: "Evidence-based parenting support in your pocket. Grounded in 1,300+ research sources.",
   },
   {
@@ -121,7 +121,7 @@ export function WebOnboarding() {
             {/* Hero image on first slide */}
             {step === 0 && (
               <img
-                src="/calm-parent-community.png"
+                src="/parentkin-community.png"
                 alt="Diverse parents community"
                 style={{
                   width: "100%",

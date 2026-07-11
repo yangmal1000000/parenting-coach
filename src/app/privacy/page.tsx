@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Privacy Policy — Calm Parent",
-  description: "How Calm Parent handles your data.",
+  title: "Privacy Policy — ParentKin",
+  description: "How ParentKin handles your data.",
 };
 
 export default function PrivacyPage() {
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
         <section style={{ marginBottom: 28 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Overview</h2>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-muted)" }}>
-            Calm Parent is an AI-powered parenting coach. We take your privacy seriously.
+            ParentKin is an AI-powered parenting coach. We take your privacy seriously.
             This policy explains what data we collect, how we use it, and your rights.
           </p>
         </section>
@@ -86,7 +86,7 @@ export default function PrivacyPage() {
         <section style={{ marginBottom: 28 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Children&apos;s Privacy</h2>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-muted)" }}>
-            Calm Parent is designed for parents and caregivers, not children. We do not knowingly
+            ParentKin is designed for parents and caregivers, not children. We do not knowingly
             collect data directly from children under 13. The child profile information is provided
             by the parent for the purpose of receiving parenting advice.
           </p>
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
         <section style={{ marginBottom: 28 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Educational Disclaimer</h2>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-muted)" }}>
-            Calm Parent provides educational guidance, not medical advice. Always consult your
+            ParentKin provides educational guidance, not medical advice. Always consult your
             pediatrician or a qualified professional for concerns about your child&apos;s health or development.
           </p>
         </section>
@@ -103,12 +103,12 @@ export default function PrivacyPage() {
         <section style={{ marginBottom: 28 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Contact</h2>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-muted)" }}>
-            Questions about privacy? Email us at <a href="mailto:support@calmparent.app" style={{ color: "var(--primary)" }}>support@calmparent.app</a>
+            Questions about privacy? Email us at <a href="mailto:support@parentkin.com" style={{ color: "var(--primary)" }}>support@parentkin.com</a>
           </p>
         </section>
 
         <p style={{ fontSize: 13, color: "var(--text-muted)", opacity: 0.6, marginTop: 40 }}>
-          © 2026 Calm Parent. All rights reserved.
+          © 2026 ParentKin. All rights reserved.
         </p>
       </div>
     </div>
