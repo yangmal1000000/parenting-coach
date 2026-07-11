@@ -25,6 +25,16 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Don't redirect /learn and its sub-pages — these are standalone SEO pages
+  if (pathname === "/learn" || pathname.startsWith("/learn/")) {
+    return NextResponse.next();
+  }
+
+  // Don't redirect /privacy — standalone page
+  if (pathname === "/privacy") {
+    return NextResponse.next();
+  }
+
   // Check if the path already starts with a locale
   const hasLocale = locales.some(l => pathname === `/${l}` || pathname.startsWith(`/${l}/`));
 
