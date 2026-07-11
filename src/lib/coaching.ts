@@ -272,6 +272,7 @@ export interface CoachingRequest {
   childName?: string;
   childAge?: string;
   childNotes?: string;
+  childContext?: string;  // structured context from childProfile.buildChildContext()
   language?: Language;
   userId?: string;
   deepDive?: boolean;
@@ -288,11 +289,17 @@ export interface CoachingResponse {
 export async function generateAdvice(
   request: CoachingRequest
 ): Promise<CoachingResponse> {
-  const { query, childName, childAge, childNotes, language = "en", conversationHistory = [] } = request;
+  const { query, childName, childAge, childNotes, childContext, language = "en", conversationHistory = [] } = request;
+
+  // Use structured childContext if available, otherwise build from individual fields
+  const childInfo = childContext
+    || (childAge
+      ? `Child: ${childName || "the child"}. Age: ${childAge}${childNotes ? `. Additional context: ${childNotes}` : ""}`
+      : "");
 
   // Build enriched query with child context
-  const enrichedQuery = childAge
-    ? `${query} [Context: child named ${childName || "the child"} is ${childAge} old${childNotes ? `, ${childNotes}` : ""}]`
+  const enrichedQuery = childInfo
+    ? `${query} [Context: ${childInfo}]`
     : query;
 
   // RAG: retrieve relevant knowledge chunks
@@ -311,8 +318,8 @@ export async function generateAdvice(
     : basePrompt;
 
   // Build user message
-  const userMessage = childAge
-    ? `My child ${childName ? `(${childName}) ` : ""}is ${childAge}. ${childNotes ? `Notes: ${childNotes}. ` : ""}${query}`
+  const userMessage = childInfo
+    ? `${childInfo}. ${query}`
     : query;
 
   // Build conversation messages with history
@@ -360,10 +367,15 @@ export async function generateAdvice(
 export async function generateAdviceStream(
   request: CoachingRequest
 ): Promise<ReadableStream> {
-  const { query, childName, childAge, childNotes, language = "en", conversationHistory = [] } = request;
+  const { query, childName, childAge, childNotes, childContext, language = "en", conversationHistory = [] } = request;
 
-  const enrichedQuery = childAge
-    ? `${query} [Context: child named ${childName || "the child"} is ${childAge} old${childNotes ? `, ${childNotes}` : ""}]`
+  const childInfo = childContext
+    || (childAge
+      ? `Child: ${childName || "the child"}. Age: ${childAge}${childNotes ? `. Additional context: ${childNotes}` : ""}`
+      : "");
+
+  const enrichedQuery = childInfo
+    ? `${query} [Context: ${childInfo}]`
     : query;
 
   const retrieved = await retrieveRelevantChunks(enrichedQuery, 6);
@@ -379,8 +391,8 @@ export async function generateAdviceStream(
   const systemPrompt = conversationHistory.length > 0
     ? baseStreamPrompt + (language === "ko" ? "\n\n중요: 이전 대화의 맥락을 고려하여 답변하세요. 부모가 추가 질문을 하면 이전 조언을 참고하고 일관성을 유지하세요." : "\n\nIMPORTANT: Consider the conversation history. When the parent asks a follow-up, reference and build on previous advice. Maintain consistency with earlier guidance.")
     : baseStreamPrompt;
-  const userMessage = childAge
-    ? `My child ${childName ? `(${childName}) ` : ""}is ${childAge}. ${childNotes ? `Notes: ${childNotes}. ` : ""}${query}`
+  const userMessage = childInfo
+    ? `${childInfo}. ${query}`
     : query;
 
   const sources = [...new Set(retrieved.map((r) => r.chunk.source))];
