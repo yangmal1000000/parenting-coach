@@ -5,11 +5,11 @@ import { WebOnboarding } from "@/components/WebOnboarding";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata = {
-  title: "Calm Parent — Evidence-Based AI Parenting Coach",
-  description: "Get practical, research-backed parenting advice in seconds. Grounded in 1,300+ sources from 15+ expert books. Speak or type what's happening. Free.",
+  title: "Calm Parent — AI Parenting Coach for Ages 1-8",
+  description: "Get practical, research-backed parenting advice for toddlers and young children. Tantrums, sleep, picky eating, behavior — grounded in 1,300+ sources. Free.",
   openGraph: {
-    title: "Calm Parent — Evidence-Based AI Parenting Coach",
-    description: "Get practical, research-backed parenting advice in seconds. Free.",
+    title: "Calm Parent — AI Parenting Coach for Ages 1-8",
+    description: "Get practical, research-backed parenting advice for toddlers and young children. Free.",
     type: "website",
     url: "https://parenting-coach-two.vercel.app",
     images: ["/calm-parent-hero.png"],
@@ -105,7 +105,7 @@ export default function LandingPage() {
           letterSpacing: 0.3,
           textTransform: "uppercase",
         }}>
-          📚 1,300+ research sources
+          📚 1,300+ research sources · Ages 1-8
         </div>
         <h1 style={{
           fontSize: "clamp(32px, 6vw, 48px)",
@@ -114,7 +114,7 @@ export default function LandingPage() {
           lineHeight: 1.1,
           marginBottom: 20,
         }}>
-          Parenting advice that's{" "}
+          Parenting advice for ages 1-8 that's{" "}
           <span style={{ color: "var(--primary)" }}>actually grounded in research</span>
         </h1>
         <p style={{
@@ -124,7 +124,7 @@ export default function LandingPage() {
           maxWidth: 520,
           margin: "0 auto 36px",
         }}>
-          Type or speak what's happening right now. Get practical dos, don'ts, and the psychology behind why they work — in seconds.
+          Tantrums, sleep struggles, picky eating, behavior issues. Type or speak what's happening right now. Get practical dos, don'ts, and the psychology behind why they work — in seconds.
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/en" style={{
@@ -276,7 +276,7 @@ export default function LandingPage() {
           You don't have to figure it out alone
         </h2>
         <p style={{ fontSize: 16, color: "var(--text-muted)", marginBottom: 32 }}>
-          Free. Private. Available when you need it — even at 7am.
+          Free. Private. Built for parents of children ages 1-8. Available when you need it — even at 7am.
         </p>
         <Link href="/en" style={{
           display: "inline-block",
