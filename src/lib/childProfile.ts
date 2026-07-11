@@ -1,6 +1,15 @@
 // Shared child profile system — mirrors mobile childProfile.ts
 export type DevelopmentalStage = "infant" | "toddler" | "preschool" | "school" | "preteen" | "teen";
 
+export const STAGE_LABELS: Record<DevelopmentalStage, string> = {
+  infant: "👶 Infant (0-1)",
+  toddler: "🧒 Toddler (1-3)",
+  preschool: "🎨 Preschool (3-5)",
+  school: "🎒 School Age (5-11)",
+  preteen: "🧑 Preteen (11-13)",
+  teen: "👤 Teen (13+)",
+};
+
 export interface ChildProfile {
   id: string;
   name: string;

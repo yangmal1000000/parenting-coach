@@ -1,5 +1,7 @@
 "use client";
 import { buildChildContext } from '@/lib/childProfile';
+import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
+import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';
 
 import { useState, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
@@ -124,6 +126,9 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [query, setQuery] = useState("");
   const [profile, setProfile] = useState<ChildProfile>({ name: "", age: "", notes: "" });
   const [profileSaved, setProfileSaved] = useState(false);
+  const [webChildren, setWebChildren] = useState<any[]>([]);
+  const [activeChildId, setActiveChildId] = useState<string | null>(null);
+  const [editingChild, setEditingChild] = useState<any>(null);
 
   // Age-filtered topics based on child profile
   const childAgeYears = parseAgeYears(profile.age);
@@ -170,6 +175,20 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   useEffect(() => {
     const savedProfile = loadFromStorage<ChildProfile | null>("pc_profile", null);
     if (savedProfile) { setProfile(savedProfile); setProfileSaved(true); }
+    // Load children
+    const savedChildren = loadFromStorage<any[]>("pc_children", []);
+    if (savedChildren.length > 0) {
+      setWebChildren(savedChildren);
+      const savedActive = loadFromStorage<string | null>("pc_active_child", null);
+      setActiveChildId(savedActive || savedChildren[0]?.id || null);
+    } else if (savedProfile && (savedProfile.name || savedProfile.age)) {
+      // Migrate old profile
+      const migrated = { id: `child_${Date.now()}`, name: savedProfile.name, ageLabel: savedProfile.age, temperament: [], conditions: [], notes: savedProfile.notes, createdAt: Date.now() };
+      setWebChildren([migrated]);
+      setActiveChildId(migrated.id);
+      saveToStorage("pc_children", [migrated]);
+      saveToStorage("pc_active_child", migrated.id);
+    }
     const savedSessions = loadFromStorage<Session[]>("pc_sessions", []);
     setSessions(savedSessions);
     const onboarded = loadFromStorage("pc_onboarded", false);
@@ -309,9 +328,12 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: q,
-          childContext: buildChildContext({ id: "web", name: profile.name, ageLabel: profile.age, temperament: [], conditions: [], notes: profile.notes, createdAt: 0 }),
-          childName: profile.name || undefined,
-          childAge: profile.age || undefined,
+          childContext: (() => {
+            const ac = webChildren.find(c => c.id === activeChildId);
+            return ac ? buildChildContext(ac) : buildChildContext({ id: "web", name: profile.name, ageLabel: profile.age, temperament: [], conditions: [], notes: profile.notes, createdAt: 0 });
+          })(),
+          childName: (() => { const ac = webChildren.find(c => c.id === activeChildId); return ac?.name || profile.name || undefined; })(),
+          childAge: (() => { const ac = webChildren.find(c => c.id === activeChildId); return (ac ? (calcAge(ac.birthDate)?.label || ac.ageLabel) : profile.age) || undefined; })(),
           childNotes: profile.notes || undefined,
           language: lang,
           deepDive,
@@ -837,11 +859,17 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           <>
             {/* Profile chip + streak */}
             <div className="flex items-center gap-2 mb-4 text-xs flex-wrap" style={{ color: "var(--text-muted)" }}>
-              {profileSaved && profile.name && (
-                <span className="px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                  👶 {profile.name}, {profile.age}
-                </span>
-              )}
+              {(() => {
+                const ac = webChildren.find(c => c.id === activeChildId);
+                const name = ac?.name || (profileSaved ? profile.name : "");
+                const age = ac ? (calcAge(ac.birthDate)?.label || ac.ageLabel) : profile.age;
+                if (!name) return null;
+                return (
+                  <span className="px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                    👶 {name}, {age}
+                  </span>
+                );
+              })()}
               {currentStreak.count >= 2 && (
                 <span className="px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)" }}>
                   🔥 {currentStreak.count} {lang === "ko" ? "일 연속" : "day streak"}
@@ -1363,18 +1391,153 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               </div>
             )}
 
-            <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text)" }}>{t.childProfile}</h2>
-            <div className="rounded-2xl p-5 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-              <label className="text-xs font-medium mb-1 block" style={{ color: "var(--text-muted)" }}>{t.childName}</label>
-              <input value={profile.name} onChange={e => { setProfile({...profile, name: e.target.value}); setProfileSaved(false); }} placeholder={lang === "ko" ? "예: 민지" : "e.g., Theo"} className="w-full px-3 py-2.5 rounded-xl text-sm mb-3 focus:outline-none" style={{ border: "1px solid var(--border)" }} />
-              <label className="text-xs font-medium mb-1 block" style={{ color: "var(--text-muted)" }}>{t.childAge}</label>
-              <input value={profile.age} onChange={e => { setProfile({...profile, age: e.target.value}); setProfileSaved(false); }} placeholder={lang === "ko" ? "예: 3살" : "e.g., 3 years"} className="w-full px-3 py-2.5 rounded-xl text-sm mb-3 focus:outline-none" style={{ border: "1px solid var(--border)" }} />
-              <label className="text-xs font-medium mb-1 block" style={{ color: "var(--text-muted)" }}>{t.childNotes}</label>
-              <input value={profile.notes} onChange={e => { setProfile({...profile, notes: e.target.value}); setProfileSaved(false); }} placeholder={t.childNotesPlaceholder} className="w-full px-3 py-2.5 rounded-xl text-sm mb-3 focus:outline-none" style={{ border: "1px solid var(--border)" }} />
-              <button onClick={saveProfile} className="w-full py-2.5 rounded-xl text-white font-medium text-sm" style={{ background: "var(--primary)" }}>
-                {profileSaved ? t.profileSaved : t.saveProfile}
-              </button>
-            </div>
+            <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text)" }}>{lang === "ko" ? "👶 아이 프로필" : "👶 Children"}</h2>
+
+            {/* Child list */}
+            {!editingChild && (
+              <div className="space-y-2 mb-4">
+                {webChildren.map((child) => {
+                  const age = calcAge(child.birthDate);
+                  const stage = getStage(child.birthDate, child.ageLabel);
+                  return (
+                    <button key={child.id} onClick={() => setEditingChild({ ...child })}
+                      className="w-full text-left rounded-2xl p-4 transition-colors"
+                      style={{
+                        background: activeChildId === child.id ? "var(--emerald-50)" : "var(--surface)",
+                        border: `1px solid ${activeChildId === child.id ? "var(--success)" : "var(--border)"}`,
+                      }}>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{child.name || "Unnamed"}</p>
+                          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                            {age?.label || child.ageLabel || "—"}{stage ? ` · ${STAGE_LABELS[stage]}` : ""}
+                          </p>
+                          {child.temperament?.length > 0 && (
+                            <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>{child.temperament.join(", ")}</p>
+                          )}
+                        </div>
+                        {activeChildId === child.id && <span className="text-xs font-semibold" style={{ color: "var(--primary)" }}>● ACTIVE</span>}
+                      </div>
+                    </button>
+                  );
+                })}
+                <button onClick={() => setEditingChild(createBlankChild())}
+                  className="w-full rounded-2xl py-3 text-sm font-semibold transition-colors"
+                  style={{ border: `2px dashed var(--success)`, background: "var(--emerald-50)", color: "var(--primary)" }}>
+                  {lang === "ko" ? "+ 아이 추가" : "+ Add Child"}
+                </button>
+              </div>
+            )}
+
+            {/* Edit/Add child form */}
+            {editingChild && (
+              <div className="rounded-2xl p-5 mb-4 space-y-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                <label className="text-xs font-medium block" style={{ color: "var(--text-muted)" }}>{t.childName}</label>
+                <input value={editingChild.name || ""} onChange={e => setEditingChild({...editingChild, name: e.target.value})}
+                  placeholder={lang === "ko" ? "예: 민지" : "e.g., Theo"}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none" style={{ border: "1px solid var(--border)" }} />
+
+                <label className="text-xs font-medium block" style={{ color: "var(--text-muted)" }}>{lang === "ko" ? "생년월일 (선택)" : "Birth Date (optional)"}</label>
+                <input type="date" value={editingChild.birthDate || ""} onChange={e => setEditingChild({...editingChild, birthDate: e.target.value})}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none" style={{ border: "1px solid var(--border)" }} />
+                {editingChild.birthDate && (
+                  <p className="text-xs" style={{ color: "var(--primary)" }}>{calcAge(editingChild.birthDate)?.label}{getStage(editingChild.birthDate) ? ` · ${STAGE_LABELS[getStage(editingChild.birthDate)!]}` : ""}</p>
+                )}
+
+                {!editingChild.birthDate && (
+                  <>
+                    <label className="text-xs font-medium block" style={{ color: "var(--text-muted)" }}>{lang === "ko" ? "나이" : "Age"}</label>
+                    <input value={editingChild.ageLabel || ""} onChange={e => setEditingChild({...editingChild, ageLabel: e.target.value})}
+                      placeholder={lang === "ko" ? "예: 3살" : "e.g., 3 years"}
+                      className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none" style={{ border: "1px solid var(--border)" }} />
+                  </>
+                )}
+
+                {/* Temperament tags */}
+                <label className="text-xs font-medium block mt-2" style={{ color: "var(--text-muted)" }}>{lang === "ko" ? "성향" : "Temperament"}</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {TEMPERAMENT_TAGS.map(tag => {
+                    const sel = editingChild.temperament?.includes(tag.id);
+                    return (
+                      <button key={tag.id} onClick={() => {
+                        const tags = editingChild.temperament || [];
+                        setEditingChild({...editingChild, temperament: sel ? tags.filter((t: string) => t !== tag.id) : [...tags, tag.id]});
+                      }}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                        style={{ background: sel ? "var(--primary)" : "transparent", color: sel ? "#fff" : "var(--text)", border: `1px solid ${sel ? "var(--primary)" : "var(--border)"}` }}>
+                        {tag.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Conditions */}
+                <label className="text-xs font-medium block mt-2" style={{ color: "var(--text-muted)" }}>{lang === "ko" ? "관련 상황 (선택)" : "Conditions (optional)"}</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {CONDITION_TAGS.map(tag => {
+                    const sel = editingChild.conditions?.includes(tag.id);
+                    return (
+                      <button key={tag.id} onClick={() => {
+                        const tags = editingChild.conditions || [];
+                        setEditingChild({...editingChild, conditions: sel ? tags.filter((t: string) => t !== tag.id) : [...tags, tag.id]});
+                      }}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                        style={{ background: sel ? "var(--primary)" : "transparent", color: sel ? "#fff" : "var(--text)", border: `1px solid ${sel ? "var(--primary)" : "var(--border)"}` }}>
+                        {tag.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <label className="text-xs font-medium block mt-2" style={{ color: "var(--text-muted)" }}>{t.childNotes}</label>
+                <input value={editingChild.notes || ""} onChange={e => setEditingChild({...editingChild, notes: e.target.value})}
+                  placeholder={t.childNotesPlaceholder}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none" style={{ border: "1px solid var(--border)" }} />
+
+                <div className="flex gap-2 pt-2">
+                  <button onClick={() => {
+                    const exists = webChildren.find(c => c.id === editingChild.id);
+                    let updated;
+                    if (exists) {
+                      updated = webChildren.map(c => c.id === editingChild.id ? editingChild : c);
+                    } else {
+                      updated = [...webChildren, editingChild];
+                    }
+                    setWebChildren(updated);
+                    saveToStorage("pc_children", updated);
+                    if (!activeChildId && updated.length === 1) {
+                      setActiveChildId(editingChild.id);
+                      saveToStorage("pc_active_child", editingChild.id);
+                    }
+                    setEditingChild(null);
+                  }} className="flex-1 py-2.5 rounded-xl text-white font-medium text-sm" style={{ background: "var(--primary)" }}>
+                    {lang === "ko" ? "저장" : "Save"}
+                  </button>
+                  {editingChild.id !== activeChildId && webChildren.find(c => c.id === editingChild.id) && (
+                    <button onClick={() => { setActiveChildId(editingChild.id); saveToStorage("pc_active_child", editingChild.id); }} className="px-4 py-2.5 rounded-xl text-sm font-medium" style={{ border: "1px solid var(--success)", background: "var(--emerald-50)", color: "var(--primary)" }}>
+                      Set Active
+                    </button>
+                  )}
+                </div>
+                {webChildren.find(c => c.id === editingChild.id) && (
+                  <button onClick={() => {
+                    const updated = webChildren.filter(c => c.id !== editingChild.id);
+                    setWebChildren(updated);
+                    saveToStorage("pc_children", updated);
+                    if (activeChildId === editingChild.id) {
+                      setActiveChildId(updated[0]?.id || null);
+                      saveToStorage("pc_active_child", updated[0]?.id || null);
+                    }
+                    setEditingChild(null);
+                  }} className="w-full py-2 text-xs" style={{ color: "var(--error)" }}>
+                    {lang === "ko" ? "🗑 삭제" : "🗑 Delete Child"}
+                  </button>
+                )}
+                <button onClick={() => setEditingChild(null)} className="w-full py-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                  {lang === "ko" ? "취소" : "Cancel"}
+                </button>
+              </div>
+            )}
 
             {/* Topic Browser */}
             <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>{t.browseTopics}</h3>
