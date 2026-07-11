@@ -258,7 +258,7 @@ export default function LandingPage() {
       {/* Final CTA */}
       <section style={{
         textAlign: "center",
-        padding: "60px 24px 80px",
+        padding: "60px 24px 40px",
         maxWidth: 600,
         margin: "0 auto",
       }}>
@@ -283,6 +283,48 @@ export default function LandingPage() {
         </Link>
       </section>
 
+      {/* Email capture */}
+      <section style={{
+        textAlign: "center",
+        padding: "20px 24px 60px",
+        maxWidth: 500,
+        margin: "0 auto",
+      }}>
+        <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 12 }}>
+          📬 Get notified about the mobile app launch
+        </p>
+        <form action="https://formspree.io/f/xyzplaceholder" method="POST" style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+          <input
+            type="email"
+            name="email"
+            placeholder="your@email.com"
+            required
+            style={{
+              padding: "12px 16px",
+              borderRadius: 999,
+              border: "1px solid var(--border)",
+              background: "var(--surface)",
+              color: "var(--text)",
+              fontSize: 14,
+              minWidth: 220,
+              outline: "none",
+            }}
+          />
+          <button type="submit" style={{
+            padding: "12px 20px",
+            borderRadius: 999,
+            background: "var(--primary)",
+            color: "#fff",
+            fontSize: 14,
+            fontWeight: 600,
+            border: "none",
+            cursor: "pointer",
+          }}>
+            Notify Me
+          </button>
+        </form>
+      </section>
+
       {/* Footer */}
       <footer style={{
         padding: "32px 24px",
@@ -293,7 +335,7 @@ export default function LandingPage() {
           🌿 Calm Parent — Educational guidance, not medical advice.
         </p>
         <p style={{ fontSize: 11, color: "var(--text-muted)", opacity: 0.6 }}>
-          Always consult your pediatrician. © 2026 Calm Parent.
+          <Link href="/privacy" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Privacy Policy</Link> · © 2026 Calm Parent.
         </p>
       </footer>
     </div>
