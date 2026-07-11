@@ -83,7 +83,7 @@ export async function logFeedback(log: Omit<FeedbackLog, "timestamp">) {
 // Get analytics data for admin dashboard
 export async function getAnalytics(days = 7) {
   try {
-    const [totalQueries, rawStats, recentQueries, recentFeedback, recentDetails, uniqueUsers] = await Promise.all([
+    const [totalQueries, , recentQueries, recentFeedback, recentDetails, uniqueUsers] = await Promise.all([
       redis.get<number>("total_queries") ?? 0,
       (await redis.hgetall<Record<string, number>>("stats")) ?? {},
       redis.lrange<string>("queries", 0, 199),
@@ -167,7 +167,7 @@ export async function getAnalytics(days = 7) {
     }
     let followUpUsers = 0;
     let totalUsersWithId = 0;
-    for (const [userId, times] of Object.entries(userQueryTimes)) {
+    for (const [, times] of Object.entries(userQueryTimes)) {
       if (times.length < 2) continue;
       totalUsersWithId++;
       times.sort((a, b) => a - b);

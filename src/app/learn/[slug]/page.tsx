@@ -283,7 +283,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
             ))}
           </ul>
           <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 12 }}>
-            These are general guidelines. Always consult your pediatrician for your child's specific needs.
+            These are general guidelines. Always consult your pediatrician for your child&apos;s specific needs.
           </p>
         </section>
 

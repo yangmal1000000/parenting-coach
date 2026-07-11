@@ -32,6 +32,7 @@ export function WebOnboarding() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -81,8 +82,6 @@ export function WebOnboarding() {
   const textMuted = isDark ? "#7A6E62" : "#6B5D52";
   const border = isDark ? "#3D342E" : "#EDE5DA";
   const primary = isDark ? "#6BA889" : "#4A7C6A";
-  const primaryLight = isDark ? "#1E3A30" : "#EDF6F0";
-  const primaryBorder = isDark ? "#2D5A45" : "#C5E0D2";
 
   return (
     <div style={{

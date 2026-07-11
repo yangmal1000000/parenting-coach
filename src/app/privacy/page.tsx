@@ -29,7 +29,7 @@ export default function PrivacyPage() {
           <ul style={{ fontSize: 15, lineHeight: 1.8, color: "var(--text-muted)", paddingLeft: 20 }}>
             <li><strong>Child profiles:</strong> Name/nickname, age or birth date, temperament tags, conditions, and notes you choose to add. This is stored on your device and optionally synced to your account via Supabase.</li>
             <li><strong>Questions and advice:</strong> When you ask for advice, your query and the AI-generated response are saved to your session history on your device and optionally in the cloud.</li>
-            <li><strong>Voice recordings:</strong> If you use the voice feature, audio is sent to OpenAI's Whisper API for transcription and immediately discarded. We do not store audio recordings.</li>
+            <li><strong>Voice recordings:</strong> If you use the voice feature, audio is sent to OpenAI&apos;s Whisper API for transcription and immediately discarded. We do not store audio recordings.</li>
             <li><strong>Feedback:</strong> When you rate advice (👍/👎) or provide feedback reasons, this is logged for product improvement.</li>
             <li><strong>Account info:</strong> If you sign in with Google, we store your email address and Google ID for authentication and cloud sync.</li>
           </ul>
@@ -46,10 +46,10 @@ export default function PrivacyPage() {
         </section>
 
         <section style={{ marginBottom: 28 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>What We Don't Do</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>What We Don&apos;t Do</h2>
           <ul style={{ fontSize: 15, lineHeight: 1.8, color: "var(--text-muted)", paddingLeft: 20 }}>
             <li>We do <strong>not</strong> sell your data to third parties</li>
-            <li>We do <strong>not</strong> share your child's information with advertisers</li>
+            <li>We do <strong>not</strong> share your child&apos;s information with advertisers</li>
             <li>We do <strong>not</strong> store voice audio after transcription</li>
             <li>We do <strong>not</strong> train AI models on your personal data</li>
           </ul>
@@ -58,7 +58,7 @@ export default function PrivacyPage() {
         <section style={{ marginBottom: 28 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Third-Party Services</h2>
           <ul style={{ fontSize: 15, lineHeight: 1.8, color: "var(--text-muted)", paddingLeft: 20 }}>
-            <li><strong>OpenAI:</strong> Powers the advice generation (GPT-4o) and voice transcription (Whisper). Your query text and child context are sent to OpenAI's API for processing. OpenAI does not use this data for training.</li>
+            <li><strong>OpenAI:</strong> Powers the advice generation (GPT-4o) and voice transcription (Whisper). Your query text and child context are sent to OpenAI&apos;s API for processing. OpenAI does not use this data for training.</li>
             <li><strong>Supabase:</strong> Provides authentication and cloud database for syncing profiles and sessions across devices. Data is encrypted in transit and at rest.</li>
             <li><strong>Vercel:</strong> Hosts the web application. Standard server logs are retained for 30 days.</li>
           </ul>
@@ -84,7 +84,7 @@ export default function PrivacyPage() {
         </section>
 
         <section style={{ marginBottom: 28 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Children's Privacy</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Children&apos;s Privacy</h2>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-muted)" }}>
             Calm Parent is designed for parents and caregivers, not children. We do not knowingly
             collect data directly from children under 13. The child profile information is provided
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Educational Disclaimer</h2>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-muted)" }}>
             Calm Parent provides educational guidance, not medical advice. Always consult your
-            pediatrician or a qualified professional for concerns about your child's health or development.
+            pediatrician or a qualified professional for concerns about your child&apos;s health or development.
           </p>
         </section>
 

@@ -446,7 +446,7 @@ export async function generateAdviceStream(
         controller.enqueue(
           encoder.encode(`data: ${JSON.stringify({ type: "done", advice: fullAdvice })}\n\n`)
         );
-      } catch (err) {
+      } catch {
         controller.enqueue(
           encoder.encode(`data: ${JSON.stringify({ type: "error", error: "Stream failed" })}\n\n`)
         );

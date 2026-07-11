@@ -14,12 +14,10 @@ import {
   signInWithGoogle,
   signInWithMagicLink,
   signOut,
-  getCurrentUser,
   syncProfile,
   loadProfile,
   syncSession,
   loadCloudSessions,
-  deleteCloudSession,
 } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
@@ -126,9 +124,9 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [query, setQuery] = useState("");
   const [profile, setProfile] = useState<ChildProfile>({ name: "", age: "", notes: "" });
   const [profileSaved, setProfileSaved] = useState(false);
-  const [webChildren, setWebChildren] = useState<any[]>([]);
+  const [webChildren, setWebChildren] = useState<ChildProfileFull[]>([]);
   const [activeChildId, setActiveChildId] = useState<string | null>(null);
-  const [editingChild, setEditingChild] = useState<any>(null);
+  const [editingChild, setEditingChild] = useState<ChildProfileFull | null>(null);
 
   // Age-filtered topics based on child profile
   const childAgeYears = parseAgeYears(profile.age);
@@ -144,7 +142,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [feedbackReasons, setFeedbackReasons] = useState<string[]>([]);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [streamError, setStreamError] = useState(false);
+  const [, setStreamError] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Voice
@@ -174,9 +172,10 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   // Load from storage on mount
   useEffect(() => {
     const savedProfile = loadFromStorage<ChildProfile | null>("pc_profile", null);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (savedProfile) { setProfile(savedProfile); setProfileSaved(true); }
     // Load children
-    const savedChildren = loadFromStorage<any[]>("pc_children", []);
+    const savedChildren = loadFromStorage<ChildProfileFull[]>("pc_children", []);
     if (savedChildren.length > 0) {
       setWebChildren(savedChildren);
       const savedActive = loadFromStorage<string | null>("pc_active_child", null);
@@ -234,6 +233,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
       return () => subscription.unsubscribe();
     }
     updateStreak();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Dark mode toggle
@@ -519,11 +519,6 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     setAuthMode("none");
   }
 
-  function saveProfile() {
-    saveToStorage("pc_profile", profile);
-    setProfileSaved(true);
-  }
-
   // === Sessions ===
   function rateSession(sessionId: string, rating: "up" | "down") {
     const sid = sessionId || currentSessionId;
@@ -564,10 +559,6 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     const sid = sessionId || currentSessionId;
     if (!sid) return;
     setSessions(prev => prev.map(s => s.id === sid ? { ...s, bookmarked: !s.bookmarked, _synced: false } : s));
-  }
-
-  function deleteSession(sessionId: string) {
-    setSessions(prev => prev.filter(s => s.id !== sessionId));
   }
 
   function newSession() {
@@ -1106,7 +1097,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' && query.trim()) handleSubmit(e as any); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && query.trim()) handleSubmit(e as unknown as React.FormEvent); }}
                     placeholder={lang === "ko" ? "추가 질문을 입력하세요..." : "Type a follow-up question..."}
                     className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2"
                     style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}

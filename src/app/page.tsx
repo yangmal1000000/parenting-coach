@@ -158,7 +158,7 @@ export default function LandingPage() {
               lineHeight: 1.12,
               marginBottom: 16,
             }}>
-              Parenting advice for ages 1-8 that's{" "}
+              Parenting advice for ages 1-8 that&apos;s{" "}
               <span style={{ color: "var(--primary)" }}>actually grounded in research</span>
             </h1>
             <p style={{
@@ -167,7 +167,7 @@ export default function LandingPage() {
               color: "var(--text-muted)",
               marginBottom: 28,
             }}>
-              Tantrums, sleep struggles, picky eating, behavior issues. Type or speak what's happening right now. Get practical dos, don'ts, and the psychology behind why they work — in seconds.
+              Tantrums, sleep struggles, picky eating, behavior issues. Type or speak what&apos;s happening right now. Get practical dos, don&apos;ts, and the psychology behind why they work — in seconds.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <Link href="/en" style={{
@@ -377,7 +377,7 @@ export default function LandingPage() {
           marginTop: 32,
           fontWeight: 600,
         }}>
-          You're not failing. You just need the right strategies.
+          You&apos;re not failing. You just need the right strategies.
         </p>
       </section>
 
@@ -491,17 +491,17 @@ export default function LandingPage() {
             </div>
             <div style={{ marginBottom: 24 }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>✅ Do</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6 }}>• Get down to their eye level. Try: "I see you really want the sweets. We're not buying them today."</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>• Name the feeling: "You're frustrated because you wanted them so badly."</p>
+              <p style={{ fontSize: 14, lineHeight: 1.6 }}>• Get down to their eye level. Try: &ldquo;I see you really want the sweets. We&apos;re not buying them today.&rdquo;</p>
+              <p style={{ fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>• Name the feeling: &ldquo;You&apos;re frustrated because you wanted them so badly.&rdquo;</p>
             </div>
             <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "var(--error)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>❌ Don't</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6 }}>• Don't give in to stop the crying — this teaches that meltdowns work.</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>• Don't try to reason mid-tantrum — their logical brain is offline.</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: "var(--error)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>❌ Don&apos;t</p>
+              <p style={{ fontSize: 14, lineHeight: 1.6 }}>• Don&apos;t give in to stop the crying — this teaches that meltdowns work.</p>
+              <p style={{ fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>• Don&apos;t try to reason mid-tantrum — their logical brain is offline.</p>
             </div>
             <div style={{ marginBottom: 24 }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>🧠 Why this works</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6 }}>At 3, your child's prefrontal cortex — the brain region that controls impulses — is still developing. They literally cannot regulate disappointment on their own. By naming the emotion, you activate their left hemisphere, which helps calm the emotional right brain. This is called "name it to tame it."</p>
+              <p style={{ fontSize: 14, lineHeight: 1.6 }}>At 3, your child&apos;s prefrontal cortex — the brain region that controls impulses — is still developing. They literally cannot regulate disappointment on their own. By naming the emotion, you activate their left hemisphere, which helps calm the emotional right brain. This is called &ldquo;name it to tame it.&rdquo;</p>
             </div>
             <div style={{
               paddingTop: 16,
@@ -635,7 +635,7 @@ export default function LandingPage() {
         }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>🌿</div>
           <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: -0.5, marginBottom: 12, color: "#fff" }}>
-            You don't have to figure it out alone
+            You don&apos;t have to figure it out alone
           </h2>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.85)", marginBottom: 32, maxWidth: 400, margin: "0 auto 32px" }}>
             Free. Private. Built for parents of children ages 1-8. Available when you need it — even at 7am.

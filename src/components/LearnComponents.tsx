@@ -16,10 +16,10 @@ export function CtaBlock({ variant = "mid" }: { variant?: "mid" | "end" }) {
         textAlign: "center",
       }}>
         <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>
-          Get advice tailored to your child's age and situation
+          Get advice tailored to your child&apos;s age and situation
         </p>
         <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 16 }}>
-          Type what's happening right now. Get personalised guidance in seconds.
+          Type what&apos;s happening right now. Get personalised guidance in seconds.
         </p>
         <Link href="/en" style={{
           display: "inline-block",
@@ -52,7 +52,7 @@ export function CtaBlock({ variant = "mid" }: { variant?: "mid" | "end" }) {
         marginBottom: 12,
         letterSpacing: -0.5,
       }}>
-        You don't have to figure it out alone
+        You don&apos;t have to figure it out alone
       </h2>
       <p style={{ fontSize: 16, color: "rgba(255,255,255,0.85)", marginBottom: 24 }}>
         Free. Private. Available when you need it — even at 7am.

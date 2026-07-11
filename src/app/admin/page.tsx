@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface QueryLog {
   id: string;
@@ -49,16 +49,14 @@ export default function AdminPage() {
   // Check if already authed in sessionStorage
   useEffect(() => {
     const saved = sessionStorage.getItem("admin_auth");
-    if (saved) { setAuthed(true); setPassword(saved); }
+    if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAuthed(true);
+      setPassword(saved);
+    }
   }, []);
 
-  // Fetch data when authed
-  useEffect(() => {
-    if (!authed) return;
-    fetchData(days);
-  }, [authed, days]);
-
-  async function fetchData(d: number) {
+  const fetchData = useCallback(async (d: number) => {
     setLoading(true);
     setError("");
     try {
@@ -73,7 +71,14 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [password]);
+
+  // Fetch data when authed
+  useEffect(() => {
+    if (!authed) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchData(days);
+  }, [authed, days, fetchData]);
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -277,7 +282,7 @@ export default function AdminPage() {
                         <span className="text-lg">{f.rating === "up" ? "👍" : "👎"}</span>
                         <div className="flex-1">
                           <p className="text-sm text-zinc-300">{f.query.slice(0, 100)}</p>
-                          {f.feedbackText && <p className="text-xs text-zinc-500 mt-1 italic">"{f.feedbackText}"</p>}
+                          {f.feedbackText && <p className="text-xs text-zinc-500 mt-1 italic">&ldquo;{f.feedbackText}&rdquo;</p>}
                           <p className="text-xs text-zinc-600 mt-1">{new Date(f.timestamp).toLocaleString("en-GB", { timeZone: "Europe/London" })}</p>
                         </div>
                       </div>
