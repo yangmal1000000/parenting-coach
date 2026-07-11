@@ -38,17 +38,27 @@ export default function LandingPage() {
           <span style={{ fontSize: 22 }}>🌿</span>
           <span style={{ fontWeight: 600, fontSize: 17, letterSpacing: -0.3 }}>Calm Parent</span>
         </div>
-        <Link href="/en" style={{
-          padding: "8px 20px",
-          borderRadius: 999,
-          background: "var(--primary)",
-          color: "#fff",
-          fontSize: 14,
-          fontWeight: 600,
-          textDecoration: "none",
-        }}>
-          Try Free →
-        </Link>
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          <Link href="/learn" style={{
+            fontSize: 14,
+            fontWeight: 500,
+            color: "var(--text-muted)",
+            textDecoration: "none",
+          }}>
+            Learn
+          </Link>
+          <Link href="/en" style={{
+            padding: "8px 20px",
+            borderRadius: 999,
+            background: "var(--primary)",
+            color: "#fff",
+            fontSize: 14,
+            fontWeight: 600,
+            textDecoration: "none",
+          }}>
+            Try Free →
+          </Link>
+        </div>
       </nav>
 
       {/* Hero */}
