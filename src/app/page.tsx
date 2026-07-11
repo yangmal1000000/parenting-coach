@@ -90,94 +90,134 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section style={{
-        textAlign: "center",
-        padding: "48px 24px 48px",
-        maxWidth: 680,
+        padding: "40px 24px 48px",
+        maxWidth: 900,
         margin: "0 auto",
       }}>
-        {/* Hero illustrations */}
         <div style={{
           display: "flex",
-          gap: 12,
-          justifyContent: "center",
-          marginBottom: 32,
+          gap: 40,
+          alignItems: "center",
           flexWrap: "wrap",
+          justifyContent: "center",
         }}>
-          <img
-            src="/calm-parent-hero.png"
-            alt="A calm mother embracing her child"
-            style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 16 }}
-          />
-          <img
-            src="/calm-parent-community.png"
-            alt="Diverse parents in a warm community"
-            style={{ width: 280, height: 200, objectFit: "cover", borderRadius: 16 }}
-          />
-          <img
-            src="/calm-parent-hero-father.png"
-            alt="A calm father playing with his child"
-            style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 16 }}
-          />
-        </div>
-        <div style={{
-          display: "inline-block",
-          padding: "6px 14px",
-          borderRadius: 999,
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          fontSize: 12,
-          fontWeight: 600,
-          color: "var(--text-muted)",
-          marginBottom: 24,
-          letterSpacing: 0.3,
-          textTransform: "uppercase",
-        }}>
-          📚 1,300+ research sources · Ages 1-8
-        </div>
-        <h1 style={{
-          fontSize: "clamp(32px, 6vw, 48px)",
-          fontWeight: 700,
-          letterSpacing: -1,
-          lineHeight: 1.1,
-          marginBottom: 20,
-        }}>
-          Parenting advice for ages 1-8 that's{" "}
-          <span style={{ color: "var(--primary)" }}>actually grounded in research</span>
-        </h1>
-        <p style={{
-          fontSize: 18,
-          lineHeight: 1.6,
-          color: "var(--text-muted)",
-          maxWidth: 520,
-          margin: "0 auto 36px",
-        }}>
-          Tantrums, sleep struggles, picky eating, behavior issues. Type or speak what's happening right now. Get practical dos, don'ts, and the psychology behind why they work — in seconds.
-        </p>
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/en" style={{
-            padding: "14px 32px",
-            borderRadius: 999,
-            background: "var(--primary)",
-            color: "#fff",
-            fontSize: 16,
-            fontWeight: 600,
-            textDecoration: "none",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+          {/* Left: copy */}
+          <div style={{ flex: "1 1 380px", maxWidth: 480 }}>
+            <div style={{
+              display: "inline-block",
+              padding: "6px 14px",
+              borderRadius: 999,
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              fontSize: 12,
+              fontWeight: 600,
+              color: "var(--text-muted)",
+              marginBottom: 20,
+              letterSpacing: 0.3,
+              textTransform: "uppercase",
+            }}>
+              📚 1,300+ research sources · Ages 1-8
+            </div>
+            <h1 style={{
+              fontSize: "clamp(28px, 5vw, 42px)",
+              fontWeight: 700,
+              letterSpacing: -1,
+              lineHeight: 1.15,
+              marginBottom: 16,
+            }}>
+              Parenting advice for ages 1-8 that's{" "}
+              <span style={{ color: "var(--primary)" }}>actually grounded in research</span>
+            </h1>
+            <p style={{
+              fontSize: 17,
+              lineHeight: 1.6,
+              color: "var(--text-muted)",
+              marginBottom: 28,
+            }}>
+              Tantrums, sleep struggles, picky eating, behavior issues. Type or speak what's happening right now. Get practical dos, don'ts, and the psychology behind why they work — in seconds.
+            </p>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <Link href="/en" style={{
+                padding: "14px 32px",
+                borderRadius: 999,
+                background: "var(--primary)",
+                color: "#fff",
+                fontSize: 16,
+                fontWeight: 600,
+                textDecoration: "none",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+              }}>
+                Get Advice Now →
+              </Link>
+              <Link href="/ko" style={{
+                padding: "14px 32px",
+                borderRadius: 999,
+                background: "var(--surface)",
+                color: "var(--text)",
+                fontSize: 16,
+                fontWeight: 600,
+                textDecoration: "none",
+                border: "1px solid var(--border)",
+              }}>
+                🇰🇷 한국어
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: hero image collage */}
+          <div style={{
+            flex: "1 1 300px",
+            maxWidth: 380,
+            position: "relative",
+            minHeight: 360,
           }}>
-            Get Advice Now →
-          </Link>
-          <Link href="/ko" style={{
-            padding: "14px 32px",
-            borderRadius: 999,
-            background: "var(--surface)",
-            color: "var(--text)",
-            fontSize: 16,
-            fontWeight: 600,
-            textDecoration: "none",
-            border: "1px solid var(--border)",
-          }}>
-            🇰🇷 한국어
-          </Link>
+            {/* Main image */}
+            <img
+              src="/calm-parent-hero.png"
+              alt="A calm mother embracing her child"
+              style={{
+                width: "100%",
+                maxWidth: 320,
+                height: "auto",
+                aspectRatio: "1",
+                objectFit: "cover",
+                borderRadius: 20,
+                boxShadow: "0 12px 32px rgba(0,0,0,0.12)",
+              }}
+            />
+            {/* Floating second image */}
+            <img
+              src="/calm-parent-hero-father.png"
+              alt="A calm father playing with his child"
+              style={{
+                position: "absolute",
+                bottom: -20,
+                right: -10,
+                width: 140,
+                height: 140,
+                objectFit: "cover",
+                borderRadius: 14,
+                border: "4px solid var(--bg)",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+              }}
+            />
+            {/* Floating third image */}
+            <img
+              src="/calm-parent-community.png"
+              alt="Diverse parents in a warm community"
+              style={{
+                position: "absolute",
+                top: -16,
+                right: 10,
+                width: 110,
+                height: 110,
+                objectFit: "cover",
+                borderRadius: 12,
+                border: "4px solid var(--bg)",
+                boxShadow: "0 6px 16px rgba(0,0,0,0.12)",
+              }}
+            />
+          </div>
         </div>
       </section>
 
