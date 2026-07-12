@@ -1,6 +1,7 @@
 import { Geist } from "next/font/google";
 import Link from "next/link";
 import ScrollGrowLogo from "@/components/ScrollGrowLogo";
+import { ExampleCarousel } from "@/components/ExampleCarousel";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
@@ -19,23 +20,23 @@ export const metadata = {
 const FAQS = [
   {
     q: "Is ParentKin free?",
-    a: "Yes — completely free. No subscription, no ads, no paywalls. The web app is free to use right now, and the mobile app will also be free."
+    a: "You get 5 free coaching sessions every month — no signup required. For unlimited sessions, Deep Dive reports, and cross-device sync, ParentKin Premium is £4.99/month or £39/year. The web app is free to try right now."
   },
   {
     q: "Is this advice medically reviewed?",
-    a: "ParentKin provides educational guidance drawn from published parenting books and research. It is not a substitute for professional medical advice. Always consult your pediatrician for your child's specific needs."
+    a: "ParentKin provides educational guidance drawn from published parenting books and research. It is not a substitute for professional medical advice. Always consult your pediatrician for your child&apos;s specific needs."
   },
   {
     q: "How is this different from asking ChatGPT?",
-    a: "ParentKin is specifically trained on 1,300+ knowledge chunks from 15+ evidence-based parenting books. Every response cites its sources. You also get structured dos, don'ts, and the developmental psychology — not just a wall of text."
+    a: "ParentKin is specifically trained on 1,300+ knowledge chunks from 15+ evidence-based parenting books. Every response cites its sources. You also get structured dos, don&apos;ts, and the developmental psychology — not just a wall of text."
   },
   {
     q: "Is my data private?",
-    a: "Yes. Your queries stay on your device by default. No account required. Optional cloud sync via Google sign-in if you want to access sessions across devices."
+    a: "Yes. Your queries stay on your device by default. No account required for the free tier. Premium uses optional cloud sync via Google sign-in if you want to access sessions across devices."
   },
   {
-    q: "Does it work offline?",
-    a: "The mobile app detects when you're offline and shows a status banner. You can still browse saved advice and history. New queries need an internet connection."
+    q: "What does Premium include?",
+    a: "Unlimited coaching sessions, Deep Dive personalised reports (750-word deep analysis with reflective exercises), conversation history across devices, and an ad-free experience. £4.99/month or £39/year."
   },
   {
     q: "What languages does it support?",
@@ -72,6 +73,87 @@ const SOURCES = [
   "The Explosive Child",
   "Parenting from the Inside Out",
   "Raising Good Humans",
+];
+
+const EXAMPLES = [
+  {
+    situation: "Your 3-year-old wants sweets and is screaming in the shop.",
+    dos: [
+      "Get down to their eye level. Try: \u201cI see you really want the sweets. We\u2019re not buying them today.\u201d",
+      "Name the feeling: \u201cYou\u2019re frustrated because you wanted them so badly.\u201d",
+    ],
+    donts: [
+      "Don\u2019t give in to stop the crying \u2014 this teaches that meltdowns work.",
+      "Don\u2019t try to reason mid-tantrum \u2014 their logical brain is offline.",
+    ],
+    why: "At 3, your child\u2019s prefrontal cortex \u2014 the brain region that controls impulses \u2014 is still developing. They literally cannot regulate disappointment on their own. By naming the emotion, you activate their left hemisphere, which helps calm the emotional right brain. This is called \u201cname it to tame it.\u201d",
+    source: "\u{1F4D6} The Whole-Brain Child (Siegel & Bryson), Ch. 3",
+  },
+  {
+    situation: "Your 4-year-old refuses to stay in bed and keeps coming out of their room.",
+    dos: [
+      "Use a bedtime pass \u2014 one ticket for one final request (water, hug, bathroom). After that, gently walk them back without talking.",
+      "Make bedtime earlier. Overtired kids fight sleep harder.",
+    ],
+    donts: [
+      "Don\u2019t negotiate or give long explanations at bedtime \u2014 attention rewards the behaviour.",
+      "Don\u2019t show frustration \u2014 a calm, boring return is the only effective response.",
+    ],
+    why: "The \u201cbedtime pass\u201d gives your child a sense of control within firm boundaries, reducing power struggles. Silent returns eliminate the attention reward. Research shows this combination resolves bedtime resistance in 90% of cases within a week.",
+    source: "\u{1F4D6} 1-2-3 Magic (Phelan), Ch. 7",
+  },
+  {
+    situation: "Your 5-year-old hits their younger sibling when they don\u2019t get their way.",
+    dos: [
+      "Separate them immediately and calmly: \u201cI won\u2019t let you hit. I\u2019m keeping everyone safe.\u201d",
+      "Once calm, help them name it: \u201cYou were really angry that she took your toy. What could you do next time?\u201d",
+    ],
+    donts: [
+      "Don\u2019t hit back or use physical punishment \u2014 it models the exact behaviour you\u2019re trying to stop.",
+      "Don\u2019t force apologies mid-meltdown \u2014 empathy can\u2019t be taught when the brain is in fight-or-flight.",
+    ],
+    why: "Children learn emotional regulation through co-regulation. When you stay calm during their aggression, you\u2019re literally lending them your prefrontal cortex. Over time, this builds their own capacity for self-control.",
+    source: "\u{1F4D6} No-Drama Discipline (Siegel & Bryson), Ch. 5",
+  },
+  {
+    situation: "Your 2-year-old throws food on the floor at every meal.",
+    dos: [
+      "Say calmly: \u201cFood stays on the tray.\u201d If they throw again, end the meal: \u201cMealtime is over. We\u2019ll try again later.\u201d",
+      "Give small portions \u2014 less to throw, and it gives them a sense of finishing.",
+    ],
+    donts: [
+      "Don\u2019t laugh or give big reactions \u2014 even negative attention reinforces the behaviour.",
+      "Don\u2019t force them to eat \u2014 pressure creates food battles that can last years.",
+    ],
+    why: "At 2, throwing is experimentation + cause-and-effect learning, not defiance. A calm, consistent boundary (meal ends) teaches natural consequences without power struggles. Ellyn Satter\u2019s Division of Responsibility shows that pressuring food intake backfires and increases picky eating.",
+    source: "\u{1F4D6} Raising Good Humans (Clarke-Fields), Ch. 8",
+  },
+  {
+    situation: "Every time you turn off the iPad, your 4-year-old has a meltdown.",
+    dos: [
+      "Give a 5-minute warning: \u201cTwo more episodes, then we turn it off.\u201d Use a visual timer.",
+      "Have a transition activity ready: \u201cAfter the iPad, it\u2019s Lego time! What should we build?\u201d",
+    ],
+    donts: [
+      "Don\u2019t turn it off without warning \u2014 abrupt transitions feel like betrayal to a young brain.",
+      "Don\u2019t use screen time as a reward or punishment \u2014 it makes it more emotionally charged.",
+    ],
+    why: "Young children struggle with task-switching \u2014 their brains get \u201cstuck\u201d on the high-dopamine activity. Warnings + a planned next activity help their nervous system transition. Research from the AAP shows that predictable routines reduce screen-time meltdowns by 70%.",
+    source: "\u{1F4D6} The Explosive Child (Greene), Ch. 4",
+  },
+  {
+    situation: "Your kids (ages 3 and 6) fight over every single toy.",
+    dos: [
+      "Sportscast: \u201cYou both want the truck. You\u2019re pulling on it.\u201d Let them attempt a solution before stepping in.",
+      "Use \u201ctime-sharing\u201d: \u201c3 minutes each, I\u2019ll set the timer.\u201d Give them the tool, not the solution.",
+    ],
+    donts: [
+      "Don\u2019t always intervene \u2014 children need practice negotiating, and hovering prevents skill-building.",
+      "Don\u2019t pick a \u201cwinner\u201d \u2014 \u201cWho had it first?\u201d teaches them that possession is power.",
+    ],
+    why: "Sibling conflict is developmentally normal and actually builds negotiation skills. Faber & Mazlish found that children whose parents \u201csportscast\u201d conflicts (narrate without judging) develop stronger conflict resolution skills by age 7. The goal isn\u2019t zero fights \u2014 it\u2019s productive fights.",
+    source: "\u{1F4D6} Siblings Without Rivalry (Faber & Mazlish), Ch. 3",
+  },
 ];
 
 export default function LandingPage() {
@@ -315,7 +397,7 @@ export default function LandingPage() {
             { stat: "1,300+", label: "Research sources" },
             { stat: "15+", label: "Expert books" },
             { stat: "2", label: "Languages" },
-            { stat: "100%", label: "Free" },
+            { stat: "5/mo", label: "Free sessions" },
           ].map((item) => (
             <div key={item.label} style={{ textAlign: "center" }}>
               <div style={{ fontSize: 20, fontWeight: 700, color: "var(--text)" }}>
@@ -437,7 +519,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Example card — premium treatment */}
+      {/* Example carousel */}
       <section style={{
         padding: "24px 24px 64px",
         maxWidth: 620,
@@ -459,69 +541,7 @@ export default function LandingPage() {
         }}>
           Not a wall of text. Structured, actionable guidance.
         </p>
-        <div style={{
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 24,
-          padding: 0,
-          boxShadow: "0 12px 40px rgba(0,0,0,0.06)",
-          overflow: "hidden",
-        }}>
-          {/* Header bar */}
-          <div style={{
-            padding: "14px 24px",
-            borderBottom: "1px solid var(--border)",
-            background: "var(--bg)",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}>
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#e88b7b" }} />
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#f4a340" }} />
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#7ec9a3" }} />
-            <span style={{ fontSize: 12, color: "var(--text-muted)", marginLeft: 8 }}>Example response</span>
-          </div>
-
-          <div style={{ padding: "28px" }}>
-            <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>📋 Situation</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6 }}>Your 3-year-old wants sweets and is screaming in the shop.</p>
-            </div>
-            <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>✅ Do</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6 }}>• Get down to their eye level. Try: &ldquo;I see you really want the sweets. We&apos;re not buying them today.&rdquo;</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>• Name the feeling: &ldquo;You&apos;re frustrated because you wanted them so badly.&rdquo;</p>
-            </div>
-            <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "var(--error)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>❌ Don&apos;t</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6 }}>• Don&apos;t give in to stop the crying — this teaches that meltdowns work.</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>• Don&apos;t try to reason mid-tantrum — their logical brain is offline.</p>
-            </div>
-            <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>🧠 Why this works</p>
-              <p style={{ fontSize: 14, lineHeight: 1.6 }}>At 3, your child&apos;s prefrontal cortex — the brain region that controls impulses — is still developing. They literally cannot regulate disappointment on their own. By naming the emotion, you activate their left hemisphere, which helps calm the emotional right brain. This is called &ldquo;name it to tame it.&rdquo;</p>
-            </div>
-            <div style={{
-              paddingTop: 16,
-              borderTop: "1px solid var(--border)",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}>
-              <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>📖 The Whole-Brain Child (Siegel & Bryson), Ch. 3</p>
-              <span style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: "var(--primary)",
-                background: "var(--emerald-50)",
-                padding: "4px 10px",
-                borderRadius: 999,
-              }}>
-                Cited
-              </span>
-            </div>
-          </div>
-        </div>
+        <ExampleCarousel examples={EXAMPLES} />
       </section>
 
       {/* Features */}
@@ -636,7 +656,7 @@ export default function LandingPage() {
             You don&apos;t have to figure it out alone
           </h2>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.85)", marginBottom: 32, maxWidth: 400, margin: "0 auto 32px" }}>
-            Free. Private. Built for parents of children ages 1-8. Available when you need it — even at 7am.
+            Free. Private. Built for parents of children ages 1-8. 5 free sessions every month — no signup needed.
           </p>
           <Link href="/en" style={{
             display: "inline-block",
@@ -649,7 +669,7 @@ export default function LandingPage() {
             textDecoration: "none",
             boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
           }}>
-            Try ParentKin Free →
+            Try ParentKin →
           </Link>
         </div>
       </section>
