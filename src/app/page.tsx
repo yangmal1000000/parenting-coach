@@ -94,9 +94,9 @@ export default function LandingPage() {
         maxWidth: 960,
         margin: "0 auto",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <img src="/logo/logo-original.jpg" alt="ParentKin logo" style={{ height: 28, width: "auto", borderRadius: 4 }} />
-          <span style={{ fontWeight: 600, fontSize: 17, letterSpacing: -0.3 }}>ParentKin</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <img src="/logo/parentkin-icon.jpg" alt="ParentKin logo" style={{ height: 34, width: 34, borderRadius: 8, objectFit: "cover" }} />
+          <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: -0.4, color: "var(--text)" }}>ParentKin</span>
         </div>
         <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
           <Link href="/learn" style={{
@@ -739,7 +739,7 @@ export default function LandingPage() {
       }}>
         <div style={{ marginBottom: 16 }}>
           <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <img src="/logo/logo-original.jpg" alt="ParentKin logo" style={{ height: 18, width: "auto", borderRadius: 3 }} />
+            <img src="/logo/parentkin-icon.jpg" alt="ParentKin logo" style={{ height: 24, width: 24, borderRadius: 5, objectFit: "cover" }} />
             <span style={{ fontWeight: 600, fontSize: 15, color: "var(--text)" }}>ParentKin</span>
           </Link>
         </div>

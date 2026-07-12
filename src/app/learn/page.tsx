@@ -28,9 +28,9 @@ export default function LearnHubPage() {
         maxWidth: 900,
         margin: "0 auto",
       }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-          <span style={{ fontSize: 22 }}>🌿</span>
-          <span style={{ fontWeight: 600, fontSize: 17, color: "var(--text)", letterSpacing: -0.3 }}>ParentKin</span>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+          <img src="/logo/parentkin-icon.jpg" alt="ParentKin" style={{ height: 30, width: 30, borderRadius: 6, objectFit: "cover" }} />
+          <span style={{ fontWeight: 700, fontSize: 18, color: "var(--text)", letterSpacing: -0.4 }}>ParentKin</span>
         </Link>
         <Link href="/en" style={{
           padding: "8px 20px",

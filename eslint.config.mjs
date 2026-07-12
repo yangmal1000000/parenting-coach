@@ -14,7 +14,7 @@ const eslintConfig = defineConfig([
   },
   // Landing page uses <img> intentionally for decorative images
   {
-    files: ["src/app/page.tsx", "src/components/{ScrollGrowLogo,WebOnboarding}.tsx"],
+    files: ["src/app/page.tsx", "src/app/learn/**/*.tsx", "src/components/{ScrollGrowLogo,WebOnboarding}.tsx"],
     rules: {
       "@next/next/no-img-element": "off",
     },
