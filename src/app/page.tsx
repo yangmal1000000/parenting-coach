@@ -1,6 +1,5 @@
 import { Geist } from "next/font/google";
 import Link from "next/link";
-import { WebOnboarding } from "@/components/WebOnboarding";
 import ScrollGrowLogo from "@/components/ScrollGrowLogo";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
@@ -78,7 +77,6 @@ const SOURCES = [
 export default function LandingPage() {
   return (
     <>
-    <WebOnboarding />
     <ScrollGrowLogo />
     <div className={`${geist.variable} min-h-screen`} style={{
       background: "var(--bg)",
