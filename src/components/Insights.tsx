@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import { BarChart3 } from "lucide-react";
 import type { Language } from "@/lib/i18n";
 import { TOPIC_CATEGORIES, getTopicLabel as getTopicLabelLocalized } from "@/lib/topics";
+import { detectBehaviorPatterns } from "@/lib/behaviorPatterns";
+import type { BehaviorPattern } from "@/lib/behaviorPatterns";
 
 // === Types (mirrors from page.tsx) ===
 interface Session {
@@ -65,6 +67,16 @@ export default function Insights({ sessions, lang }: InsightsProps) {
   const t = lang === "ko" ? koStrings : enStrings;
   const getTopicLabel = useTopicLabelGetter(lang);
 
+  const patterns = useMemo(() => {
+    return detectBehaviorPatterns(sessions.map(s => ({
+      id: s.id,
+      query: s.query || "",
+      topicCategory: s.topicCategory,
+      rating: s.rating,
+      createdAt: s.createdAt,
+    })));
+  }, [sessions]);
+
   const insights = useMemo(() => computeInsights(sessions), [sessions]);
 
   if (sessions.length === 0) {
@@ -123,6 +135,41 @@ export default function Insights({ sessions, lang }: InsightsProps) {
               ? t.trendImproving.replace("{this}", String(insights.thisMonth)).replace("{last}", String(insights.lastMonth))
               : t.trendIncreasing.replace("{this}", String(insights.thisMonth)).replace("{last}", String(insights.lastMonth))}
           </p>
+        </div>
+      )}
+
+      {/* AI Behavior Patterns */}
+      {patterns.length > 0 && (
+        <div className="mb-4">
+          <h3 className="text-sm font-bold mb-2 font-display flex items-center gap-1" style={{ color: "var(--text)" }}>
+            🧠 {lang === "ko" ? "행동 패턴 인사이트" : "Behavior Pattern Insights"}
+          </h3>
+          {patterns.map((p: BehaviorPattern, i: number) => {
+            const bg = p.severity === "positive" ? "#f0fdf4" : p.severity === "warning" ? "#fffbeb" : "var(--surface)";
+            const border = p.severity === "positive" ? "#86efac" : p.severity === "warning" ? "#fcd34d" : "var(--border)";
+            const titleColor = p.severity === "positive" ? "#16a34a" : p.severity === "warning" ? "#d97706" : "var(--text)";
+            return (
+              <div key={i} className="rounded-2xl p-4 mb-2" style={{ background: bg, border: `1px solid ${border}` }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl">{p.icon}</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold mb-1" style={{ color: titleColor }}>
+                      {lang === "ko" ? p.titleKo : p.titleEn}
+                    </p>
+                    <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                      {lang === "ko" ? p.descKo : p.descEn}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "var(--bg)" }}>
+                        <div className="h-full rounded-full" style={{ width: `${p.confidence * 100}%`, background: border }} />
+                      </div>
+                      <span className="text-xs" style={{ color: "var(--text-muted)" }}>{Math.round(p.confidence * 100)}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
