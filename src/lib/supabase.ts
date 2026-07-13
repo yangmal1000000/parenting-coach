@@ -60,6 +60,14 @@ export async function signInWithGoogle() {
   });
 }
 
+export async function signInWithApple() {
+  if (!supabase) return;
+  await supabase.auth.signInWithOAuth({
+    provider: "apple",
+    options: { redirectTo: window.location.origin },
+  });
+}
+
 export async function signInWithMagicLink(email: string) {
   if (!supabase) return { data: null, error: { message: "Not configured" } as { message: string } };
   const { data, error } = await supabase.auth.signInWithOtp({

@@ -72,6 +72,7 @@ export interface UIStrings {
   tabHistory: string;
   tabSaved: string;
   tabProfile: string;
+  tabInsights: string;
   // History
   recentSessions: string;
   noSessions: string;
@@ -199,6 +200,7 @@ export const UI: Record<Language, UIStrings> = {
     tabHistory: "History",
     tabSaved: "Saved",
     tabProfile: "Profile",
+    tabInsights: "Insights",
     recentSessions: "Recent Sessions",
     noSessions: "No sessions yet. Ask for advice to get started!",
     clearHistory: "Clear all history",
@@ -317,6 +319,7 @@ export const UI: Record<Language, UIStrings> = {
     tabHistory: "기록",
     tabSaved: "저장",
     tabProfile: "프로필",
+    tabInsights: "인사이트",
     recentSessions: "최근 기록",
     noSessions: "아직 기록이 없습니다. 조언을 요청해 보세요!",
     clearHistory: "기록 전체 삭제",

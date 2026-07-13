@@ -1,4 +1,5 @@
 "use client";
+import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Check, X } from 'lucide-react';
 import { buildChildContext } from '@/lib/childProfile';
 import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
 import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';
@@ -7,11 +8,16 @@ import { useState, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { TOPIC_CATEGORIES, parseAgeYears, topicsForAge } from "@/lib/topics";
 import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from "@/lib/i18n";
+import Insights from "@/components/Insights";
+import ProactiveContentCard from "@/components/ProactiveContentCard";
+import ActionPlansView from "@/components/ActionPlansView";
+import { getProactiveContent } from "@/lib/proactive";
 import {
   supabase,
   signUp,
   signIn,
   signInWithGoogle,
+  signInWithApple,
   signInWithMagicLink,
   signOut,
   syncProfile,
@@ -99,7 +105,7 @@ function saveToStorage(key: string, value: unknown) {
 }
 
 // === Tab type ===
-type Tab = "home" | "history" | "saved" | "profile";
+type Tab = "home" | "history" | "saved" | "plans" | "insights" | "profile";
 
 // === Conversation turn for follow-up memory ===
 interface ConversationTurn {
@@ -642,16 +648,20 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
       {/* Onboarding */}
       {showOnboarding && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,0.5)" }}>
-          <div className="rounded-2xl p-8 max-w-sm w-full slide-up" style={{ background: "var(--surface)" }}>
-            <div className="text-center mb-6">
-              <div className="text-5xl mb-3">🧠</div>
-              <h2 className="text-xl font-bold mb-2" style={{ color: "var(--text)" }}>{t.onboardingTitle}</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,0.6)" }}>
+          <div className="rounded-3xl p-10 max-w-sm w-full slide-up elevation-3 relative" style={{ background: "linear-gradient(135deg, var(--surface) 0%, var(--surface) 60%, rgba(91,140,123,0.04) 100%)" }}>
+            {/* Close button */}
+            <button onClick={() => { saveToStorage("pc_onboarded", true); setShowOnboarding(false); }} className="absolute top-4 right-4 p-2 rounded-lg" style={{ color: "var(--text-muted)" }}>
+              <X size={18} />
+            </button>
+            <div className="text-center mb-8">
+              <img src="/icon.png" alt="ParentKin" style={{ width: 64, height: 64, borderRadius: 16, margin: "0 auto 16px" }} />
+              <h2 className="text-2xl font-bold mb-2 font-display" style={{ color: "var(--text)" }}>{t.onboardingTitle}</h2>
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t.onboardingSubtitle}</p>
             </div>
-            <div className="space-y-3 mb-6">
+            <div className="space-y-4 mb-8">
               <div className="flex items-start gap-3">
-                <span className="text-xl">🎤</span>
+                <span className="text-xl"><Mic size={20} /></span>
                 <div><p className="text-sm font-medium" style={{ color: "var(--text)" }}>{t.onboardingSpeak}</p><p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.onboardingSpeakDesc}</p></div>
               </div>
               <div className="flex items-start gap-3">
@@ -663,9 +673,17 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 <div><p className="text-sm font-medium" style={{ color: "var(--text)" }}>{t.onboardingInstant}</p><p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.onboardingInstantDesc}</p></div>
               </div>
             </div>
-            <button onClick={completeOnboarding} className="w-full py-3 rounded-xl font-medium text-white" style={{ background: "var(--primary)" }}>
+            <button onClick={completeOnboarding} className="w-full py-3.5 rounded-xl font-medium text-white" style={{ background: "var(--primary)", boxShadow: "0 4px 20px rgba(91, 140, 123, 0.35)" }}>
               {t.getStarted}
             </button>
+            {/* Trust signals */}
+            <div className="flex items-center justify-center gap-3 mt-5 text-xs" style={{ color: "var(--text-muted)" }}>
+              <span className="flex items-center gap-1"><Check size={12} style={{ color: "var(--success)" }} /> Expert-reviewed</span>
+              <span style={{ opacity: 0.3 }}>·</span>
+              <span className="flex items-center gap-1"><Check size={12} style={{ color: "var(--success)" }} /> Science-backed</span>
+              <span style={{ opacity: 0.3 }}>·</span>
+              <span className="flex items-center gap-1"><Check size={12} style={{ color: "var(--success)" }} /> 100% Private</span>
+            </div>
           </div>
         </div>
       )}
@@ -674,7 +692,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
       {showInfo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.5)" }} onClick={() => setShowInfo(false)}>
           <div
-            className="rounded-2xl max-w-lg w-full my-8 slide-up overflow-y-auto"
+            className="rounded-2xl max-w-lg w-full my-8 slide-up overflow-y-auto elevation-3"
             style={{ background: "var(--surface)", maxHeight: "85vh" }}
             onClick={e => e.stopPropagation()}
           >
@@ -682,7 +700,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             <div className="sticky top-0 z-10 px-6 pt-6 pb-4" style={{ background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-bold mb-1" style={{ color: "var(--text)" }}>{t.howItWorksTitle}</h2>
+                  <h2 className="text-lg font-bold mb-1 font-display" style={{ color: "var(--text)" }}>{t.howItWorksTitle}</h2>
                   <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.howItWorksSubtitle}</p>
                 </div>
                 <button onClick={() => setShowInfo(false)} className="p-2 rounded-lg shrink-0" style={{ color: "var(--text-muted)" }}>✕</button>
@@ -809,33 +827,10 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
       <header className="sticky top-0 z-30 safe-top" style={{ background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <button onClick={() => { setTab("home"); newSession(); }} className="flex items-center gap-2">
-            <span className="text-xl">🧠</span>
-            <span className="font-semibold text-sm" style={{ color: "var(--text)" }}>{t.appName}</span>
+            <img src="/icon.png" alt="ParentKin" style={{ width: 32, height: 32, borderRadius: 8 }} />
+            <span className="font-semibold text-sm font-display" style={{ color: "var(--text)" }}>{t.appName}</span>
           </button>
           <div className="flex items-center gap-1">
-            {/* Telegram button */}
-            <a href="https://t.me/CalmParent1Bot" target="_blank" rel="noopener" className="p-2 rounded-lg flex items-center justify-center" style={{ color: "#0088cc" }} title="Telegram">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
-            </a>
-            {/* Info button */}
-            <button onClick={() => setShowInfo(true)} className="p-2 rounded-lg text-sm font-medium pulse-glow" style={{ color: "var(--primary)" }} title={t.howItWorks}>
-              ℹ️
-            </button>
-            {/* Language selector */}
-            {LANGUAGES.map((l) => (
-              <button
-                key={l.code}
-                onClick={() => switchLanguage(l.code)}
-                className="px-2 py-1 rounded-lg text-base transition-all"
-                style={{
-                  opacity: lang === l.code ? 1 : 0.4,
-                  background: lang === l.code ? "var(--bg)" : "transparent",
-                }}
-                title={l.label}
-              >
-                {l.flag}
-              </button>
-            ))}
             <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg" style={{ color: "var(--text-muted)" }}>
               {darkMode ? "☀️" : "🌙"}
             </button>
@@ -868,10 +863,36 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               )}
             </div>
 
+            {/* Proactive Content — Tip of the Week, Milestone, Seasonal */}
+            {!advice && !loading && !query.trim() && (() => {
+              const ac = webChildren.find(c => c.id === activeChildId);
+              const ageYears = ac?.birthDate ? (calcAge(ac.birthDate)?.years ?? null) : (ac?.ageLabel ? parseAgeYears(ac.ageLabel) : null);
+              const stage = ac?.birthDate ? getStage(ac.birthDate) : getStage(undefined, ac?.ageLabel);
+              const proactive = getProactiveContent(lang, ageYears ?? undefined, stage);
+              if (!proactive.weeklyTip && !proactive.seasonalAlert && !proactive.milestoneAlert) return null;
+              return (
+                <ProactiveContentCard
+                  content={proactive}
+                  lang={lang}
+                  onTopicSelect={(topicId) => {
+                    setQuery(topicExamples[topicId] || "");
+                  }}
+                />
+              );
+            })()}
+
             {/* Voice + Input */}
             {!advice && !loading && (
-              <div className="text-center mb-6">
-                <h2 className="text-lg font-semibold mb-1" style={{ color: "var(--text)" }}>{t.whatsHappening}</h2>
+              <div className="text-center mb-6 hero-card rounded-3xl p-6 -mx-2">
+                <h2 className="text-xl font-bold mb-1 font-display" style={{ color: "var(--text)" }}>
+                  {(() => {
+                    const hr = new Date().getHours();
+                    const greeting = hr < 12 ? (lang === "ko" ? "좋은 아침이에요" : "Good morning") : hr < 18 ? (lang === "ko" ? "좋은 오후예요" : "Good afternoon") : (lang === "ko" ? "좋은 저녁이에요" : "Good evening");
+                    const name = profile.name || (webChildren.find(c => c.id === activeChildId)?.name) || "";
+                    return `${greeting}${name ? ", " + name : ""} 👋`;
+                  })()}
+                </h2>
+                <p className="text-sm mb-3 font-display" style={{ color: "var(--text-muted)" }}>Backed by 1,300+ research sources</p>
                 <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>{t.speakOrType}</p>
                 <button onClick={() => setShowInfo(true)} className="text-xs font-medium underline" style={{ color: "var(--primary)" }}>
                   {t.howItWorks} →
@@ -880,7 +901,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             )}
 
             {/* Voice Button */}
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-3">
               {isRecording ? (
                 <button onClick={stopRecording} className="flex items-center gap-3 px-6 py-4 rounded-full text-white font-medium shadow-lg" style={{ background: "#dc2626" }}>
                   <div className="flex items-end gap-0.5 h-5">
@@ -894,17 +915,34 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 <button
                   onClick={startRecording}
                   disabled={isTranscribing || loading}
-                  className="flex items-center gap-2 px-7 py-4 rounded-full text-white font-medium shadow-md transition-all hover:scale-105 disabled:opacity-50 pulse-glow"
-                  style={{ background: "var(--primary)" }}
+                  className="flex items-center gap-2 px-8 py-4 rounded-full text-white font-semibold shadow-lg transition-all hover:scale-105 disabled:opacity-50 pulse-glow"
+                  style={{ background: "var(--primary)", fontSize: "15px", boxShadow: "0 4px 20px rgba(91, 140, 123, 0.35)" }}
                 >
                   {isTranscribing ? (
                     <><span className="breathe">◌</span> {t.transcribing}</>
                   ) : (
-                    <><span className="text-lg">🎤</span> {t.tapToSpeak}</>
+                    <><Mic size={20} /> {t.tapToSpeak}</>
                   )}
                 </button>
               )}
             </div>
+
+            {/* Trust signals */}
+            {!advice && !loading && (
+              <div className="text-center mb-4">
+                <div className="flex items-center justify-center gap-3 text-xs mb-1.5" style={{ color: "var(--text-muted)" }}>
+                  <span className="flex items-center gap-1"><Check size={12} style={{ color: "var(--success)" }} /> Expert-reviewed</span>
+                  <span style={{ opacity: 0.3 }}>·</span>
+                  <span className="flex items-center gap-1"><Check size={12} style={{ color: "var(--success)" }} /> Science-backed</span>
+                  <span style={{ opacity: 0.3 }}>·</span>
+                  <span className="flex items-center gap-1"><Check size={12} style={{ color: "var(--success)" }} /> 100% private</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                  <span style={{ color: "var(--accent)", letterSpacing: "1px" }}>★★★★★</span>
+                  <span className="ml-1" style={{ opacity: 0.7 }}>Loved by parents worldwide</span>
+                </div>
+              </div>
+            )}
 
             {/* Divider */}
             {!advice && !loading && (
@@ -928,7 +966,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                   disabled={isRecording || isTranscribing}
                 />
                 {query.trim() && (
-                  <button type="submit" className="w-full mt-3 py-3 rounded-2xl text-white font-medium text-sm transition-colors" style={{ background: "var(--primary)" }}>
+                  <button type="submit" className="w-full mt-3 py-3 rounded-2xl text-white font-medium text-sm transition-colors" style={{ background: "var(--primary)", boxShadow: "0 4px 20px rgba(91, 140, 123, 0.35)" }}>
                     {t.getAdvice}
                   </button>
                 )}
@@ -985,7 +1023,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               <div className="space-y-3 slide-up">
                 {/* Situation */}
                 {advice.situation && (
-                  <div className="rounded-2xl p-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                  <div className="rounded-2xl p-4 elevation-2" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                     <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>{t.situation}</p>
                     <p className="text-sm" style={{ color: "var(--text)" }}>{advice.situation}</p>
                   </div>
@@ -993,7 +1031,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
 
                 {/* DO */}
                 {advice.dos.length > 0 && (
-                  <div className="rounded-2xl p-4" style={{ background: "var(--emerald-50)", border: "1px solid var(--success)" }}>
+                  <div className="rounded-2xl p-4 elevation-2" style={{ background: "var(--emerald-50)", border: "1px solid var(--success)" }}>
                     <p className="text-xs font-medium mb-2" style={{ color: "var(--emerald-700)" }}>{t.do}</p>
                     <ul className="space-y-1.5">
                       {advice.dos.map((d, i) => (
@@ -1008,7 +1046,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
 
                 {/* DON'T */}
                 {advice.donts.length > 0 && (
-                  <div className="rounded-2xl p-4" style={{ background: "var(--red-50)", border: "1px solid var(--error)" }}>
+                  <div className="rounded-2xl p-4 elevation-2" style={{ background: "var(--red-50)", border: "1px solid var(--error)" }}>
                     <p className="text-xs font-medium mb-2" style={{ color: "var(--red-700)" }}>{t.dont}</p>
                     <ul className="space-y-1.5">
                       {advice.donts.map((d, i) => (
@@ -1023,7 +1061,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
 
                 {/* WHY */}
                 {advice.why && (
-                  <div className="rounded-2xl p-4" style={{ background: "var(--amber-50)", border: "1px solid var(--accent)" }}>
+                  <div className="rounded-2xl p-4 elevation-2" style={{ background: "var(--amber-50)", border: "1px solid var(--accent)" }}>
                     <p className="text-xs font-medium mb-1" style={{ color: "var(--accent)" }}>{t.whyThisWorks}</p>
                     <p className="text-sm" style={{ color: "var(--text)" }}>{advice.why}</p>
                   </div>
@@ -1226,7 +1264,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         {tab === "history" && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>{t.recentSessions}</h2>
+              <h2 className="text-lg font-semibold font-display" style={{ color: "var(--text)" }}>{t.recentSessions}</h2>
               {sessions.length > 0 && (
                 <span className="text-xs px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
                   {sessions.length} {lang === "ko" ? "개" : "total"}
@@ -1234,7 +1272,12 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               )}
             </div>
             {sessions.length === 0 ? (
-              <p className="text-sm text-center py-12" style={{ color: "var(--text-muted)" }}>{t.noSessions}</p>
+              <div className="flex flex-col items-center py-16">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--emerald-50)" }}>
+                  <Sprout size={36} style={{ color: "var(--success)" }} />
+                </div>
+                <p className="text-sm text-center" style={{ color: "var(--text-muted)" }}>{t.noSessions}</p>
+              </div>
             ) : (
               <div className="space-y-2">
                 {sessions.map(s => (
@@ -1265,9 +1308,14 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         {/* === SAVED TAB === */}
         {tab === "saved" && (
           <div>
-            <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text)" }}>{t.savedAdvice}</h2>
+            <h2 className="text-lg font-semibold mb-4 font-display" style={{ color: "var(--text)" }}>{t.savedAdvice}</h2>
             {sessions.filter(s => s.bookmarked).length === 0 ? (
-              <p className="text-sm text-center py-12" style={{ color: "var(--text-muted)" }}>{t.noSaved}</p>
+              <div className="flex flex-col items-center py-16">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4" style={{ background: "rgba(245,158,11,0.1)" }}>
+                  <Star size={36} style={{ color: "#f59e0b" }} />
+                </div>
+                <p className="text-sm text-center" style={{ color: "var(--text-muted)" }}>{t.noSaved}</p>
+              </div>
             ) : (
               <div className="space-y-2">
                 {sessions.filter(s => s.bookmarked).map(s => (
@@ -1288,9 +1336,51 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           </div>
         )}
 
+        {/* === PLANS TAB === */}
+        {tab === "plans" && (() => {
+          const ac = webChildren.find(c => c.id === activeChildId);
+          const ageYears = ac?.birthDate ? (calcAge(ac.birthDate)?.years ?? null) : (ac?.ageLabel ? parseAgeYears(ac.ageLabel) : null);
+          return <ActionPlansView lang={lang} childAgeYears={ageYears} />;
+        })()}
+
+        {/* === INSIGHTS TAB === */}
+        {tab === "insights" && (
+          <Insights sessions={sessions} lang={lang} />
+        )}
+
         {/* === PROFILE TAB === */}
         {tab === "profile" && (
           <div>
+            {/* Settings: Language & Info */}
+            <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <h3 className="text-sm font-semibold mb-3 font-display" style={{ color: "var(--text)" }}>{lang === "ko" ? "설정" : "Settings"}</h3>
+              {/* Language */}
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm" style={{ color: "var(--text)" }}>{lang === "ko" ? "언어" : "Language"}</span>
+                <div className="flex items-center gap-1">
+                  {LANGUAGES.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => switchLanguage(l.code)}
+                      className="px-2 py-1 rounded-lg text-base transition-all"
+                      style={{
+                        opacity: lang === l.code ? 1 : 0.4,
+                        background: lang === l.code ? "var(--bg)" : "transparent",
+                      }}
+                      title={l.label}
+                    >
+                      {l.flag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* How it works */}
+              <button onClick={() => setShowInfo(true)} className="w-full flex items-center justify-between py-2 text-sm" style={{ color: "var(--text)" }}>
+                <span>{t.howItWorks}</span>
+                <span style={{ color: "var(--text-muted)" }}>→</span>
+              </button>
+            </div>
+
             {/* Auth section */}
             {user ? (
               <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
@@ -1360,10 +1450,14 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             ) : (
               <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                 <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{t.syncDesc || "Create an account to sync your saved advice across devices"}</p>
-                {/* Google OAuth */}
-                <button onClick={() => signInWithGoogle()} className="w-full py-2.5 rounded-xl text-sm font-medium mb-3 flex items-center justify-center gap-2" style={{ border: "1px solid var(--border)", background: "#fff", color: "#3c4043" }}>
+                {/* OAuth buttons */}
+                <button onClick={() => signInWithGoogle()} className="w-full py-2.5 rounded-xl text-sm font-medium mb-2 flex items-center justify-center gap-2" style={{ border: "1px solid var(--border)", background: "#fff", color: "#3c4043" }}>
                   <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                   {lang === "ko" ? "Google로 계속하기" : "Continue with Google"}
+                </button>
+                <button onClick={() => signInWithApple()} className="w-full py-2.5 rounded-xl text-sm font-medium mb-3 flex items-center justify-center gap-2" style={{ border: "1px solid var(--border)", background: "#000", color: "#fff" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                  {lang === "ko" ? "Apple로 계속하기" : "Continue with Apple"}
                 </button>
                 {/* Divider */}
                 <div className="flex items-center gap-3 mb-3">
@@ -1382,7 +1476,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               </div>
             )}
 
-            <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text)" }}>{lang === "ko" ? "👶 아이 프로필" : "👶 Children"}</h2>
+            <h2 className="text-lg font-semibold mb-4 font-display" style={{ color: "var(--text)" }}>{lang === "ko" ? "👶 아이 프로필" : "👶 Children"}</h2>
 
             {/* Child list */}
             {!editingChild && (
@@ -1531,7 +1625,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             )}
 
             {/* Topic Browser */}
-            <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>{t.browseTopics}</h3>
+            <h3 className="text-sm font-semibold mb-3 font-display" style={{ color: "var(--text)" }}>{t.browseTopics}</h3>
             <div className="space-y-2 mb-4">
               {visibleTopics.map(topic => (
                 <button key={topic.id} onClick={() => { setQuery(topicExamples[topic.id] || ""); setTab("home"); }} className="w-full text-left rounded-xl p-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
@@ -1548,16 +1642,21 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
       <nav className="fixed bottom-0 left-0 right-0 z-30 safe-bottom" style={{ background: "var(--surface)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-2xl mx-auto flex items-center justify-around px-2 py-2">
           {([
-            { id: "home", icon: "🏠", label: t.tabHome },
-            { id: "history", icon: "📋", label: t.tabHistory },
-            { id: "saved", icon: "⭐", label: t.tabSaved },
-            { id: "profile", icon: "👤", label: t.tabProfile },
-          ] as const).map(item => (
-            <button key={item.id} onClick={() => setTab(item.id)} className="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-lg transition-colors" style={{ opacity: tab === item.id ? 1 : 0.5 }}>
-              <span className="text-lg">{item.icon}</span>
-              <span className="text-xs font-medium" style={{ color: "var(--text)" }}>{item.label}</span>
-            </button>
-          ))}
+            { id: "home", icon: HomeIcon, label: t.tabHome },
+            { id: "history", icon: ClipboardList, label: t.tabHistory },
+            { id: "saved", icon: Star, label: t.tabSaved },
+            { id: "plans", icon: Target, label: lang === "ko" ? "플랜" : "Plans" },
+            { id: "insights", icon: BarChart3, label: t.tabInsights || "Insights" },
+            { id: "profile", icon: UserIcon, label: t.tabProfile },
+          ] as const).map(item => {
+            const Icon = item.icon;
+            return (
+              <button key={item.id} onClick={() => setTab(item.id)} className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors" style={{ opacity: tab === item.id ? 1 : 0.5 }}>
+                <Icon size={20} style={{ color: "var(--text)" }} />
+                <span className="text-xs font-medium nav-label" style={{ color: "var(--text)" }}>{item.label}</span>
+              </button>
+            );
+          })}
         </div>
       </nav>
     </div>
