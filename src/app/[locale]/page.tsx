@@ -1,5 +1,5 @@
 "use client";
-import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Check, X } from 'lucide-react';
+import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, Check, X } from 'lucide-react';
 import { buildChildContext } from '@/lib/childProfile';
 import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
 import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';
@@ -10,6 +10,7 @@ import { TOPIC_CATEGORIES, parseAgeYears, topicsForAge } from "@/lib/topics";
 import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from "@/lib/i18n";
 import Insights from "@/components/Insights";
 import FamilyPanel from "@/components/FamilyPanel";
+import MilestoneTracker from "@/components/MilestoneTracker";
 import ProactiveContentCard from "@/components/ProactiveContentCard";
 import ActionPlansView from "@/components/ActionPlansView";
 import { getProactiveContent } from "@/lib/proactive";
@@ -106,7 +107,7 @@ function saveToStorage(key: string, value: unknown) {
 }
 
 // === Tab type ===
-type Tab = "home" | "history" | "saved" | "plans" | "insights" | "family" | "profile";
+type Tab = "home" | "history" | "saved" | "plans" | "insights" | "family" | "milestones" | "profile";
 
 // === Conversation turn for follow-up memory ===
 interface ConversationTurn {
@@ -1354,6 +1355,13 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           <FamilyPanel lang={lang} />
         )}
 
+        {/* === MILESTONES TAB === */}
+        {tab === "milestones" && (() => {
+          const ac = webChildren.find(c => c.id === activeChildId);
+          const milestoneAge = ac?.birthDate ? (calcAge(ac.birthDate)?.years ?? null) : parseAgeYears(profile.age);
+          return <MilestoneTracker lang={lang} childAgeYears={milestoneAge} />;
+        })()}
+
         {/* === PROFILE TAB === */}
         {tab === "profile" && (
           <div>
@@ -1654,6 +1662,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             { id: "plans", icon: Target, label: lang === "ko" ? "플랜" : "Plans" },
             { id: "insights", icon: BarChart3, label: t.tabInsights || "Insights" },
             { id: "family", icon: Users, label: lang === "ko" ? "가족" : "Family" },
+            { id: "milestones", icon: Leaf, label: lang === "ko" ? "발달" : "Milestones" },
             { id: "profile", icon: UserIcon, label: t.tabProfile },
           ] as const).map(item => {
             const Icon = item.icon;
