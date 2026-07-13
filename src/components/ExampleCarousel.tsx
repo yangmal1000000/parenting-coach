@@ -77,19 +77,19 @@ export function ExampleCarousel({ examples }: { examples: Example[] }) {
             <p style={{ fontSize: 14, lineHeight: 1.6 }}>{ex.situation}</p>
           </div>
           <div style={{ marginBottom: 24 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>✅ Do</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>Do</p>
             {ex.dos.map((d, i) => (
               <p key={i} style={{ fontSize: 14, lineHeight: 1.6, marginTop: i > 0 ? 4 : 0 }}>• {d}</p>
             ))}
           </div>
           <div style={{ marginBottom: 24 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--error)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>❌ Don&apos;t</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--error)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>Don&apos;t</p>
             {ex.donts.map((d, i) => (
               <p key={i} style={{ fontSize: 14, lineHeight: 1.6, marginTop: i > 0 ? 4 : 0 }}>• {d}</p>
             ))}
           </div>
           <div style={{ marginBottom: 24 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>🧠 Why this works</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>Why this works</p>
             <p style={{ fontSize: 14, lineHeight: 1.6 }}>{ex.why}</p>
           </div>
           <div style={{

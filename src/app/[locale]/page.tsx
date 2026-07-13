@@ -1,5 +1,5 @@
 "use client";
-import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X } from 'lucide-react';
+import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X, BookOpen, Brain, Clock, TrendingUp, AlertTriangle, Heart, MessageCircle, RefreshCw, Flame, Calendar, Lightbulb, PartyPopper, Search, Trash2, ThumbsUp, ThumbsDown, Baby, Bell, Sun, Moon, Lock, CheckCircle2, XCircle, Sparkles, Zap, Phone, Mail, ChevronLeft, ArrowLeft, ArrowRight, ArrowDown, ArrowUp } from 'lucide-react';
 import { buildChildContext } from '@/lib/childProfile';
 import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
 import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';
@@ -636,27 +636,27 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   async function shareAdvice() {
     if (!advice) return;
     const lines: string[] = [
-      `🧠 ${t.appName}`,
+      `${t.appName}`,
       ``,
       `📋 ${advice.situation || currentQuery}`,
       ``,
     ];
     if (advice.dos.length > 0) {
-      lines.push("✅ " + (lang === "ko" ? "하세요:" : "DO:"));
+      lines.push("" + (lang === "ko" ? "하세요:" : "DO:"));
       advice.dos.forEach(d => lines.push(`  • ${d}`));
       lines.push("");
     }
     if (advice.donts.length > 0) {
-      lines.push("❌ " + (lang === "ko" ? "하지 마세요:" : "DON'T:"));
+      lines.push("" + (lang === "ko" ? "하지 마세요:" : "DON'T:"));
       advice.donts.forEach(d => lines.push(`  • ${d}`));
       lines.push("");
     }
     if (advice.why) {
-      lines.push("🧠 " + (lang === "ko" ? "이유:" : "WHY:"));
+      lines.push("" + (lang === "ko" ? "이유:" : "WHY:"));
       lines.push(`  ${advice.why.slice(0, 200)}${advice.why.length > 200 ? "..." : ""}`);
       lines.push("");
     }
-    if (advice.source) lines.push(`📖 ${advice.source}`);
+    if (advice.source) lines.push(`${advice.source}`);
     lines.push(``, `— ${t.appName}`);
     const text = lines.join("\n");
     try {
@@ -691,7 +691,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 <div><p className="text-sm font-medium" style={{ color: "var(--text)" }}>{t.onboardingSpeak}</p><p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.onboardingSpeakDesc}</p></div>
               </div>
               <div className="flex items-start gap-3">
-                <span className="text-xl">📚</span>
+                <span className="text-xl"></span>
                 <div><p className="text-sm font-medium" style={{ color: "var(--text)" }}>{t.onboardingEvidence}</p><p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.onboardingEvidenceDesc}</p></div>
               </div>
               <div className="flex items-start gap-3">
@@ -878,13 +878,13 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 if (!name) return null;
                 return (
                   <span className="px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                    👶 {name}, {age}
+                    {name}, {age}
                   </span>
                 );
               })()}
               {currentStreak.count >= 2 && (
                 <span className="px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)" }}>
-                  🔥 {currentStreak.count} {lang === "ko" ? "일 연속" : "day streak"}
+                  {currentStreak.count} {lang === "ko" ? "일 연속" : "day streak"}
                 </span>
               )}
             </div>
@@ -1118,7 +1118,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                       className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors"
                       style={{ background: "var(--primary)", color: "white" }}
                     >
-                      🔍 Go Deeper
+                      Go Deeper
                     </button>
                     <button
                       onClick={() => {
@@ -1128,7 +1128,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                       className="flex-1 py-3 rounded-xl text-sm font-medium transition-colors"
                       style={{ border: "1px solid var(--primary)", color: "var(--primary)" }}
                     >
-                      💬 Ask Follow-up
+                      Ask Follow-up
                     </button>
                   </div>
                 )}
@@ -1136,7 +1136,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 {/* Conversation thread history */}
                 {!feedbackGiven && conversationThread.length > 0 && (
                   <div className="rounded-2xl p-3 mb-2 space-y-2" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
-                    <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>💬 {lang === "ko" ? "대화 기록" : "Conversation"}</p>
+                    <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>{lang === "ko" ? "대화 기록" : "Conversation"}</p>
                     {conversationThread.map((turn, i) => (
                       <div key={i} className="text-xs" style={{
                         paddingLeft: turn.role === "user" ? "0" : "12px",
@@ -1396,9 +1396,9 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                       <button onClick={() => toggleBookmark(s.id)} className="text-xs" style={{ color: "var(--accent)" }}>★</button>
                     </div>
                     <div className="text-xs space-y-1" style={{ color: "var(--text-muted)" }}>
-                      {parseAdvice(s.advice).dos.slice(0, 2).map((d, i) => <p key={i}>✅ {d}</p>)}
+                      {parseAdvice(s.advice).dos.slice(0, 2).map((d, i) => <p key={i}>{d}</p>)}
                     </div>
-                    <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>📖 {parseAdvice(s.advice).source}</p>
+                    <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{parseAdvice(s.advice).source}</p>
                     <button onClick={() => loadSession(s)} className="text-xs mt-2" style={{ color: "var(--primary)" }}>{t.viewFull}</button>
                   </div>
                 ))}
@@ -1483,7 +1483,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                     {t.signOut || "Sign Out"}
                   </button>
                 </div>
-                <p className="text-xs mt-2" style={{ color: "var(--emerald-700)" }}>☁️ {t.cloudSync || "Your advice is synced across devices"}</p>
+                <p className="text-xs mt-2" style={{ color: "var(--emerald-700)" }}>{t.cloudSync || "Your advice is synced across devices"}</p>
               </div>
             ) : authMode !== "none" ? (
               <div className="rounded-2xl p-5 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
@@ -1564,7 +1564,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               </div>
             )}
 
-            <h2 className="text-lg font-semibold mb-4 font-display" style={{ color: "var(--text)" }}>{lang === "ko" ? "👶 아이 프로필" : "👶 Children"}</h2>
+            <h2 className="text-lg font-semibold mb-4 font-display" style={{ color: "var(--text)" }}>{lang === "ko" ? "아이 프로필" : "Children"}</h2>
 
             {/* Child list */}
             {!editingChild && (

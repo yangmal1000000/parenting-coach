@@ -250,7 +250,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
       {/* Due now */}
       {dueMilestones.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>⏰ {str.dueNow}</h3>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>{str.dueNow}</h3>
           <div className="space-y-2">
             {dueMilestones.map(m => {
               const rec = records[m.id];
@@ -280,7 +280,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
       {/* Upcoming */}
       {upcomingMilestones.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>📅 {str.upcoming}</h3>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>{str.upcoming}</h3>
           <div className="space-y-2">
             {upcomingMilestones.slice(0, 5).map(m => {
               const rec = records[m.id];
@@ -306,7 +306,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
       {/* Completed */}
       {completedMilestones.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>✅ {str.completed} ({completedMilestones.length})</h3>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>{str.completed} ({completedMilestones.length})</h3>
           <div className="space-y-1">
             {completedMilestones.map(m => (
               <button

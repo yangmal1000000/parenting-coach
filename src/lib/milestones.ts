@@ -22,11 +22,11 @@ export interface MilestoneRecord {
 }
 
 export const CATEGORY_META: Record<MilestoneCategory, { icon: string; labelEn: string; labelKo: string; color: string }> = {
-  motor: { icon: "🏃", labelEn: "Motor Skills", labelKo: "운동 능력", color: "#f97316" },
-  language: { icon: "💬", labelEn: "Language", labelKo: "언어 능력", color: "#3b82f6" },
-  social: { icon: "🤝", labelEn: "Social & Emotional", labelKo: "사회성·감정", color: "#ec4899" },
-  cognitive: { icon: "🧩", labelEn: "Cognitive", labelKo: "인지 능력", color: "#8b5cf6" },
-  selfcare: { icon: "🧒", labelEn: "Self-Care", labelKo: "자기 관리", color: "#14b8a6" },
+  motor: { icon: "Activity", labelEn: "Motor Skills", labelKo: "운동 능력", color: "#f97316" },
+  language: { icon: "MessageSquare", labelEn: "Language", labelKo: "언어 능력", color: "#3b82f6" },
+  social: { icon: "Users", labelEn: "Social & Emotional", labelKo: "사회성·감정", color: "#ec4899" },
+  cognitive: { icon: "Puzzle", labelEn: "Cognitive", labelKo: "인지 능력", color: "#8b5cf6" },
+  selfcare: { icon: "Baby", labelEn: "Self-Care", labelKo: "자기 관리", color: "#14b8a6" },
 };
 
 export const MILESTONES: Milestone[] = [

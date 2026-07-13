@@ -113,7 +113,7 @@ export default function CrisisSupportPanel({ lang }: Props) {
       {/* Emergency */}
       {emergencies.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-sm font-bold mb-2" style={{ color: "#dc2626" }}>🚨 {str.emergency}</h3>
+          <h3 className="text-sm font-bold mb-2" style={{ color: "#dc2626" }}>{str.emergency}</h3>
           {emergencies.map(r => <ResourceCard key={r.id} r={r} />)}
         </div>
       )}
@@ -121,7 +121,7 @@ export default function CrisisSupportPanel({ lang }: Props) {
       {/* Hotlines */}
       {hotlines.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>📞 {str.hotlines}</h3>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>{str.hotlines}</h3>
           {hotlines.map(r => <ResourceCard key={r.id} r={r} />)}
         </div>
       )}
@@ -129,7 +129,7 @@ export default function CrisisSupportPanel({ lang }: Props) {
       {/* Directories */}
       {directories.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>🔍 {str.findTherapist}</h3>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>{str.findTherapist}</h3>
           {directories.map(r => <ResourceCard key={r.id} r={r} />)}
         </div>
       )}

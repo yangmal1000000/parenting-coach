@@ -142,7 +142,7 @@ export default function Insights({ sessions, lang }: InsightsProps) {
       {patterns.length > 0 && (
         <div className="mb-4">
           <h3 className="text-sm font-bold mb-2 font-display flex items-center gap-1" style={{ color: "var(--text)" }}>
-            🧠 {lang === "ko" ? "행동 패턴 인사이트" : "Behavior Pattern Insights"}
+            {lang === "ko" ? "행동 패턴 인사이트" : "Behavior Pattern Insights"}
           </h3>
           {patterns.map((p: BehaviorPattern, i: number) => {
             const bg = p.severity === "positive" ? "#f0fdf4" : p.severity === "warning" ? "#fffbeb" : "var(--surface)";
@@ -266,7 +266,7 @@ export default function Insights({ sessions, lang }: InsightsProps) {
       {/* Improvement Narrative */}
       {insights.improvingTopics.length > 0 && (
         <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--emerald-50)", border: "1px solid var(--success)" }}>
-          <p className="text-sm font-semibold mb-2" style={{ color: "var(--success)" }}>🎉 {t.improvingTitle}</p>
+          <p className="text-sm font-semibold mb-2" style={{ color: "var(--success)" }}>{t.improvingTitle}</p>
           {insights.improvingTopics.map(({ topic, lastMonth, thisMonth }) => (
             <div key={topic} className="flex items-center justify-between py-1.5" style={{ borderTop: "1px solid rgba(16,185,129,0.2)" }}>
               <span className="text-xs" style={{ color: "var(--text)" }}>{getTopicLabel(topic)}</span>
@@ -281,7 +281,7 @@ export default function Insights({ sessions, lang }: InsightsProps) {
       {/* Escalation Alert */}
       {insights.escalatingTopics.length > 0 && (
         <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--warning, #f59e0b)" }}>
-          <p className="text-sm font-semibold mb-2" style={{ color: "#f59e0b" }}>⚠️ {t.escalatingTitle}</p>
+          <p className="text-sm font-semibold mb-2" style={{ color: "#f59e0b" }}>{t.escalatingTitle}</p>
           {insights.escalatingTopics.map(({ topic, lastMonth, thisMonth }) => (
             <div key={topic} className="flex items-center justify-between py-1.5" style={{ borderTop: "1px solid rgba(245,158,11,0.2)" }}>
               <span className="text-xs" style={{ color: "var(--text)" }}>{getTopicLabel(topic)}</span>
@@ -297,7 +297,7 @@ export default function Insights({ sessions, lang }: InsightsProps) {
       {/* Most Used Strategy (top bookmarked) */}
       {insights.favoriteSource && (
         <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-          <p className="text-sm font-semibold mb-1" style={{ color: "var(--text)" }}>📖 {t.favoriteSource}</p>
+          <p className="text-sm font-semibold mb-1" style={{ color: "var(--text)" }}>{t.favoriteSource}</p>
           <p className="text-xs" style={{ color: "var(--text-muted)" }}>{insights.favoriteSource}</p>
         </div>
       )}
@@ -483,7 +483,7 @@ function formatHour(h: number): string {
 
 // === i18n ===
 const enStrings = {
-  title: "📊 Insights",
+  title: "Insights",
   empty: "Start asking for advice and you'll see patterns, trends, and progress here.",
   totalQueries: "Queries",
   topicsCovered: "Topics",
@@ -504,7 +504,7 @@ const enStrings = {
 };
 
 const koStrings = {
-  title: "📊 인사이트",
+  title: "인사이트",
   empty: "조언을 요청하면 여기서 패턴, 트렌드, 진행 상황을 볼 수 있습니다.",
   totalQueries: "상담",
   topicsCovered: "주제",

@@ -89,7 +89,7 @@ export default function ProactiveContentCard({ content, lang, onTopicSelect }: P
         <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>{milestone.description}</p>
         {milestone.redFlags.length > 0 && (
           <div className="mb-2">
-            <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>⚠️ {t.redFlags}</p>
+            <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>{t.redFlags}</p>
             <ul className="space-y-0.5">
               {milestone.redFlags.map((flag, i) => (
                 <li key={i} className="text-xs" style={{ color: "var(--text-muted)" }}>• {flag}</li>

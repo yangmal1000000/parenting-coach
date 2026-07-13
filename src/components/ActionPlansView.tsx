@@ -13,7 +13,7 @@ interface Props {
 }
 
 const en = {
-  title: "🎯 Action Plans",
+  title: "Action Plans",
   subtitle: "Guided multi-day programs",
   startPlan: "Start Plan",
   day: "Day",
@@ -25,13 +25,13 @@ const en = {
   noPlans: "No plans available for this age yet.",
   tip: "Today's tip",
   progress: "Progress",
-  finished: "🎉 Plan Complete!",
+  finished: "Plan Complete!",
   finishedDesc: "You've completed all days. Keep using what you've learned!",
   markDone: "Mark Day Complete →",
 };
 
 const ko = {
-  title: "🎯 액션 플랜",
+  title: "액션 플랜",
   subtitle: "단계별 프로그램",
   startPlan: "시작하기",
   day: "",
@@ -43,7 +43,7 @@ const ko = {
   noPlans: "이 연령대의 플랜이 아직 없습니다.",
   tip: "오늘의 팁",
   progress: "진행 상황",
-  finished: "🎉 플랜 완료!",
+  finished: "플랜 완료!",
   finishedDesc: "모든 날짜를 완료했어요. 배운 것을 계속 실천해 보세요!",
   markDone: "오늘 완료 →",
 };
@@ -146,7 +146,7 @@ export default function ActionPlansView({ lang, childAgeYears }: Props) {
                 ))}
               </ul>
               <div className="rounded-xl p-3 mb-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>💡 {t.tip}</p>
+                <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>{t.tip}</p>
                 <p className="text-xs italic" style={{ color: "var(--text)" }}>{todayData.tip}</p>
               </div>
               {dayDone ? (

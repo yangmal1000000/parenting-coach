@@ -34,7 +34,7 @@ export function detectBehaviorPatterns(sessions: SessionData[]): BehaviorPattern
       titleKo: "더 많은 기록으로 인사이트를 받아보세요",
       descEn: "Record at least 3 sessions to start seeing behavioral patterns.",
       descKo: "최소 3개의 상담 기록이 있으면 행동 패턴을 분석할 수 있습니다.",
-      icon: "📊",
+      icon: "BarChart3",
       confidence: 1,
     });
     return patterns;
@@ -109,7 +109,7 @@ function detectTriggers(sessions: SessionData[]): BehaviorPattern[] {
       titleKo: `반복되는 상황: "${topKw}"`,
       descEn: `This keyword appears in ${topData.count} sessions${topicStr ? `, linked to ${topicStr}` : ""}. Consider preparing a consistent response strategy.`,
       descKo: `이 키워드가 ${topData.count}번의 상담에 나타났습니다${topicStr ? ` (${topicStr} 관련)` : ""}. 일관된 대응 전략을 준비해 보세요.`,
-      icon: "🔄",
+      icon: "RefreshCw",
       confidence: Math.min(topData.count / sessions.length + 0.3, 0.95),
     });
   }
@@ -156,7 +156,7 @@ function detectCorrelations(sessions: SessionData[]): BehaviorPattern[] {
       titleKo: `자주 함께 나타나는 주제: ${pair}`,
       descEn: `These topics co-occurred ${count} times on the same day. Addressing one may help with the other.`,
       descKo: `같은 날 ${count}번 함께 나타났습니다. 한 가지를 해결하면 다른 문제도 도움이 될 수 있습니다.`,
-      icon: "🔗",
+      icon: "Link2",
       confidence: 0.7,
     });
   }
@@ -201,7 +201,7 @@ function detectStreak(sessions: SessionData[]): BehaviorPattern | null {
       descKo: streak >= 5
         ? "꾸준한 기록이 패턴 파악에 도움이 됩니다. 계속해 보세요!"
         : "습관을 만들어가고 있습니다. 정기적인 기록이 더 좋은 인사이트로 이어집니다.",
-      icon: "🔥",
+      icon: "Flame",
       confidence: 0.9,
     };
   }
@@ -241,7 +241,7 @@ function detectProgress(sessions: SessionData[]): BehaviorPattern[] {
       titleKo: `호전: "${topic}" 상담 감소`,
       descEn: `Down from ${counts.lastM} last month to ${counts.thisM} this month. Your strategies may be working!`,
       descKo: `지난달 ${counts.lastM}건에서 이번달 ${counts.thisM}건으로 감소했습니다. 전략이 효과가 있는 것 같아요!`,
-      icon: "📈",
+      icon: "TrendingUp",
       confidence: 0.8,
     });
   }
@@ -280,7 +280,7 @@ function detectConcerns(sessions: SessionData[]): BehaviorPattern[] {
       titleKo: `주의: "${topic}" 상담 증가`,
       descEn: `Up from ${counts.lastM} last month to ${counts.thisM} this month. Consider exploring new strategies or a deeper dive.`,
       descKo: `지난달 ${counts.lastM}건에서 이번달 ${counts.thisM}건으로 증가했습니다. 새로운 전략이나 심층 분석을 고려해 보세요.`,
-      icon: "⚠️",
+      icon: "AlertTriangle",
       confidence: 0.75,
     });
   }
@@ -325,7 +325,7 @@ function detectTimingPatterns(sessions: SessionData[]): BehaviorPattern[] {
         titleKo: `최다 이용 시간: ${peak}`,
         descEn: `${percent}% of your sessions happen during this time. Consider preparing strategies before your peak window.`,
         descKo: `상담의 ${percent}%가 이 시간대에 집중되어 있습니다. 최다 이용 시간 전에 전략을 준비해 보세요.`,
-        icon: "⏰",
+        icon: "Clock",
         confidence: 0.85,
       });
     }
@@ -350,7 +350,7 @@ function detectRatingPattern(sessions: SessionData[]): BehaviorPattern | null {
       titleKo: `조언이 효과적: ${rate}% 긍정 평가`,
       descEn: "You're finding the advice helpful! Keep applying strategies and tracking results.",
       descKo: "조언이 도움이 되고 있습니다! 전략을 계속 적용하고 결과를 기록하세요.",
-      icon: "💚",
+      icon: "Heart",
       confidence: 0.9,
     };
   } else if (rate < 40) {
@@ -361,7 +361,7 @@ function detectRatingPattern(sessions: SessionData[]): BehaviorPattern | null {
       titleKo: `조언 효과 낮음: ${rate}% 긍정 평가`,
       descEn: "Advice hasn't been landing well. Try providing more detail in your queries for better results.",
       descKo: "조언이 큰 도움이 되지 않았습니다. 질문에 더 자세한 내용을 포함해 보세요.",
-      icon: "💭",
+      icon: "MessageCircle",
       confidence: 0.8,
     };
   }
