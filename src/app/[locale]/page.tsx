@@ -174,6 +174,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [authMode, setAuthMode] = useState<"none" | "login" | "signup">("none");
   const [showAuthGate, setShowAuthGate] = useState(false); // soft gate after 1 free query
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [historyFilter, setHistoryFilter] = useState<"all" | "mine" | "shared">("all");
 
   // Free query tracking — allow 1 anonymous query, then gate
   const FREE_QUERY_LIMIT = 1;
@@ -1288,7 +1289,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         {/* === HISTORY TAB === */}
         {tab === "history" && (
           <div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold font-display" style={{ color: "var(--text)" }}>{t.recentSessions}</h2>
               {sessions.length > 0 && (
                 <span className="text-xs px-2 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
@@ -1296,6 +1297,29 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 </span>
               )}
             </div>
+
+            {/* Filter pills */}
+            {sessions.length > 0 && (
+              <div className="flex gap-2 mb-4">
+                {([
+                  { id: "all", label: lang === "ko" ? "전체" : "All" },
+                  { id: "mine", label: lang === "ko" ? "내 것" : "Mine" },
+                  { id: "shared", label: lang === "ko" ? "공유" : "Shared" },
+                ] as const).map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => setHistoryFilter(f.id)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium transition"
+                    style={{
+                      background: historyFilter === f.id ? "var(--primary)" : "var(--surface)",
+                      color: historyFilter === f.id ? "#fff" : "var(--text-muted)",
+                      border: `1px solid ${historyFilter === f.id ? "var(--primary)" : "var(--border)"}`,
+                    }}
+                  >{f.label}</button>
+                ))}
+              </div>
+            )}
+
             {sessions.length === 0 ? (
               <div className="flex flex-col items-center py-16">
                 <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--emerald-50)" }}>
@@ -1305,10 +1329,32 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               </div>
             ) : (
               <div className="space-y-2">
-                {sessions.map(s => (
-                  <button key={s.id} onClick={() => loadSession(s)} className="w-full text-left rounded-2xl p-4 transition-colors" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                {sessions
+                  .filter(s => {
+                    if (historyFilter === "mine") return !(s as any).is_shared;
+                    if (historyFilter === "shared") return (s as any).is_shared;
+                    return true;
+                  })
+                  .map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => loadSession(s)}
+                    className="w-full text-left rounded-2xl p-4 transition-colors"
+                    style={{
+                      background: "var(--surface)",
+                      border: "1px solid var(--border)",
+                      borderLeft: (s as any).is_shared ? "3px solid var(--primary)" : "1px solid var(--border)",
+                    }}
+                  >
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <p className="text-sm font-medium flex-1" style={{ color: "var(--text)" }}>{s.query}</p>
+                      <div className="flex items-center gap-2 flex-1">
+                        {(s as any).is_shared && (
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--emerald-50)", color: "var(--success)", border: "1px solid #86efac" }}>
+                            {lang === "ko" ? "공유됨" : "Shared"}
+                          </span>
+                        )}
+                        <p className="text-sm font-medium flex-1" style={{ color: "var(--text)" }}>{s.query}</p>
+                      </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {s.rating === "up" && <span className="text-xs">👍</span>}
                         {s.rating === "down" && <span className="text-xs">👎</span>}

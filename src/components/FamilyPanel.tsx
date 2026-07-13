@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Users, Mail, Copy, Check, X, UserPlus, LogOut } from "lucide-react";
+import { Users, Mail, Copy, Check, X, UserPlus, LogOut, Activity } from "lucide-react";
 import type { Language } from "@/lib/i18n";
 import type { FamilyInfo, FamilyMember, FamilyInvite, FamilyRole } from "@/lib/familyTypes";
 import { ROLE_LABELS } from "@/lib/familyTypes";
@@ -13,6 +13,7 @@ import {
   getPendingInvites,
   revokeInvite,
   removeFamilyMember,
+  getSharedSessions,
   leaveFamily,
 } from "@/lib/family";
 
@@ -83,6 +84,7 @@ export default function FamilyPanel({ lang }: Props) {
   const [family, setFamily] = useState<FamilyInfo | null>(null);
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [invites, setInvites] = useState<FamilyInvite[]>([]);
+  const [sharedSessions, setSharedSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<FamilyRole>("co-parent");
@@ -97,12 +99,14 @@ export default function FamilyPanel({ lang }: Props) {
     const f = await getMyFamily();
     setFamily(f);
     if (f) {
-      const [m, inv] = await Promise.all([
+      const [m, inv, shared] = await Promise.all([
         getFamilyMembers(f.family_id),
         getPendingInvites(f.family_id),
+        getSharedSessions(f.family_id),
       ]);
       setMembers(m);
       setInvites(inv);
+      setSharedSessions(shared);
     }
     setLoading(false);
   }, []);
@@ -312,6 +316,33 @@ export default function FamilyPanel({ lang }: Props) {
                 </button>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Activity Feed */}
+      {family && sharedSessions.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: "var(--text)" }}>
+            <Activity size={16} /> {lang === "ko" ? "최근 활동" : "Recent Activity"}
+          </h3>
+          <div className="space-y-2">
+            {sharedSessions.slice(0, 10).map(s => {
+              const member = members.find(m => m.user_id === s.user_id);
+              const authorName = member?.display_name || (member?.user_id === family?.family_id ? (lang === "ko" ? "나" : "You") : "—");
+              return (
+                <div key={s.id} className="rounded-lg p-3" style={{ background: "var(--surface)", border: "1px solid var(--border)", borderLeft: "3px solid var(--primary)" }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium" style={{ color: "var(--text)" }}>{authorName}</span>
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>{new Date(s.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <p className="text-xs mb-1" style={{ color: "var(--text)" }}>{s.query}</p>
+                  {s.topic_category && (
+                    <span className="inline-block text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--bg)", color: "var(--text-muted)" }}>{s.topic_category}</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
