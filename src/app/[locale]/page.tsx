@@ -1,5 +1,5 @@
 "use client";
-import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, Check, X } from 'lucide-react';
+import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X } from 'lucide-react';
 import { buildChildContext } from '@/lib/childProfile';
 import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
 import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';
@@ -173,6 +173,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<"none" | "login" | "signup">("none");
   const [showAuthGate, setShowAuthGate] = useState(false); // soft gate after 1 free query
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   // Free query tracking — allow 1 anonymous query, then gate
   const FREE_QUERY_LIMIT = 1;
@@ -1760,33 +1761,72 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               >
                 {lang === "ko" ? "로그인" : "Log in"}
               </button>
+              <span style={{ opacity: 0.4, margin: "0 8px" }}>·</span>
+              <button
+                onClick={() => setShowAuthGate(false)}
+                className="font-medium underline"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {lang === "ko" ? "나중에 하기" : "Maybe later"}
+              </button>
             </p>
           </div>
         </div>
       )}
 
-      {/* Bottom Nav */}
+      {/* Bottom Nav — 5 primary + More menu */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 safe-bottom" style={{ background: "var(--surface)", borderTop: "1px solid var(--border)" }}>
-        <div className="max-w-2xl mx-auto flex items-center justify-around px-2 py-2">
+        <div className="max-w-2xl mx-auto flex items-center justify-around px-2 py-2 relative">
           {([
             { id: "home", icon: HomeIcon, label: t.tabHome },
             { id: "history", icon: ClipboardList, label: t.tabHistory },
-            { id: "saved", icon: Star, label: t.tabSaved },
             { id: "plans", icon: Target, label: lang === "ko" ? "플랜" : "Plans" },
             { id: "insights", icon: BarChart3, label: t.tabInsights || "Insights" },
-            { id: "family", icon: Users, label: lang === "ko" ? "가족" : "Family" },
-            { id: "milestones", icon: Leaf, label: lang === "ko" ? "발달" : "Milestones" },
-            { id: "support", icon: LifeBuoy, label: lang === "ko" ? "지원" : "Support" },
             { id: "profile", icon: UserIcon, label: t.tabProfile },
           ] as const).map(item => {
             const Icon = item.icon;
+            const isActive = tab === item.id;
             return (
-              <button key={item.id} onClick={() => setTab(item.id)} className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors" style={{ opacity: tab === item.id ? 1 : 0.5 }}>
+              <button key={item.id} onClick={() => { setTab(item.id); setShowMoreMenu(false); }} className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors" style={{ opacity: isActive ? 1 : 0.5 }}>
                 <Icon size={20} style={{ color: "var(--text)" }} />
                 <span className="text-xs font-medium nav-label" style={{ color: "var(--text)" }}>{item.label}</span>
               </button>
             );
           })}
+          {/* More button */}
+          <button
+            onClick={() => setShowMoreMenu(!showMoreMenu)}
+            className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors"
+            style={{ opacity: showMoreMenu || ["saved", "family", "milestones", "support"].includes(tab) ? 1 : 0.5 }}
+          >
+            <MoreHorizontal size={20} style={{ color: "var(--text)" }} />
+            <span className="text-xs font-medium nav-label" style={{ color: "var(--text)" }}>{lang === "ko" ? "더보기" : "More"}</span>
+          </button>
+
+          {/* More menu popup */}
+          {showMoreMenu && (
+            <div className="absolute bottom-full right-2 mb-2 rounded-2xl p-2 elevation-3" style={{ background: "var(--surface)", border: "1px solid var(--border)", minWidth: 160 }}>
+              {([
+                { id: "saved", icon: Star, label: t.tabSaved },
+                { id: "family", icon: Users, label: lang === "ko" ? "가족" : "Family" },
+                { id: "milestones", icon: Leaf, label: lang === "ko" ? "발달" : "Milestones" },
+                { id: "support", icon: LifeBuoy, label: lang === "ko" ? "지원" : "Support" },
+              ] as const).map(item => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => { setTab(item.id); setShowMoreMenu(false); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors hover:opacity-70"
+                    style={{ background: tab === item.id ? "var(--bg)" : "transparent" }}
+                  >
+                    <Icon size={18} style={{ color: "var(--text)" }} />
+                    <span className="text-sm font-medium" style={{ color: "var(--text)" }}>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </nav>
     </div>
