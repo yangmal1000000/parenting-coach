@@ -1,5 +1,5 @@
 "use client";
-import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, Check, X } from 'lucide-react';
+import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, Check, X } from 'lucide-react';
 import { buildChildContext } from '@/lib/childProfile';
 import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
 import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';
@@ -11,6 +11,7 @@ import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from 
 import Insights from "@/components/Insights";
 import FamilyPanel from "@/components/FamilyPanel";
 import MilestoneTracker from "@/components/MilestoneTracker";
+import CrisisSupportPanel from "@/components/CrisisSupportPanel";
 import ProactiveContentCard from "@/components/ProactiveContentCard";
 import ActionPlansView from "@/components/ActionPlansView";
 import { getProactiveContent } from "@/lib/proactive";
@@ -107,7 +108,7 @@ function saveToStorage(key: string, value: unknown) {
 }
 
 // === Tab type ===
-type Tab = "home" | "history" | "saved" | "plans" | "insights" | "family" | "milestones" | "profile";
+type Tab = "home" | "history" | "saved" | "plans" | "insights" | "family" | "milestones" | "support" | "profile";
 
 // === Conversation turn for follow-up memory ===
 interface ConversationTurn {
@@ -1383,6 +1384,11 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           return <MilestoneTracker lang={lang} childAgeYears={milestoneAge} />;
         })()}
 
+        {/* === SUPPORT TAB === */}
+        {tab === "support" && (
+          <CrisisSupportPanel lang={lang} />
+        )}
+
         {/* === PROFILE TAB === */}
         {tab === "profile" && (
           <div>
@@ -1770,6 +1776,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
             { id: "insights", icon: BarChart3, label: t.tabInsights || "Insights" },
             { id: "family", icon: Users, label: lang === "ko" ? "가족" : "Family" },
             { id: "milestones", icon: Leaf, label: lang === "ko" ? "발달" : "Milestones" },
+            { id: "support", icon: LifeBuoy, label: lang === "ko" ? "지원" : "Support" },
             { id: "profile", icon: UserIcon, label: t.tabProfile },
           ] as const).map(item => {
             const Icon = item.icon;
