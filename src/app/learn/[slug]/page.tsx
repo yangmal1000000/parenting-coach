@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { LEARN_TOPICS, getTopic, getRelatedTopics } from "@/lib/learn-topics";
+import { DynamicIcon } from "@/lib/DynamicIcon";
 import {
   CtaBlock, Breadcrumb, RelatedTopics,
   SourcesList, FaqSection, ArticleSchema,
@@ -108,7 +109,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
 
         {/* Header */}
         <header style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>{topic.icon}</div>
+          <div style={{ marginBottom: 12 }}><DynamicIcon name={topic.icon} size={40} color="var(--primary)" /></div>
           <h1 style={{
             fontSize: "clamp(26px, 5vw, 36px)",
             fontWeight: 700,

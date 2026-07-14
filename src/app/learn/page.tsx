@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LEARN_TOPICS } from "@/lib/learn-topics";
+import { DynamicIcon } from "@/lib/DynamicIcon";
 
 export const metadata = {
   title: "Learn — Evidence-Based Parenting Guides | ParentKin",
@@ -114,7 +115,7 @@ export default function LearnHubPage() {
                 transition: "transform 0.15s, box-shadow 0.15s",
               }}
             >
-              <div style={{ fontSize: 36, marginBottom: 12 }}>{topic.icon}</div>
+              <div style={{ marginBottom: 12 }}><DynamicIcon name={topic.icon} size={36} color="var(--primary)" /></div>
               <h2 style={{
                 fontSize: 16,
                 fontWeight: 600,

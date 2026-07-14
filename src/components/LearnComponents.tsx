@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { LearnTopic } from "@/lib/learn-topics";
+import { DynamicIcon } from "@/lib/DynamicIcon";
 
 // ── CTA Block ──
 export function CtaBlock({ variant = "mid" }: { variant?: "mid" | "end" }) {
@@ -132,7 +133,7 @@ export function RelatedTopics({ topics }: { topics: LearnTopic[] }) {
               textDecoration: "none",
             }}
           >
-            <div style={{ fontSize: 24, marginBottom: 6 }}>{t.icon}</div>
+            <div style={{ fontSize: 24, marginBottom: 6 }}><DynamicIcon name={t.icon} size={24} color="var(--primary)" /></div>
             <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", marginBottom: 2 }}>
               {t.title}
             </div>

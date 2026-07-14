@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Phone, MessageSquare, Globe, LifeBuoy } from "lucide-react";
+import { DynamicIcon } from "@/lib/DynamicIcon";
 import type { Language } from "@/lib/i18n";
 import { CRISIS_RESOURCES, WARNING_SIGNS, URGENCY_META, type CrisisResource } from "@/lib/crisisResources";
 
@@ -142,7 +143,7 @@ export default function CrisisSupportPanel({ lang }: Props) {
           const meta = URGENCY_META[sign.urgency];
           return (
             <div key={sign.id} className="flex items-start gap-2 mb-2.5">
-              <span className="text-base">{sign.icon}</span>
+              <span className="text-base"><DynamicIcon name={sign.icon} size={16} /></span>
               <div className="flex-1">
                 <p className="text-xs mb-0.5" style={{ color: "var(--text)" }}>{lang === "ko" ? sign.ko : sign.en}</p>
                 <div className="flex items-center gap-1">

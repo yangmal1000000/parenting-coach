@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Sprout, Check, AlertTriangle, ChevronLeft } from "lucide-react";
+import { DynamicIcon } from "@/lib/DynamicIcon";
 import type { Language } from "@/lib/i18n";
 import {
   CATEGORY_META,
@@ -142,7 +143,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
 
         <div className="rounded-xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">{CATEGORY_META[selectedMilestone.category].icon}</span>
+            <span className="text-2xl"><DynamicIcon name={CATEGORY_META[selectedMilestone.category].icon} size={28} /></span>
             <div>
               <p className="font-bold text-sm" style={{ color: "var(--text)" }}>
                 {lang === "ko" ? selectedMilestone.titleKo : selectedMilestone.titleEn}
@@ -233,7 +234,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
             const pct = data.total > 0 ? Math.round((data.achieved / data.total) * 100) : 0;
             return (
               <div key={cat} className="rounded-lg p-2" style={{ background: "var(--bg)", minWidth: 80 }}>
-                <p className="text-sm">{CATEGORY_META[cat].icon}</p>
+                <p className="text-sm"><DynamicIcon name={CATEGORY_META[cat].icon} size={20} /></p>
                 <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                   {lang === "ko" ? CATEGORY_META[cat].labelKo : CATEGORY_META[cat].labelEn}
                 </p>
@@ -264,7 +265,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
                     border: `1px solid ${rec?.status === "achieved" ? "#16a34a" : rec?.status === "concern" ? "#d97706" : "var(--border)"}`,
                   }}
                 >
-                  <span className="text-xl">{CATEGORY_META[m.category].icon}</span>
+                  <span className="text-xl"><DynamicIcon name={CATEGORY_META[m.category].icon} size={20} /></span>
                   <div className="flex-1">
                     <p className="text-sm font-medium" style={{ color: "var(--text)" }}>{lang === "ko" ? m.titleKo : m.titleEn}</p>
                     <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{lang === "ko" ? m.descKo : m.descEn}</p>
@@ -291,7 +292,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
                   className="w-full text-left rounded-lg p-3 flex items-center gap-3 transition hover:opacity-80 opacity-80"
                   style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
                 >
-                  <span className="text-lg">{CATEGORY_META[m.category].icon}</span>
+                  <span className="text-lg"><DynamicIcon name={CATEGORY_META[m.category].icon} size={18} /></span>
                   <div className="flex-1">
                     <p className="text-sm" style={{ color: "var(--text)" }}>{lang === "ko" ? m.titleKo : m.titleEn}</p>
                     <p className="text-xs" style={{ color: "var(--text-muted)" }}>{m.ageMonths} {lang === "ko" ? "개월" : "months"}</p>
@@ -315,7 +316,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
                 className="w-full text-left rounded-lg p-2.5 flex items-center gap-2 transition hover:opacity-80"
                 style={{ background: "#f0fdf4", border: "1px solid #86efac" }}
               >
-                <span className="text-base">{CATEGORY_META[m.category].icon}</span>
+                <span className="text-base"><DynamicIcon name={CATEGORY_META[m.category].icon} size={16} /></span>
                 <span className="flex-1 text-xs line-through opacity-70" style={{ color: "var(--text)" }}>
                   {lang === "ko" ? m.titleKo : m.titleEn}
                 </span>

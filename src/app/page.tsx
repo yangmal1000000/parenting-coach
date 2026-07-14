@@ -2,6 +2,8 @@ import { Geist } from "next/font/google";
 import Link from "next/link";
 import ScrollGrowLogo from "@/components/ScrollGrowLogo";
 import { ExampleCarousel } from "@/components/ExampleCarousel";
+import { getIcon } from "@/lib/iconMap";
+import { DynamicIcon } from "@/lib/DynamicIcon";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
@@ -45,23 +47,23 @@ const FAQS = [
 ];
 
 const PAIN_POINTS = [
-  { emoji: "😤", text: "Your toddler is screaming on the supermarket floor because you said no to sweets" },
-  { emoji: "😴", text: "Bedtime is a daily battle — they keep coming out of their room" },
-  { emoji: "🍽️", text: "Your child refuses everything except bread and crackers" },
-  { emoji: "😡", text: "Your child hits or bites when they don't get their way" },
-  { emoji: "📱", text: "Every time you turn off the iPad, it's a meltdown" },
-  { emoji: "👥", text: "Your kids fight over every single toy" },
+  { icon: "Flame", text: "Your toddler is screaming on the supermarket floor because you said no to sweets" },
+  { icon: "Moon", text: "Bedtime is a daily battle — they keep coming out of their room" },
+  { icon: "Utensils", text: "Your child refuses everything except bread and crackers" },
+  { icon: "Angry", text: "Your child hits or bites when they don't get their way" },
+  { icon: "Smartphone", text: "Every time you turn off the iPad, it's a meltdown" },
+  { icon: "Users", text: "Your kids fight over every single toy" },
 ];
 
 const FEATURES = [
-  { icon: "🎤", title: "Speak or type", body: "Voice input for when your hands are full. Just tap and speak." },
-  { icon: "👶", title: "Multi-child profiles", body: "Add each child's age, temperament, and conditions for personalised advice." },
-  { icon: "💬", title: "Conversation mode", body: "Ask follow-ups. The thread keeps context so you can go deeper." },
-  { icon: "🔔", title: "Daily parenting tips", body: "A gentle, evidence-based tip each morning. Opt in anytime." },
-  { icon: "🔒", title: "Private by default", body: "No account needed. Your data stays on your device." },
-  { icon: "🌍", title: "Bilingual", body: "English and 한국어. Switch anytime." },
-  { icon: "📴", title: "Works offline", body: "Browse saved advice even without internet." },
-  { icon: "🌙", title: "Dark mode", body: "Easy on the eyes during those 3am wake-ups." },
+  { icon: "Mic", title: "Speak or type", body: "Voice input for when your hands are full. Just tap and speak." },
+  { icon: "Baby", title: "Multi-child profiles", body: "Add each child's age, temperament, and conditions for personalised advice." },
+  { icon: "MessageSquare", title: "Conversation mode", body: "Ask follow-ups. The thread keeps context so you can go deeper." },
+  { icon: "Bell", title: "Daily parenting tips", body: "A gentle, evidence-based tip each morning. Opt in anytime." },
+  { icon: "Lock", title: "Private by default", body: "No account needed. Your data stays on your device." },
+  { icon: "Globe", title: "Bilingual", body: "English and 한국어. Switch anytime." },
+  { icon: "WifiOff", title: "Works offline", body: "Browse saved advice even without internet." },
+  { icon: "Moon", title: "Dark mode", body: "Easy on the eyes during those 3am wake-ups." },
 ];
 
 const SOURCES = [
@@ -443,7 +445,7 @@ export default function LandingPage() {
               gap: 12,
               alignItems: "flex-start",
             }}>
-              <span style={{ fontSize: 22, flexShrink: 0, lineHeight: 1.2 }}>{item.emoji}</span>
+              <span style={{ flexShrink: 0, lineHeight: 1.2 }}><DynamicIcon name={item.icon} size={22} color="var(--primary)" /></span>
               <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text-muted)", margin: 0 }}>
                 {item.text}
               </p>
@@ -489,9 +491,9 @@ export default function LandingPage() {
           gap: 16,
         }}>
           {[
-            { step: "1", icon: "💬", title: "Describe the situation", body: "Type or speak. \"My 3-year-old is having a meltdown in the shop.\"" },
-            { step: "2", icon: "🧠", title: "Get evidence-based advice", body: "Practical dos, don'ts, and the developmental psychology — cited from real books." },
-            { step: "3", icon: "🔬", title: "Go deeper when you need to", body: "Deep Dive gives you a 750-word personalized report with reflective exercises." },
+            { step: "1", icon: "MessageSquare", title: "Describe the situation", body: "Type or speak. \"My 3-year-old is having a meltdown in the shop.\"" },
+            { step: "2", icon: "Brain", title: "Get evidence-based advice", body: "Practical dos, don'ts, and the developmental psychology — cited from real books." },
+            { step: "3", icon: "Microscope", title: "Go deeper when you need to", body: "Deep Dive gives you a 750-word personalized report with reflective exercises." },
           ].map((item) => (
             <div key={item.title} style={{
               background: "var(--surface)",
@@ -511,7 +513,7 @@ export default function LandingPage() {
               }}>
                 {item.step}
               </div>
-              <div style={{ fontSize: 32, marginBottom: 14 }}>{item.icon}</div>
+              <div style={{ marginBottom: 14 }}><DynamicIcon name={item.icon} size={32} color="var(--primary)" /></div>
               <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>{item.title}</h3>
               <p style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text-muted)" }}>{item.body}</p>
             </div>
@@ -578,7 +580,7 @@ export default function LandingPage() {
               border: "1px solid var(--border)",
               borderRadius: 16,
             }}>
-              <div style={{ fontSize: 26, marginBottom: 10 }}>{item.icon}</div>
+              <div style={{ marginBottom: 10 }}><DynamicIcon name={item.icon} size={26} color="var(--primary)" /></div>
               <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{item.title}</h3>
               <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text-muted)" }}>{item.body}</p>
             </div>

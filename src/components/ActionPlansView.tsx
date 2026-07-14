@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Language } from "@/lib/i18n";
+import { DynamicIcon } from "@/lib/DynamicIcon";
 import type { PlanProgress } from "@/lib/actionPlanTypes";
 import { ALL_PLANS, getPlansForAge, getPlanById, getActiveDay, getProgressPct } from "@/lib/actionPlansIndex";
 import { createBlankProgress } from "@/lib/actionPlanTypes";
@@ -107,7 +108,7 @@ export default function ActionPlansView({ lang, childAgeYears }: Props) {
         {/* Header */}
         <div className="rounded-2xl p-4 mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-3xl">{selectedPlan.icon}</span>
+            <span className="text-3xl"><DynamicIcon name={selectedPlan.icon} size={32} /></span>
             <div>
               <h2 className="text-base font-bold font-display" style={{ color: "var(--text)" }}>{selectedPlan.title}</h2>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>{selectedPlan.subtitle}</p>
@@ -203,7 +204,7 @@ export default function ActionPlansView({ lang, childAgeYears }: Props) {
                 className="w-full text-left rounded-2xl p-5 transition-colors"
                 style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                 <div className="flex items-start gap-4">
-                  <span className="text-4xl leading-none mt-0.5">{plan.icon}</span>
+                  <span className="text-4xl leading-none mt-0.5"><DynamicIcon name={plan.icon} size={36} /></span>
                   <div className="flex-1">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <h3 className="text-sm font-bold font-display" style={{ color: "var(--text)" }}>{plan.title}</h3>

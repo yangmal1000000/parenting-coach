@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { BarChart3 } from "lucide-react";
+import { DynamicIcon } from "@/lib/DynamicIcon";
 import type { Language } from "@/lib/i18n";
 import { TOPIC_CATEGORIES, getTopicLabel as getTopicLabelLocalized } from "@/lib/topics";
 import { detectBehaviorPatterns } from "@/lib/behaviorPatterns";
@@ -151,7 +152,7 @@ export default function Insights({ sessions, lang }: InsightsProps) {
             return (
               <div key={i} className="rounded-2xl p-4 mb-2" style={{ background: bg, border: `1px solid ${border}` }}>
                 <div className="flex items-start gap-3">
-                  <span className="text-xl">{p.icon}</span>
+                  <span className="text-xl"><DynamicIcon name={p.icon} size={20} /></span>
                   <div className="flex-1">
                     <p className="text-sm font-semibold mb-1" style={{ color: titleColor }}>
                       {lang === "ko" ? p.titleKo : p.titleEn}
