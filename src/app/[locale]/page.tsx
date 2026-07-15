@@ -638,7 +638,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
     const lines: string[] = [
       `${t.appName}`,
       ``,
-      `📋 ${advice.situation || currentQuery}`,
+      `${advice.situation || currentQuery}`,
       ``,
     ];
     if (advice.dos.length > 0) {
@@ -1731,7 +1731,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,0.6)" }}>
           <div className="rounded-3xl p-8 max-w-sm w-full slide-up elevation-3" style={{ background: "var(--surface)" }}>
             <div className="text-center mb-6">
-              <div className="text-4xl mb-3">🌱</div>
+              <div className="text-4xl mb-3"><Sprout size={36} color="var(--primary)" /></div>
               <h2 className="text-xl font-bold mb-2 font-display" style={{ color: "var(--text)" }}>
                 {lang === "ko" ? "무료 체험이 끝났어요" : "Your free trial is up!"}
               </h2>
