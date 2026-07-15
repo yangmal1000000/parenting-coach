@@ -208,7 +208,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
         {/* What to avoid */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>
-            ❌ Common mistakes to avoid
+            Common mistakes to avoid
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {content.avoid.map((a, i) => (
@@ -276,7 +276,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
           borderRadius: 16,
         }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>
-            🩺 When to seek professional help
+            When to seek professional help
           </h2>
           <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 6 }}>
             {content.whenToSeekHelp.map((item, i) => (
@@ -308,7 +308,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
         textAlign: "center",
       }}>
         <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>
-          🌿 ParentKin — Educational guidance, not medical advice.
+          ParentKin — Educational guidance, not medical advice.
         </p>
         <p style={{ fontSize: 11, color: "var(--text-muted)", opacity: 0.6 }}>
           <Link href="/privacy" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Privacy Policy</Link> · <Link href="/learn" style={{ color: "var(--text-muted)", textDecoration: "none" }}>All guides</Link> · © 2026 ParentKin.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookOpen } from "lucide-react";
 import { LEARN_TOPICS } from "@/lib/learn-topics";
 import { DynamicIcon } from "@/lib/DynamicIcon";
 
@@ -66,7 +67,7 @@ export default function LearnHubPage() {
           letterSpacing: 0.3,
           textTransform: "uppercase",
         }}>
-          📚 Evidence-Based Guides
+          Evidence-Based Guides
         </div>
         <h1 style={{
           fontSize: "clamp(28px, 5vw, 40px)",
@@ -174,8 +175,8 @@ export default function LearnHubPage() {
         borderTop: "1px solid var(--border)",
         textAlign: "center",
       }}>
-        <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>
-          🌿 ParentKin — Educational guidance, not medical advice.
+        <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+          ParentKin — Educational guidance, not medical advice.
         </p>
         <p style={{ fontSize: 11, color: "var(--text-muted)", opacity: 0.6 }}>
           <Link href="/privacy" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Privacy Policy</Link> · © 2026 ParentKin.
