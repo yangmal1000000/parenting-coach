@@ -621,16 +621,21 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   }
 
   // === Streak tracking ===
+  const [currentStreak, setCurrentStreak] = useState<{lastActive: string; count: number}>({ lastActive: "", count: 0 });
+
   function updateStreak() {
     const today = new Date().toISOString().split("T")[0];
     const streak = loadFromStorage<{lastActive: string; count: number}>("pc_streak", { lastActive: "", count: 0 });
-    if (streak.lastActive === today) return; // already counted today
+    if (streak.lastActive === today) {
+      setCurrentStreak(streak);
+      return;
+    }
     const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
     const newCount = streak.lastActive === yesterday ? streak.count + 1 : 1;
-    saveToStorage("pc_streak", { lastActive: today, count: newCount });
+    const updated = { lastActive: today, count: newCount };
+    saveToStorage("pc_streak", updated);
+    setCurrentStreak(updated);
   }
-
-  const currentStreak = loadFromStorage<{lastActive: string; count: number}>("pc_streak", { lastActive: "", count: 0 });
 
   // === Share ===
   async function shareAdvice() {
