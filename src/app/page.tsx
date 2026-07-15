@@ -1,5 +1,6 @@
 import { Geist } from "next/font/google";
 import Link from "next/link";
+import { Sprout } from "lucide-react";
 import ScrollGrowLogo from "@/components/ScrollGrowLogo";
 import { ExampleCarousel } from "@/components/ExampleCarousel";
 import { getIcon } from "@/lib/iconMap";
@@ -653,7 +654,7 @@ export default function LandingPage() {
           textAlign: "center",
           boxShadow: "0 20px 60px rgba(91, 140, 123, 0.2)",
         }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>🌿</div>
+          <div style={{ fontSize: 40, marginBottom: 16, display: "flex", justifyContent: "center" }}><Sprout size={40} color="#fff" /></div>
           <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: -0.5, marginBottom: 12, color: "#fff" }}>
             You don&apos;t have to figure it out alone
           </h2>

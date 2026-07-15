@@ -1,5 +1,5 @@
 "use client";
-import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X, BookOpen, Brain, Clock, TrendingUp, AlertTriangle, Heart, MessageCircle, RefreshCw, Flame, Calendar, Lightbulb, PartyPopper, Search, Trash2, ThumbsUp, ThumbsDown, Baby, Bell, Sun, Moon, Lock, CheckCircle2, XCircle, Sparkles, Zap, Phone, Mail, ChevronLeft, ArrowLeft, ArrowRight, ArrowDown, ArrowUp } from 'lucide-react';
+import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X, Brain, Phone } from 'lucide-react';
 import { buildChildContext } from '@/lib/childProfile';
 import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
 import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';

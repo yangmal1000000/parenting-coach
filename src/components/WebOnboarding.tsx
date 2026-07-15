@@ -3,26 +3,33 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Sprout, MessageSquare, Microscope, Baby } from "lucide-react";
 
 const STORAGE_KEY = "pc_onboarded";
 
 const SLIDES = [
   {
-    emoji: "🌿",
+    icon: "sprout" as const,
     title: "Welcome to ParentKin",
     body: "Evidence-based parenting support in your pocket. Grounded in 1,300+ research sources.",
   },
   {
-    emoji: "💬",
+    icon: "message" as const,
     title: "Ask anything",
     body: "Type or speak. Get practical dos and don'ts, with the psychology behind why they work.",
   },
   {
-    emoji: "🔬",
+    icon: "microscope" as const,
     title: "Go deeper",
     body: "When you need more than quick tips, Deep Dive gives you a personalised report.",
   },
 ];
+
+const ICONS = {
+  sprout: Sprout,
+  message: MessageSquare,
+  microscope: Microscope,
+} as const;
 
 export function WebOnboarding() {
   const router = useRouter();
@@ -105,7 +112,7 @@ export function WebOnboarding() {
           right: 24,
           background: "none",
           border: "none",
-          color: textMuted,
+          color: text,
           fontSize: 14,
           fontWeight: 500,
           cursor: "pointer",
@@ -132,8 +139,8 @@ export function WebOnboarding() {
                 }}
               />
             )}
-            <div style={{ fontSize: 56, marginBottom: 20 }}>
-              {SLIDES[step].emoji}
+            <div style={{ fontSize: 56, marginBottom: 20, display: "flex", justifyContent: "center" }}>
+              {(() => { const Icon = ICONS[SLIDES[step].icon]; return <Icon size={56} color={primary} />; })()}
             </div>
             <h1 style={{
               fontSize: 28,
@@ -157,7 +164,7 @@ export function WebOnboarding() {
         ) : (
           /* Profile setup */
           <div style={{ width: "100%", maxWidth: 320 }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>👶</div>
+            <div style={{ fontSize: 48, marginBottom: 16, display: "flex", justifyContent: "center" }}><Baby size={48} color={primary} /></div>
             <h1 style={{
               fontSize: 26,
               fontWeight: 700,

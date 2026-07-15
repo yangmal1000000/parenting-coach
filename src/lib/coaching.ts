@@ -25,7 +25,7 @@ const chunkEmbeddings: { chunk: KnowledgeChunk; embedding: number[] }[] = KNOWLE
   .filter(chunk => embeddingMap.has(chunk.id))
   .map(chunk => ({ chunk, embedding: embeddingMap.get(chunk.id)! }));
 
-console.log(`[RAG] Loaded ${chunkEmbeddings.length} pre-computed embeddings from file`);
+if (process.env.NODE_ENV !== 'production') console.log(`[RAG] Loaded ${chunkEmbeddings.length} pre-computed embeddings from file`);
 
 async function getEmbeddings(text: string): Promise<number[]> {
   const response = await getOpenAI().embeddings.create({
