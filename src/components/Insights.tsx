@@ -7,22 +7,9 @@ import type { Language } from "@/lib/i18n";
 import { TOPIC_CATEGORIES, getTopicLabel as getTopicLabelLocalized } from "@/lib/topics";
 import { detectBehaviorPatterns } from "@/lib/behaviorPatterns";
 import type { BehaviorPattern } from "@/lib/behaviorPatterns";
+import type { Session } from "@/lib/types";
 
-// === Types (mirrors from page.tsx) ===
-interface Session {
-  id: string;
-  query: string;
-  advice: string;
-  sources: string[];
-  topicCategory: string;
-  rating?: "up" | "down";
-  bookmarked?: boolean;
-  feedbackText?: string;
-  createdAt: number;
-  childName?: string;
-  childAge?: string;
-  language?: Language;
-}
+// === Types (imported from @/lib/types) ===
 
 interface InsightsProps {
   sessions: Session[];

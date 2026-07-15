@@ -8,6 +8,7 @@ import { useState, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { TOPIC_CATEGORIES, parseAgeYears, topicsForAge } from "@/lib/topics";
 import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from "@/lib/i18n";
+import type { Session, ChildProfile, AdviceSection, ConversationTurn } from "@/lib/types";
 import Insights from "@/components/Insights";
 import FamilyPanel from "@/components/FamilyPanel";
 import MilestoneTracker from "@/components/MilestoneTracker";
@@ -30,34 +31,7 @@ import {
 } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
-// === Types ===
-interface AdviceSection {
-  situation?: string;
-  dos: string[];
-  donts: string[];
-  why: string;
-  source: string;
-}
-interface Session {
-  id: string;
-  query: string;
-  advice: string;
-  sources: string[];
-  topicCategory: string;
-  rating?: "up" | "down";
-  bookmarked?: boolean;
-  feedbackText?: string;
-  createdAt: number;
-  childName?: string;
-  childAge?: string;
-  language?: Language;
-  _synced?: boolean;
-}
-interface ChildProfile {
-  name: string;
-  age: string;
-  notes: string;
-}
+// === Types (imported from @/lib/types) ===
 
 // === Helpers ===
 function parseAdvice(raw: string): AdviceSection {
@@ -109,12 +83,6 @@ function saveToStorage(key: string, value: unknown) {
 
 // === Tab type ===
 type Tab = "home" | "history" | "saved" | "plans" | "insights" | "family" | "milestones" | "support" | "profile";
-
-// === Conversation turn for follow-up memory ===
-interface ConversationTurn {
-  role: "user" | "assistant";
-  content: string;
-}
 
 // === Main Component ===
 export default function Home({ params }: { params: Promise<{ locale: string }> }) {
