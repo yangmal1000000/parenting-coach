@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Lock, BarChart3 } from "lucide-react";
 
 interface QueryLog {
   id: string;
@@ -93,7 +94,7 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "#0a0a0a" }}>
         <form onSubmit={handleLogin} className="max-w-sm w-full">
-          <h1 className="text-xl font-bold mb-4 text-white">🔒 Admin Dashboard</h1>
+          <h1 className="text-xl font-bold mb-4 text-white"><Lock size={20} className="inline mr-2" />Admin Dashboard</h1>
           <input
             type="password"
             value={password}
@@ -116,7 +117,7 @@ export default function AdminPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">📊 ParentKin — Dashboard</h1>
+          <h1 className="text-2xl font-bold"><BarChart3 size={24} className="inline mr-2" />ParentKin — Dashboard</h1>
           <div className="flex gap-2">
             {[1, 7, 30].map(d => (
               <button
@@ -161,22 +162,22 @@ export default function AdminPage() {
             {/* Secondary stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
-                <p className="text-xs text-zinc-500 mb-1">👍 Positive</p>
+                <p className="text-xs text-zinc-500 mb-1">Positive</p>
                 <p className="text-2xl font-bold text-emerald-400">{data.feedbackSummary.up}</p>
               </div>
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
-                <p className="text-xs text-zinc-500 mb-1">👎 Negative</p>
+                <p className="text-xs text-zinc-500 mb-1">Negative</p>
                 <p className="text-2xl font-bold text-red-400">{data.feedbackSummary.down}</p>
               </div>
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
-                <p className="text-xs text-zinc-500 mb-1">🔄 Follow-up Rate</p>
+                <p className="text-xs text-zinc-500 mb-1">Follow-up Rate</p>
                 <p className="text-2xl font-bold text-white">{data.followUpRate !== null ? `${data.followUpRate}%` : "—"}</p>
               </div>
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4">
-                <p className="text-xs text-zinc-500 mb-1">📱 Devices</p>
+                <p className="text-xs text-zinc-500 mb-1">Devices</p>
                 <div className="flex gap-2 mt-1">
                   {Object.entries(data.devices).map(([d, count]) => (
-                    <span key={d} className="text-xs text-zinc-400">{d === "mobile" ? "📱" : d === "tablet" ? "📋" : "💻"} {count}</span>
+                    <span key={d} className="text-xs text-zinc-400">{d} {count}</span>
                   ))}
                   {Object.keys(data.devices).length === 0 && <span className="text-xs text-zinc-600">—</span>}
                 </div>
@@ -185,12 +186,11 @@ export default function AdminPage() {
 
             {/* Language breakdown */}
             <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 mb-6">
-              <h2 className="text-sm font-semibold mb-3">🌐 Languages</h2>
+              <h2 className="text-sm font-semibold mb-3">Languages</h2>
               <div className="flex gap-3">
                 {Object.entries(data.languages).map(([lang, count]) => (
                   <div key={lang} className="flex items-center gap-2">
-                    <span className="text-lg">{lang === "ko" ? "🇰🇷" : "🇬🇧"}</span>
-                    <span className="text-sm text-zinc-400">{lang}</span>
+                    <span className="text-sm text-zinc-400 uppercase">{lang}</span>
                     <span className="text-sm font-bold text-white">{count}</span>
                   </div>
                 ))}
@@ -203,7 +203,7 @@ export default function AdminPage() {
             {/* Daily chart */}
             {Object.keys(data.daily).length > 0 && (
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 mb-6">
-                <h2 className="text-sm font-semibold mb-3">📈 Daily Queries</h2>
+                <h2 className="text-sm font-semibold mb-3">Daily Queries</h2>
                 <div className="flex items-end gap-1 h-24">
                   {Object.entries(data.daily).sort().map(([day, count]) => {
                     const max = Math.max(...Object.values(data.daily), 1);
@@ -223,7 +223,7 @@ export default function AdminPage() {
             {/* Topics */}
             {Object.keys(data.topics).length > 0 && (
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 mb-6">
-                <h2 className="text-sm font-semibold mb-3">📚 Topics</h2>
+                <h2 className="text-sm font-semibold mb-3">Topics</h2>
                 <div className="space-y-1.5">
                   {Object.entries(data.topics).sort((a, b) => b[1] - a[1]).map(([topic, count]) => (
                     <div key={topic} className="flex items-center gap-2">
@@ -240,7 +240,7 @@ export default function AdminPage() {
 
             {/* Recent queries */}
             <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 mb-6">
-              <h2 className="text-sm font-semibold mb-3">🔍 Recent Queries ({data.queries.length})</h2>
+              <h2 className="text-sm font-semibold mb-3">Recent Queries ({data.queries.length})</h2>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {data.queries.length === 0 && <p className="text-xs text-zinc-600">No queries yet</p>}
                 {data.queries.map((q, i) => (
@@ -248,10 +248,10 @@ export default function AdminPage() {
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <p className="text-sm text-white flex-1 break-words">{q.query}</p>
                       <div className="flex items-center gap-1 shrink-0">
-                        <span className="text-xs">{q.language === "ko" ? "🇰🇷" : "🇬🇧"}</span>
-                        {q.device && <span className="text-xs">{q.device === "mobile" ? "📱" : q.device === "tablet" ? "📋" : "💻"}</span>}
-                        {q.childAge && <span className="text-xs text-zinc-500">👶 {q.childAge}</span>}
-                        {q.responseMs && <span className="text-xs text-zinc-500">⏱ {(q.responseMs / 1000).toFixed(1)}s</span>}
+                        <span className="text-xs uppercase">{q.language}</span>
+                        {q.device && <span className="text-xs">{q.device}</span>}
+                        {q.childAge && <span className="text-xs text-zinc-500">{q.childAge}</span>}
+                        {q.responseMs && <span className="text-xs text-zinc-500">{(q.responseMs / 1000).toFixed(1)}s</span>}
                       </div>
                     </div>
                     {q.topicCategory && (
@@ -274,12 +274,12 @@ export default function AdminPage() {
             {/* Recent feedback */}
             {data.feedback.length > 0 && (
               <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 mb-6">
-                <h2 className="text-sm font-semibold mb-3">💬 Recent Feedback</h2>
+                <h2 className="text-sm font-semibold mb-3">Recent Feedback</h2>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {data.feedback.map((f, i) => (
                     <div key={i} className="rounded-xl bg-zinc-800/50 p-3">
                       <div className="flex items-start gap-2">
-                        <span className="text-lg">{f.rating === "up" ? "👍" : "👎"}</span>
+                        <span className={f.rating === "up" ? "text-emerald-400 text-lg" : "text-red-400 text-lg"}>{f.rating === "up" ? "▲" : "▼"}</span>
                         <div className="flex-1">
                           <p className="text-sm text-zinc-300">{f.query.slice(0, 100)}</p>
                           {f.feedbackText && <p className="text-xs text-zinc-500 mt-1 italic">&ldquo;{f.feedbackText}&rdquo;</p>}

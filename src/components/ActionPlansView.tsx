@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Target } from "lucide-react";
 import type { Language } from "@/lib/i18n";
 import { DynamicIcon } from "@/lib/DynamicIcon";
 import type { PlanProgress } from "@/lib/actionPlanTypes";
@@ -123,7 +124,7 @@ export default function ActionPlansView({ lang, childAgeYears }: Props) {
 
         {selectedProgress.finished ? (
           <div className="rounded-2xl p-6 text-center" style={{ background: "var(--emerald-50)", border: "1px solid var(--success)" }}>
-            <div className="text-3xl mb-2">🎉</div>
+            <div className="text-3xl mb-2"><Target size={32} color="var(--primary)" /></div>
             <p className="text-sm font-semibold mb-1" style={{ color: "var(--success)" }}>{t.finished}</p>
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.finishedDesc}</p>
           </div>

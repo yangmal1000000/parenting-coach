@@ -232,7 +232,7 @@ export default function LandingPage() {
               letterSpacing: 0.5,
               textTransform: "uppercase",
             }}>
-              📚 1,300+ research sources · Ages 1-8
+              1,300+ research sources · Ages 1-8
             </div>
             <h1 style={{
               fontSize: "clamp(28px, 5vw, 42px)",
@@ -718,7 +718,7 @@ export default function LandingPage() {
         margin: "0 auto",
       }}>
         <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 12 }}>
-          📬 Get notified about the mobile app launch
+          Get notified about the mobile app launch
         </p>
         <form action="https://formspree.io/f/xyzplaceholder" method="POST" style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
           <input
