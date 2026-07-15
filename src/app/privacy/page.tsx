@@ -30,7 +30,7 @@ export default function PrivacyPage() {
             <li><strong>Child profiles:</strong> Name/nickname, age or birth date, temperament tags, conditions, and notes you choose to add. This is stored on your device and optionally synced to your account via Supabase.</li>
             <li><strong>Questions and advice:</strong> When you ask for advice, your query and the AI-generated response are saved to your session history on your device and optionally in the cloud.</li>
             <li><strong>Voice recordings:</strong> If you use the voice feature, audio is sent to OpenAI&apos;s Whisper API for transcription and immediately discarded. We do not store audio recordings.</li>
-            <li><strong>Feedback:</strong> When you rate advice (👍/👎) or provide feedback reasons, this is logged for product improvement.</li>
+            <li><strong>Feedback:</strong> When you rate advice (positive/negative) or provide feedback reasons, this is logged for product improvement.</li>
             <li><strong>Account info:</strong> If you sign in with Google, we store your email address and Google ID for authentication and cloud sync.</li>
           </ul>
         </section>

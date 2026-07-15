@@ -125,11 +125,11 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
             fontSize: 13,
             color: "var(--text-muted)",
           }}>
-            <span>📚 Research-backed</span>
+            <span>Research-backed</span>
             <span>·</span>
-            <span>⏱️ {readingTime} min read</span>
+            <span>{readingTime} min read</span>
             <span>·</span>
-            <span>👶 Ages {topic.ageRange}</span>
+            <span>Ages {topic.ageRange}</span>
           </div>
         </header>
 
@@ -173,7 +173,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
         {/* Strategies */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>
-            ✅ What to do: evidence-based strategies
+            What to do: evidence-based strategies
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {content.strategies.map((s, i) => (
@@ -194,7 +194,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
                   border: "1px solid var(--border)",
                   marginBottom: 10,
                 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "var(--primary)" }}>💬 Try saying: </span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "var(--primary)" }}>Try saying: </span>
                   <span style={{ fontSize: 14, fontStyle: "italic" }}>{s.script}</span>
                 </div>
                 <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>
@@ -238,7 +238,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
         {/* Age-by-age guidance */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>
-            📋 Age-by-age guidance
+            Age-by-age guidance
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {content.ageGuidance.map((g, i) => (
