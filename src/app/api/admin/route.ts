@@ -1,8 +1,11 @@
 import { NextRequest } from "next/server";
 import { getAnalytics } from "@/lib/analytics";
 
-// Simple password check
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "calm-parent-admin-2026";
+// Admin password — MUST be set via env var, no insecure fallback
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+if (!ADMIN_PASSWORD && process.env.NODE_ENV === "production") {
+  console.warn("[ADMIN] ADMIN_PASSWORD env var not set — admin dashboard will be inaccessible");
+}
 
 export async function GET(request: NextRequest) {
   try {
