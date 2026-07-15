@@ -32,9 +32,10 @@ export async function POST(request: Request) {
 
     return Response.json({ text: transcription.text });
   } catch (error) {
-    console.error("[API] Whisper error:", error);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("[API] Whisper error:", msg);
     return Response.json(
-      { error: "Failed to transcribe audio" },
+      { error: "Transcription failed", detail: msg },
       { status: 500 }
     );
   }
