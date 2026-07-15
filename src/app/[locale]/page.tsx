@@ -1842,6 +1842,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           {/* More button */}
           <button
             onClick={() => setShowMoreMenu(!showMoreMenu)}
+            aria-label="More menu"
             className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors"
             style={{ opacity: showMoreMenu || ["saved", "family", "milestones", "support"].includes(tab) ? 1 : 0.5 }}
           >
