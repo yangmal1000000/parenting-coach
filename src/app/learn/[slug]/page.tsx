@@ -83,7 +83,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
         margin: "0 auto",
       }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/logo/parentkin-icon.jpg" alt="ParentKin" style={{ height: 30, width: 30, borderRadius: 6, objectFit: "cover" }} />
+          <img src="/icon.png" alt="ParentKin" style={{ height: 30, width: 30, borderRadius: 6, objectFit: "cover" }} />
           <span style={{ fontWeight: 700, fontSize: 18, color: "var(--text)", letterSpacing: -0.4 }}>ParentKin</span>
         </Link>
         <Link href="/en" style={{

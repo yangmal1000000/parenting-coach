@@ -60,7 +60,7 @@ export default function ScrollGrowLogo() {
       }}
     >
       <img
-        src="/logo/parentkin-icon.jpg"
+        src="/icon.png"
         alt=""
         style={{
           width: "auto",
