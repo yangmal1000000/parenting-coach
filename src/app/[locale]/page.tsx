@@ -1,5 +1,5 @@
 "use client";
-import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X, Brain, Phone } from 'lucide-react';
+import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X, Brain, Phone, Sun, Moon, ThumbsUp, ThumbsDown, BookOpen, Zap } from 'lucide-react';
 import { buildChildContext } from '@/lib/childProfile';
 import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
 import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';
@@ -695,7 +695,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 <div><p className="text-sm font-medium" style={{ color: "var(--text)" }}>{t.onboardingEvidence}</p><p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.onboardingEvidenceDesc}</p></div>
               </div>
               <div className="flex items-start gap-3">
-                <span className="text-xl">⚡</span>
+                <span className="text-xl"><Zap size={20} /></span>
                 <div><p className="text-sm font-medium" style={{ color: "var(--text)" }}>{t.onboardingInstant}</p><p className="text-xs" style={{ color: "var(--text-muted)" }}>{t.onboardingInstantDesc}</p></div>
               </div>
             </div>
@@ -858,7 +858,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           </button>
           <div className="flex items-center gap-1">
             <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg" style={{ color: "var(--text-muted)" }}>
-              {darkMode ? "☀️" : "🌙"}
+              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
         </div>
@@ -1096,7 +1096,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 {/* SOURCE */}
                 {advice.source && (
                   <div className="rounded-xl px-4 py-3 flex items-center gap-2" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>📖</span>
+                    <BookOpen size={12} style={{ color: "var(--text-muted)" }} />
                     <span className="text-xs" style={{ color: "var(--text-muted)" }}>{advice.source}</span>
                   </div>
                 )}
@@ -1188,7 +1188,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                 {feedbackGiven && !feedbackSubmitted && (
                   <div className="rounded-2xl p-4 slide-up" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                     <p className="text-sm font-medium mb-3" style={{ color: "var(--text)" }}>
-                      {feedbackGiven === "up" ? "👍 " + t.fbUpTitle : "👎 " + t.fbDownTitle}
+                      {feedbackGiven === "up" ? <><ThumbsUp size={16} className="inline" /> {t.fbUpTitle}</> : <><ThumbsDown size={16} className="inline" /> {t.fbDownTitle}</>}
                     </p>
                     {/* Reason chips */}
                     <div className="flex flex-wrap gap-2 mb-3">
@@ -1356,8 +1356,8 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                         <p className="text-sm font-medium flex-1" style={{ color: "var(--text)" }}>{s.query}</p>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        {s.rating === "up" && <span className="text-xs">👍</span>}
-                        {s.rating === "down" && <span className="text-xs">👎</span>}
+                        {s.rating === "up" && <ThumbsUp size={12} className="inline" />}
+                        {s.rating === "down" && <ThumbsDown size={12} className="inline" />}
                         {s.bookmarked && <span className="text-xs">★</span>}
                       </div>
                     </div>

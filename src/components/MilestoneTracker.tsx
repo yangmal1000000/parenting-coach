@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Sprout, Check, AlertTriangle, ChevronLeft } from "lucide-react";
+import { Sprout, Check, AlertTriangle, ChevronLeft, Clock } from "lucide-react";
 import { DynamicIcon } from "@/lib/DynamicIcon";
 import type { Language } from "@/lib/i18n";
 import {
@@ -270,7 +270,7 @@ export default function MilestoneTracker({ lang, childAgeYears }: Props) {
                     <p className="text-sm font-medium" style={{ color: "var(--text)" }}>{lang === "ko" ? m.titleKo : m.titleEn}</p>
                     <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{lang === "ko" ? m.descKo : m.descEn}</p>
                   </div>
-                  <span className="text-lg">{rec?.status === "achieved" ? "✅" : rec?.status === "concern" ? "⚠️" : "⏳"}</span>
+                  <span className="text-lg">{rec?.status === "achieved" ? <Check size={18} className="text-emerald-600" /> : rec?.status === "concern" ? <AlertTriangle size={18} className="text-amber-500" /> : <Clock size={18} className="text-muted" />}</span>
                 </button>
               );
             })}

@@ -73,7 +73,7 @@ export function ExampleCarousel({ examples }: { examples: Example[] }) {
 
         <div style={{ padding: "28px" }}>
           <div style={{ marginBottom: 24 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>📋 Situation</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>Situation</p>
             <p style={{ fontSize: 14, lineHeight: 1.6 }}>{ex.situation}</p>
           </div>
           <div style={{ marginBottom: 24 }}>

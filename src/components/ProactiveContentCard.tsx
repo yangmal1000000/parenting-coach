@@ -55,7 +55,7 @@ export default function ProactiveContentCard({ content, lang, onTopicSelect }: P
         <h3 className="text-sm font-semibold mb-1 font-display" style={{ color: "var(--text)" }}>{seasonal.title}</h3>
         <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>{seasonal.body}</p>
         <div className="flex items-center gap-2">
-          <p className="text-xs font-medium flex-1" style={{ color: "var(--accent)" }}>✨ {seasonal.actionable}</p>
+          <p className="text-xs font-medium flex-1" style={{ color: "var(--accent)" }}>{seasonal.actionable}</p>
           {seasonal.suggestedTopic && onTopicSelect && (
             <button
               onClick={() => onTopicSelect(seasonal.suggestedTopic!)}
@@ -133,7 +133,7 @@ export default function ProactiveContentCard({ content, lang, onTopicSelect }: P
         <h3 className="text-sm font-semibold mb-1 font-display" style={{ color: "var(--text)" }}>{tip.title}</h3>
         <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>{tip.body}</p>
         <p className="text-xs font-medium" style={{ color: "var(--success)" }}>
-          💪 {t.actionable}: {tip.actionable}
+          {t.actionable}: {tip.actionable}
         </p>
       </div>
     );
