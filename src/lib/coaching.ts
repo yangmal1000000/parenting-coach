@@ -6,6 +6,9 @@ import storedEmbeddings from "../data/embeddings.json";
 let _openai: OpenAI | null = null;
 function getOpenAI(): OpenAI {
   if (!_openai) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OpenAI API key not configured. Set OPENAI_API_KEY env var.");
+    }
     _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
   return _openai;
