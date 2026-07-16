@@ -207,6 +207,44 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           addTranscript(msg.serverContent.inputTranscription.text, true);
         }
 
+        // ─── Extract audio from modelTurn ───
+        const parts = msg.serverContent?.modelTurn?.parts;
+        if (parts && Array.isArray(parts)) {
+          for (const part of parts) {
+            // Audio can be in inlineData (base64) or text
+            if (part.inlineData?.data) {
+              try {
+                const base64 = part.inlineData.data;
+                const mimeType = part.inlineData.mimeType || "audio/pcm;rate=24000";
+                const sampleRate = mimeType.includes("24000") ? 24000 : 16000;
+
+                // base64 → Uint8Array
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+                // Uint8Array → Int16 PCM → Float32
+                const pcmData = new Int16Array(bytes.buffer);
+                const float32 = new Float32Array(pcmData.length);
+                for (let i = 0; i < pcmData.length; i++) {
+                  float32[i] = pcmData[i] / 32768;
+                }
+
+                const ctx = outputAudioCtxRef.current;
+                if (!ctx) continue;
+
+                const audioBuffer = ctx.createBuffer(1, float32.length, sampleRate);
+                audioBuffer.copyToChannel(float32, 0);
+                playbackQueueRef.current.push(audioBuffer);
+                console.log("[voice] Extracted audio:", float32.length, "samples at", sampleRate);
+                processPlaybackQueue();
+              } catch (e) {
+                console.error("[voice] Audio extraction failed:", e);
+              }
+            }
+          }
+        }
+
         // Turn complete
         if (msg.serverContent?.turnComplete) {
           if (!isPlayingRef.current && playbackQueueRef.current.length === 0) {
