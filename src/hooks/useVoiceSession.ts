@@ -50,34 +50,14 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
   const addTranscript = useCallback((text: string, isUser: boolean) => {
     setTranscript(prev => {
-      const entry: TranscriptEntry = { role: isUser ? "user" : "ai", text };
-      // For AI: accumulate partial transcriptions (Gemini sends cumulative updates)
-      if (!isUser && prev.length > 0) {
+      const role: "user" | "ai" = isUser ? "user" : "ai";
+      // Accumulate into the last bubble if same role
+      if (prev.length > 0 && prev[prev.length - 1].role === role) {
         const last = prev[prev.length - 1];
-        if (last.role === "ai") {
-          // If new text starts with old text, it's a cumulative update
-          if (text.startsWith(last.text)) {
-            return [...prev.slice(0, -1), { role: "ai", text }];
-          }
-          // If old text starts with new text, keep old (newer has less)
-          if (last.text.startsWith(text)) {
-            return prev;
-          }
-        }
+        return [...prev.slice(0, -1), { role, text: last.text + " " + text }];
       }
-      // For user: also accumulate
-      if (isUser && prev.length > 0) {
-        const last = prev[prev.length - 1];
-        if (last.role === "user") {
-          if (text.startsWith(last.text)) {
-            return [...prev.slice(0, -1), { role: "user", text }];
-          }
-          if (last.text.startsWith(text)) {
-            return prev;
-          }
-        }
-      }
-      const updated = [...prev, entry];
+      // New bubble
+      const updated = [...prev, { role, text }];
       return updated.length > 50 ? updated.slice(-50) : updated;
     });
     opts.onTranscript?.(text, isUser);
