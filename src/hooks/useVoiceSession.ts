@@ -312,7 +312,27 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       workletNode.port.onmessage = (e: MessageEvent) => {
         // Only send audio after setup is confirmed
         if (wsRef.current?.readyState === WebSocket.OPEN && isSetupDoneRef.current) {
-          wsRef.current.send(e.data);
+          // Gemini Live v1beta expects audio wrapped in JSON with base64
+          const pcmBuffer = e.data as ArrayBuffer;
+          const bytes = new Uint8Array(pcmBuffer);
+          let binary = "";
+          const chunkSize = 8192;
+          for (let i = 0; i < bytes.length; i += chunkSize) {
+            const chunk = bytes.subarray(i, i + chunkSize);
+            binary += String.fromCharCode.apply(null, Array.from(chunk));
+          }
+          const base64 = btoa(binary);
+
+          const audioMsg = {
+            realtimeInput: {
+              audio: {
+                data: base64,
+                mimeType: "audio/pcm;rate=16000",
+              },
+            },
+          };
+          wsRef.current.send(JSON.stringify(audioMsg));
+
           audioChunkCount++;
           if (audioChunkCount % 50 === 0) {
             console.log("[voice] Sent", audioChunkCount, "audio chunks");
