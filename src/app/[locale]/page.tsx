@@ -1,5 +1,5 @@
 "use client";
-import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X, Brain, Phone, Sun, Moon, ThumbsUp, ThumbsDown, BookOpen, Zap } from 'lucide-react';
+import { Mic, ClipboardList, Star, Target, BarChart3, Sprout, User as UserIcon, Home as HomeIcon, Users, Leaf, LifeBuoy, MoreHorizontal, Check, X, Brain, Phone, Sun, Moon, ThumbsUp, ThumbsDown, BookOpen, Zap, Volume2 } from 'lucide-react';
 import { buildChildContext } from '@/lib/childProfile';
 import { calcAge, getStage, STAGE_LABELS, TEMPERAMENT_TAGS, CONDITION_TAGS, createBlankChild } from '@/lib/childProfile';
 import type { ChildProfile as ChildProfileFull } from '@/lib/childProfile';
@@ -10,6 +10,7 @@ import { TOPIC_CATEGORIES, parseAgeYears, topicsForAge } from "@/lib/topics";
 import { UI, LANGUAGES, TOPIC_LABELS, TOPIC_EXAMPLES_I18N, type Language } from "@/lib/i18n";
 import type { Session, ChildProfile, AdviceSection, ConversationTurn } from "@/lib/types";
 import Insights from "@/components/Insights";
+import { VoiceModeOverlay } from "@/components/VoiceModeOverlay";
 import FamilyPanel from "@/components/FamilyPanel";
 import MilestoneTracker from "@/components/MilestoneTracker";
 import CrisisSupportPanel from "@/components/CrisisSupportPanel";
@@ -155,6 +156,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
   const [authLoading, setAuthLoading] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [linkedProviders, setLinkedProviders] = useState<string[]>([]);
+  const [showVoiceMode, setShowVoiceMode] = useState(false);
 
   // Load from storage on mount
   useEffect(() => {
@@ -929,6 +931,19 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                   ) : (
                     <><Mic size={20} /> {t.tapToSpeak}</>
                   )}
+                </button>
+              )}
+
+              {/* Real-time Voice Mode button */}
+              {!isRecording && !loading && (
+                <button
+                  onClick={() => setShowVoiceMode(true)}
+                  className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
+                  style={{ border: "1px solid var(--primary-border)", background: "var(--primary-light)", color: "var(--primary-dark)" }}
+                >
+                  <Volume2 size={14} />
+                  {lang === "ko" ? "실시간 음성 대화" : "Real-time Voice Chat"}
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--primary)", color: "#fff" }}>BETA</span>
                 </button>
               )}
             </div>
@@ -1733,6 +1748,19 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
           </div>
         )}
       </main>
+
+      {/* Voice Mode Overlay */}
+      <VoiceModeOverlay
+        visible={showVoiceMode}
+        onClose={() => setShowVoiceMode(false)}
+        childProfile={webChildren.find(c => c.id === activeChildId) ? {
+          name: webChildren.find(c => c.id === activeChildId)?.name,
+          age: calcAge(webChildren.find(c => c.id === activeChildId)?.birthDate || "")?.label || "",
+          temperament: [],
+          notes: webChildren.find(c => c.id === activeChildId)?.notes,
+        } : undefined}
+        lang={lang}
+      />
 
       {/* Auth Gate Modal — after 1 free query */}
       {showAuthGate && !user && (
