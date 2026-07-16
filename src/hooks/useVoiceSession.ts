@@ -307,7 +307,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           wsRef.current.send(e.data);
         }
       };
-
       source.connect(workletNode);
       // Don't connect to destination — avoid hearing ourselves
       workletNodeRef.current = workletNode;
