@@ -267,10 +267,17 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
       // Input context for mic capture
       const inputCtx = new AudioContext({ sampleRate: INPUT_SAMPLE_RATE });
+      // Safari starts AudioContext suspended — must resume explicitly
+      if (inputCtx.state === "suspended") {
+        await inputCtx.resume();
+      }
       inputAudioCtxRef.current = inputCtx;
 
       // Output context for playback (Gemini sends 24kHz audio)
       const outputCtx = new AudioContext({ sampleRate: OUTPUT_SAMPLE_RATE });
+      if (outputCtx.state === "suspended") {
+        await outputCtx.resume();
+      }
       outputAudioCtxRef.current = outputCtx;
 
       // AudioWorklet for PCM capture
