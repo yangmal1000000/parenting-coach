@@ -51,8 +51,33 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const addTranscript = useCallback((text: string, isUser: boolean) => {
     setTranscript(prev => {
       const entry: TranscriptEntry = { role: isUser ? "user" : "ai", text };
+      // For AI: accumulate partial transcriptions (Gemini sends cumulative updates)
+      if (!isUser && prev.length > 0) {
+        const last = prev[prev.length - 1];
+        if (last.role === "ai") {
+          // If new text starts with old text, it's a cumulative update
+          if (text.startsWith(last.text)) {
+            return [...prev.slice(0, -1), { role: "ai", text }];
+          }
+          // If old text starts with new text, keep old (newer has less)
+          if (last.text.startsWith(text)) {
+            return prev;
+          }
+        }
+      }
+      // For user: also accumulate
+      if (isUser && prev.length > 0) {
+        const last = prev[prev.length - 1];
+        if (last.role === "user") {
+          if (text.startsWith(last.text)) {
+            return [...prev.slice(0, -1), { role: "user", text }];
+          }
+          if (last.text.startsWith(text)) {
+            return prev;
+          }
+        }
+      }
       const updated = [...prev, entry];
-      // Keep last 50 entries
       return updated.length > 50 ? updated.slice(-50) : updated;
     });
     opts.onTranscript?.(text, isUser);
@@ -216,6 +241,11 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     // With binaryType = "arraybuffer", both JSON and audio arrive as ArrayBuffer
     // JSON was already handled above via TextDecoder. Anything reaching here is audio.
     if (event.data instanceof ArrayBuffer) {
+      // Check if it looks like PCM audio (not JSON)
+      const testStr = new TextDecoder().decode(event.data.slice(0, 4));
+      if (!testStr.startsWith("{")) {
+        console.log("[voice] Binary audio frame:", event.data.byteLength, "bytes");
+      }
       try {
         const pcmData = new Int16Array(event.data);
         if (pcmData.length === 0) return;
