@@ -92,6 +92,15 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
   // ─── Handle incoming WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
+    // ── Log EVERY message for debugging ──
+    if (typeof event.data === "string") {
+      console.log("[voice] TEXT msg:", event.data.substring(0, 200));
+    } else if (event.data instanceof ArrayBuffer) {
+      const arr = new Uint8Array(event.data);
+      const preview = Array.from(arr.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+      console.log("[voice] BINARY msg:", event.data.byteLength, "bytes, first8:", preview);
+    }
+
     // ── Text messages (JSON control messages) ──
     let dataStr: string | null = null;
 
