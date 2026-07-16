@@ -92,15 +92,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
   // ─── Handle incoming WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
-    // ── Log EVERY message for debugging ──
-    if (typeof event.data === "string") {
-      console.log("[voice] TEXT msg:", event.data.substring(0, 200));
-    } else if (event.data instanceof ArrayBuffer) {
-      const arr = new Uint8Array(event.data);
-      const preview = Array.from(arr.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join(' ');
-      console.log("[voice] BINARY msg:", event.data.byteLength, "bytes, first8:", preview);
-    }
-
     // ── Text messages (JSON control messages) ──
     let dataStr: string | null = null;
 
@@ -130,18 +121,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     if (dataStr !== null) {
       try {
         const msg = JSON.parse(dataStr);
-        console.log("[voice] WS JSON:", msg.setupComplete ? "setupComplete" : msg.toolCall ? "toolCall" : msg.serverContent ? "serverContent" : "unknown");
-
-        // If serverContent has inline audio, extract it
-        if (msg.serverContent) {
-          const sc = msg.serverContent;
-          console.log("[voice] serverContent keys:", Object.keys(sc));
-          // Some API versions send audio inline as base64
-          if (sc.audioChunks) {
-            console.log("[voice] Found", sc.audioChunks.length, "inline audio chunks");
-          }
-        }
-
         // Setup complete — Gemini is ready for audio
         if (msg.setupComplete) {
           isSetupDoneRef.current = true;
@@ -236,7 +215,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                 const audioBuffer = ctx.createBuffer(1, float32.length, sampleRate);
                 audioBuffer.copyToChannel(float32, 0);
                 playbackQueueRef.current.push(audioBuffer);
-                console.log("[voice] Extracted audio:", float32.length, "samples at", sampleRate);
                 processPlaybackQueue();
               } catch (e) {
                 console.error("[voice] Audio extraction failed:", e);
@@ -271,7 +249,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       // Check if it looks like PCM audio (not JSON)
       const testStr = new TextDecoder().decode(event.data.slice(0, 4));
       if (!testStr.startsWith("{")) {
-        console.log("[voice] Binary audio frame:", event.data.byteLength, "bytes");
       }
       try {
         const pcmData = new Int16Array(event.data);
@@ -402,7 +379,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
           audioChunkCount++;
           if (audioChunkCount % 50 === 0) {
-            console.log("[voice] Sent", audioChunkCount, "audio chunks");
           }
         }
       };
@@ -473,7 +449,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log("[voice] WS opened, sending setup...");
         // Send setup message
         const setup = {
           setup: {
@@ -495,7 +470,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           },
         };
         ws.send(JSON.stringify(setup));
-        console.log("[voice] Setup sent, model:", MODEL);
 
         // Start mic capture (will only send audio after setupComplete)
         startAudioCapture();
@@ -510,7 +484,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       };
 
       ws.onclose = (e) => {
-        console.log(`[voice] WS closed: ${e.code} ${e.reason}`);
         stopAudioCapture();
         wsRef.current = null;
         if (stateRef.current !== "error" && stateRef.current !== "idle") {
