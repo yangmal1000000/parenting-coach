@@ -6,6 +6,7 @@ import ScrollGrowLogo from "@/components/ScrollGrowLogo";
 import { ExampleCarousel } from "@/components/ExampleCarousel";
 import { getIcon } from "@/lib/iconMap";
 import { DynamicIcon } from "@/lib/DynamicIcon";
+import { NotifyForm } from "@/components/NotifyForm";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
@@ -723,40 +724,7 @@ export default function LandingPage() {
         <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 12 }}>
           Get notified about the mobile app launch
         </p>
-        {/* TODO: Configure Formspree endpoint or replace with own subscription handler */}
-        {/* <form action="https://formspree.io/f/your-form-id" method="POST" style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-          <input
-            type="email"
-            name="email"
-            placeholder="your@email.com"
-            required
-            style={{
-              padding: "12px 18px",
-              borderRadius: 999,
-              border: "1px solid var(--border)",
-              background: "var(--surface)",
-              color: "var(--text)",
-              fontSize: 14,
-              minWidth: 220,
-              outline: "none",
-            }}
-          />
-          <button type="submit" style={{
-            padding: "12px 22px",
-            borderRadius: 999,
-            background: "var(--primary)",
-            color: "#fff",
-            fontSize: 14,
-            fontWeight: 600,
-            border: "none",
-            cursor: "pointer",
-          }}>
-            Notify Me
-          </button>
-        </form> */}
-        <p style={{ fontSize: 13, color: "var(--text-muted)", fontStyle: "italic" }}>
-          Coming soon — check back for mobile app launch updates.
-        </p>
+        <NotifyForm />
       </section>
 
       {/* Footer */}
