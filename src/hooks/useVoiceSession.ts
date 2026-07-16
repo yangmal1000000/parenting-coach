@@ -315,7 +315,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       const config = await res.json();
       if (config.error) throw new Error(config.error);
 
-      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+      const apiKey = config.apiKey;
       if (!apiKey) {
         throw new Error("Gemini API key not configured");
       }

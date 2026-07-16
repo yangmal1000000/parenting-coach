@@ -102,9 +102,10 @@ export async function POST(request: NextRequest) {
     return Response.json({
       systemInstruction,
       tools,
-      model: "gemini-2.5-flash-native-audio-latest",
+      model: "models/gemini-2.5-flash-native-audio-latest",
       voiceName: body.language === "ko" ? "Aoede" : "Puck",
-      apiKeyPresent: true,
+      apiKey: process.env.GEMINI_API_KEY || "",
+      apiKeyPresent: !!process.env.GEMINI_API_KEY,
     });
   } catch (error) {
     console.error("[voice-session] Error:", error);
