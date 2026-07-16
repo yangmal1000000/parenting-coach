@@ -292,7 +292,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                 const s = Math.max(-1, Math.min(1, float32[i]));
                 int16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
               }
-              this.port.postMessage(int16.buffer, [int16.buffer.buffer]);
+              this.port.postMessage(int16.buffer, [int16.buffer]);
             }
             return true;
           }
