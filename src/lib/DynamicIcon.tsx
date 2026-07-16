@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { getIcon } from "./iconMap";
 
 type IconProps = {
@@ -9,6 +10,6 @@ type IconProps = {
 };
 
 export function DynamicIcon({ name, size = 20, color, style, className }: IconProps) {
-  const Cmp = getIcon(name);
+  const Cmp = useMemo(() => getIcon(name), [name]);
   return <Cmp size={size} color={color} style={style} className={className} />;
 }

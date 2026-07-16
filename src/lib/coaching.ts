@@ -32,7 +32,7 @@ if (process.env.NODE_ENV !== 'production') console.log(`[RAG] Loaded ${chunkEmbe
 
 async function getEmbeddings(text: string): Promise<number[]> {
   const response = await getOpenAI().embeddings.create({
-    model: "text-embedding-3-small",
+    model: process.env.OPENAI_EMBEDDING_MODEL || "text-embedding-3-small",
     input: text,
   });
   return response.data[0].embedding;
@@ -341,9 +341,11 @@ export async function generateAdvice(
   messages.push({ role: "user", content: userMessage });
 
   // Generate advice — use gpt-4o-mini for standard, gpt-4o for deep dive
-  const model = request.deepDive ? "gpt-4o" : "gpt-4o-mini";
+  const chatModel = request.deepDive
+    ? (process.env.OPENAI_CHAT_MODEL || "gpt-4o")
+    : (process.env.OPENAI_CHAT_MINI_MODEL || "gpt-4o-mini");
   const completion = await getOpenAI().chat.completions.create({
-    model,
+    model: chatModel,
     messages,
     max_tokens: 650,
     temperature: 0.7,
@@ -417,9 +419,11 @@ export async function generateAdviceStream(
   messages.push({ role: "user", content: userMessage });
 
   // Use gpt-4o-mini for standard queries, gpt-4o for deep dive
-  const model = isDeepDive ? "gpt-4o" : "gpt-4o-mini";
+  const chatModel = isDeepDive
+    ? (process.env.OPENAI_CHAT_MODEL || "gpt-4o")
+    : (process.env.OPENAI_CHAT_MINI_MODEL || "gpt-4o-mini");
   const completion = await getOpenAI().chat.completions.create({
-    model,
+    model: chatModel,
     messages,
     max_tokens: isDeepDive ? 2000 : 650,
     temperature: isDeepDive ? 0.8 : 0.7,

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { generateAdviceStream, CoachingRequest } from "@/lib/coaching";
 import { logQuery } from "@/lib/analytics";
+import { rateLimit } from "@/lib/rateLimit";
 
 function detectDevice(ua: string): string {
   if (/tablet|ipad/i.test(ua)) return "tablet";
@@ -9,6 +10,9 @@ function detectDevice(ua: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = await rateLimit(request, { limit: 10, windowSeconds: 60 });
+  if (limited) return limited;
+
   try {
     const body: CoachingRequest = await request.json();
 

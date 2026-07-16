@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Sprout, MessageSquare, Microscope, Baby } from "lucide-react";
 
 const STORAGE_KEY = "pc_onboarded";
@@ -127,9 +128,11 @@ export function WebOnboarding() {
           <>
             {/* Hero image on first slide */}
             {step === 0 && (
-              <img
+              <Image
                 src="/parentkin-community.png"
                 alt="Diverse parents community"
+                width={340}
+                height={227}
                 style={{
                   width: "100%",
                   maxWidth: 340,
@@ -295,7 +298,7 @@ export function WebOnboarding() {
               }}
               onClick={() => localStorage.setItem(STORAGE_KEY, "true")}
             >
-              🇰🇷 한국어로 보기
+              KO 한국어로 보기
             </Link>
           </div>
         )}

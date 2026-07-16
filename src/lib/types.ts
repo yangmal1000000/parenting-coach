@@ -14,6 +14,8 @@ export interface Session {
   childAge?: string;
   language?: Language;
   _synced?: boolean;
+  is_shared?: boolean;
+  user_id?: string;
 }
 
 export interface ChildProfile {

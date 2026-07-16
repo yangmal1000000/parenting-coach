@@ -689,7 +689,7 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
 
       {/* How It Works Modal */}
       {showInfo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.5)" }} onClick={() => setShowInfo(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.5)" }} role="button" tabIndex={0} onClick={() => setShowInfo(false)} onKeyDown={(e) => { if (e.key === "Escape") setShowInfo(false); }}>
           <div
             className="rounded-2xl max-w-lg w-full my-8 slide-up overflow-y-auto elevation-3"
             style={{ background: "var(--surface)", maxHeight: "85vh" }}
@@ -1304,8 +1304,8 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
               <div className="space-y-2">
                 {sessions
                   .filter(s => {
-                    if (historyFilter === "mine") return !(s as any).is_shared;
-                    if (historyFilter === "shared") return (s as any).is_shared;
+                    if (historyFilter === "mine") return !s.is_shared;
+                    if (historyFilter === "shared") return s.is_shared;
                     return true;
                   })
                   .map(s => (
@@ -1316,12 +1316,12 @@ export default function Home({ params }: { params: Promise<{ locale: string }> }
                     style={{
                       background: "var(--surface)",
                       border: "1px solid var(--border)",
-                      borderLeft: (s as any).is_shared ? "3px solid var(--primary)" : "1px solid var(--border)",
+                      borderLeft: s.is_shared ? "3px solid var(--primary)" : "1px solid var(--border)",
                     }}
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <div className="flex items-center gap-2 flex-1">
-                        {(s as any).is_shared && (
+                        {s.is_shared && (
                           <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--emerald-50)", color: "var(--success)", border: "1px solid #86efac" }}>
                             {lang === "ko" ? "공유됨" : "Shared"}
                           </span>

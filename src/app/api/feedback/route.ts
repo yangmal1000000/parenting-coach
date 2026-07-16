@@ -1,7 +1,11 @@
 import { NextRequest } from "next/server";
 import { logFeedback } from "@/lib/analytics";
+import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
+  const limited = await rateLimit(request, { limit: 20, windowSeconds: 60 });
+  if (limited) return limited;
+
   try {
     const body = await request.json();
     const { queryId, query, rating, feedbackText, language } = body;

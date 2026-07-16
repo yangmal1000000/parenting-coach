@@ -1,4 +1,6 @@
 import OpenAI, { toFile } from "openai";
+import { rateLimit } from "@/lib/rateLimit";
+import { NextRequest } from "next/server";
 
 let _openai: OpenAI | null = null;
 function getOpenAI(): OpenAI {
@@ -11,7 +13,10 @@ function getOpenAI(): OpenAI {
   return _openai;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const limited = await rateLimit(request, { limit: 5, windowSeconds: 60 });
+  if (limited) return limited;
+
   try {
     const formData = await request.formData();
     const audioFile = formData.get("audio") as File;
@@ -31,7 +36,7 @@ export async function POST(request: Request) {
 
     const transcription = await getOpenAI().audio.transcriptions.create({
       file: whisperFile,
-      model: "whisper-1",
+      model: process.env.OPENAI_TRANSCRIPTION_MODEL || "whisper-1",
     });
 
     return Response.json({ text: transcription.text });

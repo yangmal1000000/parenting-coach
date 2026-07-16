@@ -3,8 +3,8 @@
 export type Language = "en" | "ko";
 
 export const LANGUAGES: { code: Language; label: string; nativeLabel: string; flag: string }[] = [
-  { code: "en", label: "English", nativeLabel: "English", flag: "🇬🇧" },
-  { code: "ko", label: "Korean", nativeLabel: "한국어", flag: "🇰🇷" },
+  { code: "en", label: "English", nativeLabel: "English", flag: "EN" },
+  { code: "ko", label: "Korean", nativeLabel: "한국어", flag: "KO" },
 ];
 
 export interface UIStrings {
@@ -391,7 +391,7 @@ export const TOPIC_LABELS: Record<Language, Record<string, { label: string; desc
   en: {
     tantrums: { label: "Tantrums & Meltdowns", description: "Screaming, crying, public meltdowns, emotional outbursts" },
     sleep: { label: "Sleep Issues", description: "Won't go to bed, night waking, bedtime resistance" },
-    eating: { label: "️ Eating Problems", description: "Picky eating, food refusal, mealtime battles" },
+    eating: { label: "Eating Problems", description: "Picky eating, food refusal, mealtime battles" },
     behavior: { label: "Behavior & Discipline", description: "Not listening, defiance, hitting, lying" },
     sibling: { label: "Sibling Conflict", description: "Fighting, hitting, sharing disputes" },
     emotional: { label: "Emotional Regulation", description: "Anxiety, fears, big feelings, crying" },
@@ -410,9 +410,9 @@ export const TOPIC_LABELS: Record<Language, Record<string, { label: string; desc
     "co-parent": { label: "Co-Parenting", description: "Disagreeing on discipline, consistency, teamwork" },
   },
   ko: {
-    tantrums: { label: "tantrum & 감정 폭발", description: "울음, 고성, 공공장소 meltdown, 감정 폭발" },
+    tantrums: { label: "감정 폭발", description: "울음, 고성, 공공장소 meltdown, 감정 폭발" },
     sleep: { label: "수면 문제", description: "안 자려 함, 밤에 깨임, 취침 거부" },
-    eating: { label: "️ 식사 문제", description: "편식, 식사 거부, 밥 먹기 전쟁" },
+    eating: { label: "식사 문제", description: "편식, 식사 거부, 밥 먹기 전쟁" },
     behavior: { label: "행동 & 훈육", description: "말 안 듣기, 반항, 때리기, 거짓말" },
     sibling: { label: "형제 갈등", description: "싸움, 때리기, 장난감 다툼" },
     emotional: { label: "감정 조절", description: "불안, 두려움, 큰 감정, 울음" },

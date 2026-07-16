@@ -33,7 +33,7 @@ export async function getFamilyMembers(familyId: string): Promise<FamilyMember[]
   if (error || !data) return [];
 
   // Fetch display names from profiles
-  const userIds = data.filter((m: FamilyMember) => m.user_id).map((m: FamilyMember) => m.user_id);
+  const userIds = data.filter((m: FamilyMember) => m.user_id).map((m: FamilyMember) => m.user_id) as string[];
   let profileMap: Record<string, { display_name?: string; child_name?: string }> = {};
 
   if (userIds.length > 0) {
@@ -42,7 +42,7 @@ export async function getFamilyMembers(familyId: string): Promise<FamilyMember[]
       .select("id, display_name, child_name")
       .in("id", userIds);
     if (profiles) {
-      profileMap = Object.fromEntries(profiles.map((p: any) => [p.id, p]));
+      profileMap = Object.fromEntries(profiles.map((p: { id: string; display_name?: string; child_name?: string }) => [p.id, p]));
     }
   }
 
@@ -179,7 +179,7 @@ export async function leaveFamily(familyId: string): Promise<void> {
 }
 
 // Get shared sessions from family members
-export async function getSharedSessions(familyId: string): Promise<any[]> {
+export async function getSharedSessions(familyId: string): Promise<Array<{ id: string; user_id?: string; query?: string; topic_category?: string; created_at: string; [key: string]: unknown }>> {
   const { data, error } = await supabase
     .from("sessions")
     .select("*")

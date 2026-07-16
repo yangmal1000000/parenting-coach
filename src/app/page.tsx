@@ -1,4 +1,5 @@
 import { Geist } from "next/font/google";
+import Image from "next/image";
 import Link from "next/link";
 import { Sprout } from "lucide-react";
 import ScrollGrowLogo from "@/components/ScrollGrowLogo";
@@ -178,7 +179,7 @@ export default function LandingPage() {
         margin: "0 auto",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img src="/icon.png" alt="ParentKin logo" style={{ height: 34, width: 34, borderRadius: 8, objectFit: "cover" }} />
+          <Image src="/icon.png" alt="ParentKin logo" width={34} height={34} style={{ borderRadius: 8, objectFit: "cover" }} />
           <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: -0.4, color: "var(--text)" }}>ParentKin</span>
         </div>
         <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
@@ -275,7 +276,7 @@ export default function LandingPage() {
                 textDecoration: "none",
                 border: "1px solid var(--border)",
               }}>
-                🇰🇷 한국어
+                KO 한국어
               </Link>
             </div>
           </div>
@@ -292,9 +293,11 @@ export default function LandingPage() {
               overflow: "hidden",
               boxShadow: "0 20px 60px rgba(0, 0, 0, 0.12)",
             }}>
-              <img
+              <Image
                 src="/parentkin-hero.png"
                 alt="A calm mother embracing her child"
+                width={400}
+                height={267}
                 style={{
                   width: "100%",
                   height: "auto",
@@ -720,7 +723,8 @@ export default function LandingPage() {
         <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 12 }}>
           Get notified about the mobile app launch
         </p>
-        <form action="https://formspree.io/f/xyzplaceholder" method="POST" style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+        {/* TODO: Configure Formspree endpoint or replace with own subscription handler */}
+        {/* <form action="https://formspree.io/f/your-form-id" method="POST" style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
           <input
             type="email"
             name="email"
@@ -749,7 +753,10 @@ export default function LandingPage() {
           }}>
             Notify Me
           </button>
-        </form>
+        </form> */}
+        <p style={{ fontSize: 13, color: "var(--text-muted)", fontStyle: "italic" }}>
+          Coming soon — check back for mobile app launch updates.
+        </p>
       </section>
 
       {/* Footer */}
@@ -760,7 +767,7 @@ export default function LandingPage() {
       }}>
         <div style={{ marginBottom: 16 }}>
           <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <img src="/icon.png" alt="ParentKin logo" style={{ height: 24, width: 24, borderRadius: 5, objectFit: "cover" }} />
+            <Image src="/icon.png" alt="ParentKin logo" width={24} height={24} style={{ borderRadius: 5, objectFit: "cover" }} />
             <span style={{ fontWeight: 600, fontSize: 15, color: "var(--text)" }}>ParentKin</span>
           </Link>
         </div>
