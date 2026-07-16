@@ -301,10 +301,15 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       const source = inputCtx.createMediaStreamSource(stream);
       const workletNode = new AudioWorkletNode(inputCtx, "pcm-capture");
 
+      let audioChunkCount = 0;
       workletNode.port.onmessage = (e: MessageEvent) => {
         // Only send audio after setup is confirmed
         if (wsRef.current?.readyState === WebSocket.OPEN && isSetupDoneRef.current) {
           wsRef.current.send(e.data);
+          audioChunkCount++;
+          if (audioChunkCount % 50 === 0) {
+            console.log("[voice] Sent", audioChunkCount, "audio chunks");
+          }
         }
       };
       source.connect(workletNode);
