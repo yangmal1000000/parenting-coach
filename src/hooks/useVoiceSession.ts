@@ -87,10 +87,13 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
   // ─── Handle incoming WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
+    console.log("[voice] WS message received:", typeof event.data, event.data instanceof Blob ? "blob" : event.data instanceof ArrayBuffer ? "arraybuffer" : "");
+
     // ── Text messages (JSON control messages) ──
     if (typeof event.data === "string") {
       try {
         const msg = JSON.parse(event.data);
+        console.log("[voice] WS JSON:", msg.setupComplete ? "setupComplete" : msg.toolCall ? "toolCall" : msg.serverContent ? "serverContent" : "unknown", JSON.stringify(msg).substring(0, 100));
 
         // Setup complete — Gemini is ready for audio
         if (msg.setupComplete) {
@@ -327,6 +330,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       wsRef.current = ws;
 
       ws.onopen = () => {
+        console.log("[voice] WS opened, sending setup...");
         // Send setup message
         const setup = {
           setup: {
@@ -348,6 +352,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           },
         };
         ws.send(JSON.stringify(setup));
+        console.log("[voice] Setup sent, model:", MODEL);
 
         // Start mic capture (will only send audio after setupComplete)
         startAudioCapture();
