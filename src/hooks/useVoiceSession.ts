@@ -87,13 +87,36 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
   // ─── Handle incoming WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
-    console.log("[voice] WS message received:", typeof event.data, event.data instanceof Blob ? "blob" : event.data instanceof ArrayBuffer ? "arraybuffer" : "");
-
     // ── Text messages (JSON control messages) ──
+    let dataStr: string | null = null;
+
     if (typeof event.data === "string") {
+      dataStr = event.data;
+    } else if (event.data instanceof ArrayBuffer) {
+      // Some browsers deliver text frames as ArrayBuffer — try decoding as UTF-8
       try {
-        const msg = JSON.parse(event.data);
-        console.log("[voice] WS JSON:", msg.setupComplete ? "setupComplete" : msg.toolCall ? "toolCall" : msg.serverContent ? "serverContent" : "unknown", JSON.stringify(msg).substring(0, 100));
+        const decoded = new TextDecoder().decode(event.data);
+        if (decoded.startsWith("{") || decoded.startsWith("[")) {
+          dataStr = decoded;
+        }
+      } catch {
+        // Not text — it's binary audio
+      }
+    } else if (event.data instanceof Blob) {
+      try {
+        const text = await event.data.text();
+        if (text.startsWith("{") || text.startsWith("[")) {
+          dataStr = text;
+        }
+      } catch {
+        // Not text
+      }
+    }
+
+    if (dataStr !== null) {
+      try {
+        const msg = JSON.parse(dataStr);
+        console.log("[voice] WS JSON:", msg.setupComplete ? "setupComplete" : msg.toolCall ? "toolCall" : msg.serverContent ? "serverContent" : "unknown");
 
         // Setup complete — Gemini is ready for audio
         if (msg.setupComplete) {
@@ -180,10 +203,11 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     }
 
     // ── Binary messages (audio from Gemini) ──
-    if (event.data instanceof Blob) {
+    // With binaryType = "arraybuffer", both JSON and audio arrive as ArrayBuffer
+    // JSON was already handled above via TextDecoder. Anything reaching here is audio.
+    if (event.data instanceof ArrayBuffer) {
       try {
-        const arrayBuffer = await event.data.arrayBuffer();
-        const pcmData = new Int16Array(arrayBuffer);
+        const pcmData = new Int16Array(event.data);
         if (pcmData.length === 0) return;
 
         // Convert Int16 PCM → Float32
@@ -193,6 +217,27 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         }
 
         // Use output AudioContext at Gemini's output sample rate
+        const ctx = outputAudioCtxRef.current;
+        if (!ctx) return;
+
+        const audioBuffer = ctx.createBuffer(1, float32.length, OUTPUT_SAMPLE_RATE);
+        audioBuffer.copyToChannel(float32, 0);
+        playbackQueueRef.current.push(audioBuffer);
+        processPlaybackQueue();
+      } catch (e) {
+        console.error("[voice] Audio decode error:", e);
+      }
+    } else if (event.data instanceof Blob) {
+      try {
+        const arrayBuffer = await event.data.arrayBuffer();
+        const pcmData = new Int16Array(arrayBuffer);
+        if (pcmData.length === 0) return;
+
+        const float32 = new Float32Array(pcmData.length);
+        for (let i = 0; i < pcmData.length; i++) {
+          float32[i] = pcmData[i] / 32768;
+        }
+
         const ctx = outputAudioCtxRef.current;
         if (!ctx) return;
 
