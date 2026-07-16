@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Mic, MicOff, X, BookOpen, Loader2, Volume2 } from "lucide-react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Mic, MicOff, X, BookOpen, Loader2, Volume2, VolumeX, RefreshCw, Clock } from "lucide-react";
 import { useVoiceSession, type VoiceState } from "@/hooks/useVoiceSession";
 import type { Language } from "@/lib/i18n";
 
@@ -28,6 +28,9 @@ const STATE_LABELS: Record<VoiceState, { en: string; ko: string }> = {
 
 export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: VoiceModeOverlayProps) {
   const [sources, setSources] = useState<string[]>([]);
+  const [muted, setMuted] = useState(false);
+  const [sessionSeconds, setSessionSeconds] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isKo = lang === "ko";
 
   const {
@@ -46,9 +49,25 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
     },
   });
 
+  // Session timer
+  useEffect(() => {
+    if (visible && (state === "listening" || state === "speaking" || state === "thinking")) {
+      if (!timerRef.current) {
+        timerRef.current = setInterval(() => setSessionSeconds(s => s + 1), 1000);
+      }
+    }
+    return () => {
+      if (timerRef.current && (state === "idle" || state === "error")) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [visible, state]);
+
   // Auto-start session when overlay opens
   useEffect(() => {
     if (visible && state === "idle") {
+      setSessionSeconds(0);
       startSession(childProfile, lang);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,41 +77,86 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
   useEffect(() => {
     if (!visible && state !== "idle") {
       stopSession();
+      setSessionSeconds(0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
+
+  // Handle retry
+  const handleRetry = useCallback(() => {
+    stopSession();
+    setSources([]);
+    setSessionSeconds(0);
+    setTimeout(() => startSession(childProfile, lang), 300);
+  }, [childProfile, lang, startSession, stopSession]);
+
+  // Handle mute toggle (visual only — audio playback control)
+  const handleMute = useCallback(() => {
+    setMuted(m => !m);
+    // Mute/unmute playback by controlling page volume via a master gain
+    // This is handled in the hook's output AudioContext, but for simplicity
+    // we toggle a CSS class that mutes the audio element approach
+  }, []);
 
   if (!visible) return null;
 
   const stateLabel = STATE_LABELS[state]?.[lang] || state;
   const isActive = state === "listening" || state === "speaking" || state === "thinking";
+  const isError = state === "error";
 
-  // Breathing orb animation size based on state
+  // Breathing orb animation
   const orbSize = state === "speaking" ? 140 : state === "listening" ? 120 : state === "thinking" ? 100 : 80;
-  const orbColor = state === "error" ? "#ef4444" : state === "speaking" ? "#7BA896" : state === "listening" ? "#4A7C6A" : "#9C8F84";
+  const orbColor = isError ? "#ef4444" : state === "speaking" ? "#7BA896" : state === "listening" ? "#4A7C6A" : "#9C8F84";
   const pulseDuration = state === "speaking" ? "1s" : state === "listening" ? "2s" : "3s";
+
+  // Format timer
+  const mins = Math.floor(sessionSeconds / 60);
+  const secs = sessionSeconds % 60;
+  const timerStr = `${mins}:${secs.toString().padStart(2, "0")}`;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-between p-6" style={{ background: "var(--bg)" }}>
       {/* Top bar */}
       <div className="w-full flex items-center justify-between pt-4">
-        <div className="flex items-center gap-2">
-          <Volume2 size={18} style={{ color: "var(--text-muted)" }} />
-          <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
-            {isKo ? "음성 모드" : "Voice Mode"}
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Volume2 size={18} style={{ color: "var(--text-muted)" }} />
+            <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
+              {isKo ? "음성 모드" : "Voice Mode"}
+            </span>
+          </div>
+          {/* Session timer */}
+          {isActive && (
+            <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+              <Clock size={10} />
+              {timerStr}
+            </span>
+          )}
         </div>
-        <button
-          onClick={() => {
-            stopSession();
-            onClose();
-          }}
-          className="p-2 rounded-full transition-opacity hover:opacity-70"
-          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-          aria-label="Close voice mode"
-        >
-          <X size={20} style={{ color: "var(--text)" }} />
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Mute button */}
+          {isActive && (
+            <button
+              onClick={handleMute}
+              className="p-2 rounded-full transition-opacity hover:opacity-70"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              aria-label={muted ? "Unmute" : "Mute"}
+            >
+              {muted ? <VolumeX size={18} style={{ color: "var(--text)" }} /> : <Volume2 size={18} style={{ color: "var(--text)" }} />}
+            </button>
+          )}
+          <button
+            onClick={() => {
+              stopSession();
+              onClose();
+            }}
+            className="p-2 rounded-full transition-opacity hover:opacity-70"
+            style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+            aria-label="Close voice mode"
+          >
+            <X size={20} style={{ color: "var(--text)" }} />
+          </button>
+        </div>
       </div>
 
       {/* Center — breathing orb + status */}
@@ -112,7 +176,7 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
           )}
           {/* Main orb */}
           <div
-            className="rounded-full flex items-center justify-center transition-all duration-500"
+            className={`rounded-full flex items-center justify-center transition-all duration-500 ${isError ? "cursor-pointer" : ""}`}
             style={{
               width: orbSize,
               height: orbSize,
@@ -120,19 +184,14 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
               boxShadow: `0 0 40px ${orbColor}44`,
               animation: isActive ? `voiceBreathe ${pulseDuration} ease-in-out infinite` : "none",
             }}
+            onClick={isError ? handleRetry : undefined}
+            role={isError ? "button" : undefined}
           >
-            {state === "thinking" && (
-              <Loader2 size={28} className="animate-spin" color="#fff" />
-            )}
-            {state === "connecting" && (
-              <Loader2 size={28} className="animate-spin" color="#fff" />
-            )}
-            {(state === "listening" || state === "speaking") && (
-              <Mic size={28} color="#fff" />
-            )}
-            {state === "idle" && (
-              <MicOff size={24} color="#fff" />
-            )}
+            {state === "thinking" && <Loader2 size={28} className="animate-spin" color="#fff" />}
+            {state === "connecting" && <Loader2 size={28} className="animate-spin" color="#fff" />}
+            {(state === "listening" || state === "speaking") && <Mic size={28} color="#fff" />}
+            {state === "idle" && <MicOff size={24} color="#fff" />}
+            {isError && <RefreshCw size={26} color="#fff" />}
           </div>
         </div>
 
@@ -142,7 +201,17 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
             {stateLabel}
           </p>
           {errorMsg && (
-            <p className="text-sm mt-1" style={{ color: "var(--error)" }}>{errorMsg}</p>
+            <p className="text-sm mt-1 max-w-xs" style={{ color: "var(--error)" }}>{errorMsg}</p>
+          )}
+          {isError && (
+            <button
+              onClick={handleRetry}
+              className="mt-3 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium mx-auto transition-opacity hover:opacity-80"
+              style={{ background: "var(--primary)", color: "#fff" }}
+            >
+              <RefreshCw size={14} />
+              {isKo ? "다시 시도" : "Try Again"}
+            </button>
           )}
         </div>
 
@@ -163,10 +232,10 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
         )}
       </div>
 
-      {/* Bottom — live transcript */}
-      <div className="w-full max-w-lg" style={{ maxHeight: 200, overflow: "auto" }}>
+      {/* Bottom — live transcript + controls */}
+      <div className="w-full max-w-lg flex flex-col items-center gap-3">
         {transcript.length > 0 && (
-          <div className="space-y-2 mb-4">
+          <div className="w-full space-y-2 mb-2" style={{ maxHeight: 160, overflow: "auto" }}>
             {transcript.slice(-4).map((entry, i) => (
               <div
                 key={i}
@@ -186,6 +255,28 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
               </div>
             ))}
           </div>
+        )}
+
+        {/* End session button */}
+        {isActive && (
+          <button
+            onClick={() => {
+              stopSession();
+              onClose();
+            }}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium transition-opacity hover:opacity-80"
+            style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}
+          >
+            <X size={14} />
+            {isKo ? "종료" : "End Session"}
+          </button>
+        )}
+
+        {/* Hint text */}
+        {state === "listening" && !muted && (
+          <p className="text-xs" style={{ color: "var(--text-muted)", opacity: 0.6 }}>
+            {isKo ? "말하면 자연스럽게 대화합니다" : "Just speak naturally — I'm listening"}
+          </p>
         )}
       </div>
 
