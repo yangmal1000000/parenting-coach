@@ -118,6 +118,16 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         const msg = JSON.parse(dataStr);
         console.log("[voice] WS JSON:", msg.setupComplete ? "setupComplete" : msg.toolCall ? "toolCall" : msg.serverContent ? "serverContent" : "unknown");
 
+        // If serverContent has inline audio, extract it
+        if (msg.serverContent) {
+          const sc = msg.serverContent;
+          console.log("[voice] serverContent keys:", Object.keys(sc));
+          // Some API versions send audio inline as base64
+          if (sc.audioChunks) {
+            console.log("[voice] Found", sc.audioChunks.length, "inline audio chunks");
+          }
+        }
+
         // Setup complete — Gemini is ready for audio
         if (msg.setupComplete) {
           isSetupDoneRef.current = true;
