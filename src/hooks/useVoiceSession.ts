@@ -6,14 +6,10 @@ import { useRef, useState, useCallback, useEffect } from "react";
 const GEMINI_LIVE_URL =
   "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent";
 const MODEL = "gemini-2.5-flash-preview-native-audio-dialog";
-const SAMPLE_RATE = 16000; // 16kHz PCM
+const INPUT_SAMPLE_RATE = 16000;  // Mic capture rate
+const OUTPUT_SAMPLE_RATE = 24000; // Gemini audio output rate
 
-interface VoiceSessionConfig {
-  systemInstruction: string;
-  tools: unknown[];
-  voiceName: string;
-  apiKey: string;
-}
+export type VoiceState = "idle" | "connecting" | "listening" | "thinking" | "speaking" | "error";
 
 interface UseVoiceSessionOptions {
   onTranscript?: (text: string, isUser: boolean) => void;
@@ -23,44 +19,61 @@ interface UseVoiceSessionOptions {
   onError?: (error: string) => void;
 }
 
-export type VoiceState = "idle" | "connecting" | "listening" | "thinking" | "speaking" | "error";
+interface TranscriptEntry {
+  role: "user" | "ai";
+  text: string;
+}
 
 export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const [state, setState] = useState<VoiceState>("idle");
-  const [transcript, setTranscript] = useState<{ role: "user" | "ai"; text: string }[]>([]);
+  const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [activeSources, setActiveSources] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
+  // Refs for everything that callbacks need (avoids stale closures)
   const wsRef = useRef<WebSocket | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const inputAudioCtxRef = useRef<AudioContext | null>(null);
+  const outputAudioCtxRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const workletNodeRef = useRef<AudioWorkletNode | null>(null);
   const playbackQueueRef = useRef<AudioBuffer[]>([]);
   const isPlayingRef = useRef(false);
-  const sessionConfigRef = useRef<VoiceSessionConfig | null>(null);
+  const isSetupDoneRef = useRef(false);
+  const stateRef = useRef<VoiceState>("idle");
 
+  // Keep stateRef in sync
   const updateState = useCallback((s: VoiceState) => {
+    stateRef.current = s;
     setState(s);
     opts.onStateChange?.(s);
   }, [opts]);
 
   const addTranscript = useCallback((text: string, isUser: boolean) => {
-    setTranscript(prev => [...prev, { role: isUser ? "user" : "ai", text }]);
+    setTranscript(prev => {
+      const entry: TranscriptEntry = { role: isUser ? "user" : "ai", text };
+      const updated = [...prev, entry];
+      // Keep last 50 entries
+      return updated.length > 50 ? updated.slice(-50) : updated;
+    });
     opts.onTranscript?.(text, isUser);
   }, [opts]);
 
-  // Playback queue processor
+  // ─── Playback queue processor ───
   const processPlaybackQueue = useCallback(() => {
     if (isPlayingRef.current) return;
     const buffer = playbackQueueRef.current.shift();
-    if (!buffer || !audioCtxRef.current) return;
+    if (!buffer || !outputAudioCtxRef.current) {
+      // Nothing to play — go back to listening if we were speaking
+      if (stateRef.current === "speaking") updateState("listening");
+      return;
+    }
 
     isPlayingRef.current = true;
     updateState("speaking");
 
-    const src = audioCtxRef.current.createBufferSource();
+    const src = outputAudioCtxRef.current.createBufferSource();
     src.buffer = buffer;
-    src.connect(audioCtxRef.current.destination);
+    src.connect(outputAudioCtxRef.current.destination);
     src.onended = () => {
       isPlayingRef.current = false;
       if (playbackQueueRef.current.length > 0) {
@@ -72,17 +85,27 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     src.start();
   }, [updateState]);
 
-  // Handle incoming WebSocket messages
+  // ─── Handle incoming WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
+    // ── Text messages (JSON control messages) ──
     if (typeof event.data === "string") {
       try {
         const msg = JSON.parse(event.data);
 
+        // Setup complete — Gemini is ready for audio
+        if (msg.setupComplete) {
+          isSetupDoneRef.current = true;
+          updateState("listening");
+          return;
+        }
+
         // Tool call — Gemini wants to call get_parenting_advice
-        if (msg.toolCall) {
+        if (msg.toolCall?.functionCalls) {
           updateState("thinking");
-          for (const tc of msg.toolCall.functionCalls || []) {
+          for (const tc of msg.toolCall.functionCalls) {
             opts.onToolCall?.(tc.name, tc.args);
+
+            // Execute tool via our API
             try {
               const result = await fetch("/api/voice-tools", {
                 method: "POST",
@@ -93,7 +116,8 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
               opts.onToolResult?.(data);
 
               if (data.strategies) {
-                setActiveSources(data.strategies.map((s: { source: string }) => s.source));
+                const sources = data.strategies.map((s: { source: string }) => s.source);
+                setActiveSources(sources);
               }
 
               // Send tool response back to Gemini
@@ -102,28 +126,40 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                   functionResponses: [{
                     id: tc.id,
                     name: tc.name,
-                    response: { result: JSON.stringify(data) },
+                    response: { output: JSON.stringify(data) },
                   }],
                 },
               };
               wsRef.current?.send(JSON.stringify(toolResponse));
             } catch (e) {
               console.error("[voice] Tool call failed:", e);
+              // Send error response so Gemini doesn't hang
+              wsRef.current?.send(JSON.stringify({
+                toolResponse: {
+                  functionResponses: [{
+                    id: tc.id,
+                    name: tc.name,
+                    response: { error: "Tool execution failed" },
+                  }],
+                },
+              }));
             }
           }
         }
 
-        // Transcript — text from Gemini
+        // AI transcript (output transcription)
         if (msg.serverContent?.outputTranscription?.text) {
           addTranscript(msg.serverContent.outputTranscription.text, false);
         }
+
+        // User transcript (input transcription)
         if (msg.serverContent?.inputTranscription?.text) {
           addTranscript(msg.serverContent.inputTranscription.text, true);
         }
 
         // Turn complete
         if (msg.serverContent?.turnComplete) {
-          if (!isPlayingRef.current) {
+          if (!isPlayingRef.current && playbackQueueRef.current.length === 0) {
             updateState("listening");
           }
         }
@@ -134,21 +170,30 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           isPlayingRef.current = false;
           updateState("listening");
         }
-      } catch (e) {
-        console.error("[voice] WS parse error:", e);
+      } catch {
+        // Non-JSON text message — ignore
       }
-    } else if (event.data instanceof Blob) {
-      // Audio response from Gemini — PCM data
+      return;
+    }
+
+    // ── Binary messages (audio from Gemini) ──
+    if (event.data instanceof Blob) {
       try {
         const arrayBuffer = await event.data.arrayBuffer();
         const pcmData = new Int16Array(arrayBuffer);
+        if (pcmData.length === 0) return;
+
+        // Convert Int16 PCM → Float32
         const float32 = new Float32Array(pcmData.length);
         for (let i = 0; i < pcmData.length; i++) {
           float32[i] = pcmData[i] / 32768;
         }
 
-        if (!audioCtxRef.current) return;
-        const audioBuffer = audioCtxRef.current.createBuffer(1, float32.length, 24000);
+        // Use output AudioContext at Gemini's output sample rate
+        const ctx = outputAudioCtxRef.current;
+        if (!ctx) return;
+
+        const audioBuffer = ctx.createBuffer(1, float32.length, OUTPUT_SAMPLE_RATE);
         audioBuffer.copyToChannel(float32, 0);
         playbackQueueRef.current.push(audioBuffer);
         processPlaybackQueue();
@@ -158,7 +203,98 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     }
   }, [addTranscript, opts, processPlaybackQueue, updateState]);
 
-  // Start session
+  // ─── Audio capture: mic → PCM 16-bit → WebSocket ───
+  const startAudioCapture = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 1,
+          sampleRate: INPUT_SAMPLE_RATE,
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+      streamRef.current = stream;
+
+      // Input context for mic capture
+      const inputCtx = new AudioContext({ sampleRate: INPUT_SAMPLE_RATE });
+      inputAudioCtxRef.current = inputCtx;
+
+      // Output context for playback (Gemini sends 24kHz audio)
+      const outputCtx = new AudioContext({ sampleRate: OUTPUT_SAMPLE_RATE });
+      outputAudioCtxRef.current = outputCtx;
+
+      // AudioWorklet for PCM capture
+      const workletCode = `
+        class PCMProcessor extends AudioWorkletProcessor {
+          process(inputs) {
+            const input = inputs[0];
+            if (input && input[0] && input[0].length > 0) {
+              const float32 = input[0];
+              const int16 = new Int16Array(float32.length);
+              for (let i = 0; i < float32.length; i++) {
+                const s = Math.max(-1, Math.min(1, float32[i]));
+                int16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+              }
+              this.port.postMessage(int16.buffer, [int16.buffer.buffer]);
+            }
+            return true;
+          }
+        }
+        registerProcessor('pcm-capture', PCMProcessor);
+      `;
+
+      const blob = new Blob([workletCode], { type: "application/javascript" });
+      const workletUrl = URL.createObjectURL(blob);
+      await inputCtx.audioWorklet.addModule(workletUrl);
+      URL.revokeObjectURL(workletUrl);
+
+      const source = inputCtx.createMediaStreamSource(stream);
+      const workletNode = new AudioWorkletNode(inputCtx, "pcm-capture");
+
+      workletNode.port.onmessage = (e: MessageEvent) => {
+        // Only send audio after setup is confirmed
+        if (wsRef.current?.readyState === WebSocket.OPEN && isSetupDoneRef.current) {
+          wsRef.current.send(e.data);
+        }
+      };
+
+      source.connect(workletNode);
+      // Don't connect to destination — avoid hearing ourselves
+      workletNodeRef.current = workletNode;
+    } catch (e) {
+      console.error("[voice] Audio capture failed:", e);
+      const msg = e instanceof Error ? e.message : "Microphone access failed";
+      setErrorMsg(msg);
+      updateState("error");
+    }
+  }, [updateState]);
+
+  // ─── Stop audio capture ───
+  const stopAudioCapture = useCallback(() => {
+    if (workletNodeRef.current) {
+      try { workletNodeRef.current.disconnect(); } catch {}
+      workletNodeRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    }
+    if (inputAudioCtxRef.current) {
+      inputAudioCtxRef.current.close().catch(() => {});
+      inputAudioCtxRef.current = null;
+    }
+    if (outputAudioCtxRef.current) {
+      outputAudioCtxRef.current.close().catch(() => {});
+      outputAudioCtxRef.current = null;
+    }
+    playbackQueueRef.current = [];
+    isPlayingRef.current = false;
+    isSetupDoneRef.current = false;
+  }, []);
+
+  // ─── Start session ───
   const startSession = useCallback(async (childProfile?: {
     name?: string; age?: string; temperament?: string[]; notes?: string;
   }, language?: string) => {
@@ -166,6 +302,8 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
     updateState("connecting");
     setErrorMsg("");
+    setTranscript([]);
+    setActiveSources([]);
 
     try {
       // 1. Get session config from our API
@@ -177,36 +315,41 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       const config = await res.json();
       if (config.error) throw new Error(config.error);
 
-      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
       if (!apiKey) {
-        throw new Error("Gemini API key not available. Set NEXT_PUBLIC_GEMINI_API_KEY");
+        throw new Error("Gemini API key not configured");
       }
-
-      sessionConfigRef.current = { ...config, apiKey };
 
       // 2. Open WebSocket to Gemini Live
       const wsUrl = `${GEMINI_LIVE_URL}?key=${apiKey}`;
       const ws = new WebSocket(wsUrl);
+      ws.binaryType = "arraybuffer";
       wsRef.current = ws;
 
       ws.onopen = () => {
-        // Send setup/initialization message
+        // Send setup message
         const setup = {
           setup: {
             model: MODEL,
-            systemInstruction: { parts: [{ text: config.systemInstruction }] },
+            systemInstruction: {
+              parts: [{ text: config.systemInstruction }],
+            },
             generationConfig: {
               responseModalities: ["AUDIO"],
               speechConfig: {
-                voiceConfig: { prebuiltVoiceConfig: { voiceName: config.voiceName } },
+                voiceConfig: {
+                  prebuiltVoiceConfig: { voiceName: config.voiceName },
+                },
               },
             },
             tools: config.tools,
+            inputAudioTranscription: {},
+            outputAudioTranscription: {},
           },
         };
         ws.send(JSON.stringify(setup));
 
-        // Start audio capture
+        // Start mic capture (will only send audio after setupComplete)
         startAudioCapture();
       };
 
@@ -214,14 +357,17 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
       ws.onerror = (e) => {
         console.error("[voice] WS error:", e);
-        setErrorMsg("Connection error");
+        setErrorMsg("Connection error — please try again");
         updateState("error");
       };
 
-      ws.onclose = () => {
+      ws.onclose = (e) => {
+        console.log(`[voice] WS closed: ${e.code} ${e.reason}`);
         stopAudioCapture();
         wsRef.current = null;
-        if (state !== "error") updateState("idle");
+        if (stateRef.current !== "error" && stateRef.current !== "idle") {
+          updateState("idle");
+        }
       };
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Failed to start voice session";
@@ -229,102 +375,25 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       updateState("error");
       opts.onError?.(msg);
     }
-  }, [handleWsMessage, opts, state, updateState]);
+  }, [handleWsMessage, opts, startAudioCapture, stopAudioCapture, updateState]);
 
-  // Audio capture — mic → PCM → WebSocket
-  const startAudioCapture = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          sampleRate: SAMPLE_RATE,
-          echoCancellation: true,
-          noiseSuppression: true,
-        },
-      });
-      streamRef.current = stream;
-
-      const audioCtx = new AudioContext({ sampleRate: SAMPLE_RATE });
-      audioCtxRef.current = audioCtx;
-
-      // Create audio worklet for PCM capture
-      const workletCode = `
-        class PCMProcessor extends AudioWorkletProcessor {
-          process(inputs) {
-            const input = inputs[0];
-            if (input && input[0]) {
-              const float32 = input[0];
-              const int16 = new Int16Array(float32.length);
-              for (let i = 0; i < float32.length; i++) {
-                const s = Math.max(-1, Math.min(1, float32[i]));
-                int16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-              }
-              this.port.postMessage(int16.buffer);
-            }
-            return true;
-          }
-        }
-        registerProcessor('pcm-processor', PCMProcessor);
-      `;
-
-      const blob = new Blob([workletCode], { type: "application/javascript" });
-      const workletUrl = URL.createObjectURL(blob);
-      await audioCtx.audioWorklet.addModule(workletUrl);
-      URL.revokeObjectURL(workletUrl);
-
-      const source = audioCtx.createMediaStreamSource(stream);
-      const workletNode = new AudioWorkletNode(audioCtx, "pcm-processor");
-
-      workletNode.port.onmessage = (e) => {
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-          // Send raw PCM as ArrayBuffer
-          wsRef.current.send(e.data);
-        }
-      };
-
-      source.connect(workletNode);
-      // Don't connect workletNode to destination — we don't want to hear ourselves
-      workletNodeRef.current = workletNode;
-
-      updateState("listening");
-    } catch (e) {
-      console.error("[voice] Audio capture failed:", e);
-      setErrorMsg(e instanceof Error ? e.message : "Microphone access failed");
-      updateState("error");
-    }
-  }, [updateState]);
-
-  const stopAudioCapture = useCallback(() => {
-    if (workletNodeRef.current) {
-      workletNodeRef.current.disconnect();
-      workletNodeRef.current = null;
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
-    if (audioCtxRef.current) {
-      audioCtxRef.current.close().catch(() => {});
-      audioCtxRef.current = null;
-    }
-    playbackQueueRef.current = [];
-    isPlayingRef.current = false;
-  }, []);
-
-  // Stop session
+  // ─── Stop session ───
   const stopSession = useCallback(() => {
     if (wsRef.current) {
-      wsRef.current.close();
+      try { wsRef.current.close(1000, "User ended session"); } catch {}
       wsRef.current = null;
     }
     stopAudioCapture();
     updateState("idle");
   }, [stopAudioCapture, updateState]);
 
-  // Cleanup on unmount
+  // ─── Cleanup on unmount ───
   useEffect(() => {
     return () => {
-      if (wsRef.current) wsRef.current.close();
+      if (wsRef.current) {
+        try { wsRef.current.close(); } catch {}
+        wsRef.current = null;
+      }
       stopAudioCapture();
     };
   }, [stopAudioCapture]);
