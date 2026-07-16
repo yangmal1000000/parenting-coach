@@ -57,6 +57,13 @@ export interface UIStrings {
   noAccount: string;
   haveAccount: string;
   syncDesc: string;
+  linkedAccounts: string;
+  linkedAccountsDesc: string;
+  linkGoogle: string;
+  linkApple: string;
+  unlink: string;
+  linked: string;
+  notLinked: string;
   // Onboarding
   onboardingTitle: string;
   onboardingSubtitle: string;
@@ -187,6 +194,13 @@ export const UI: Record<Language, UIStrings> = {
     noAccount: "No account? Sign up →",
     haveAccount: "Already have an account? Log in →",
     syncDesc: "Create an account to sync your saved advice across devices",
+    linkedAccounts: "Linked Accounts",
+    linkedAccountsDesc: "Link multiple sign-in methods to access your account from any device",
+    linkGoogle: "Link Google",
+    linkApple: "Link Apple",
+    unlink: "Unlink",
+    linked: "Linked",
+    notLinked: "Not linked",
     onboardingTitle: "Instant Parenting Help",
     onboardingSubtitle: "Evidence-based advice in seconds. Just speak or type what's happening.",
     onboardingSpeak: "Tap to speak",
@@ -306,6 +320,13 @@ export const UI: Record<Language, UIStrings> = {
     noAccount: "계정이 없으신가요? 회원가입 →",
     haveAccount: "이미 계정이 있으신가요? 로그인 →",
     syncDesc: "계정을 만들면 저장한 조언이 기기 간 동기화됩니다",
+    linkedAccounts: "연결된 계정",
+    linkedAccountsDesc: "여러 로그인 방법을 연결하여 어떤 기기에서도 접속하세요",
+    linkGoogle: "Google 연결",
+    linkApple: "Apple 연결",
+    unlink: "연결 해제",
+    linked: "연결됨",
+    notLinked: "연결 안 됨",
     onboardingTitle: "즉각적인 육아 도움",
     onboardingSubtitle: "몇 초 안이면 과학적 조언을 받으세요. 상황을 말하거나 입력하세요.",
     onboardingSpeak: "눌러서 말하기",

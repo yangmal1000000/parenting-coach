@@ -81,6 +81,30 @@ export async function signOut() {
   if (supabase) await supabase.auth.signOut();
 }
 
+// === Account linking ===
+export async function getLinkedProviders(): Promise<string[]> {
+  if (!supabase) return [];
+  const { data } = await supabase.auth.getUserIdentities();
+  return data?.identities?.map((i) => i.provider) || [];
+}
+
+export async function linkAccount(provider: "google" | "apple") {
+  if (!supabase) return;
+  await supabase.auth.linkIdentity({
+    provider,
+    options: { redirectTo: `${window.location.origin}?linked=${provider}` },
+  });
+}
+
+export async function unlinkProvider(provider: string) {
+  if (!supabase) return;
+  const { data } = await supabase.auth.getUserIdentities();
+  const identity = data?.identities?.find((i) => i.provider === provider);
+  if (!identity) return;
+  const { error } = await supabase.auth.unlinkIdentity(identity);
+  if (error) throw error;
+}
+
 export async function getCurrentUser() {
   if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
