@@ -5,7 +5,7 @@ import { useRef, useState, useCallback, useEffect } from "react";
 // Gemini Live API constants
 const GEMINI_LIVE_URL =
   "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
-const MODEL = "gemini-2.5-flash-native-audio-latest";
+const MODEL = "models/gemini-2.5-flash-native-audio-latest";
 const INPUT_SAMPLE_RATE = 16000;  // Mic capture rate
 const OUTPUT_SAMPLE_RATE = 24000; // Gemini audio output rate
 
