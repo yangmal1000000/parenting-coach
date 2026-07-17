@@ -8,6 +8,8 @@ const GEMINI_LIVE_URL =
 const MODEL = "models/gemini-2.5-flash-native-audio-latest";
 const INPUT_SAMPLE_RATE = 16000;  // Mic capture rate
 const OUTPUT_SAMPLE_RATE = 24000; // Gemini audio output rate
+const MAX_PLAYBACK_QUEUE = 30;    // Cap to prevent memory growth
+const PCM_ACCUM_TARGET = 12000;   // ~0.5s of 24kHz audio before scheduling a buffer
 
 export type VoiceState = "idle" | "connecting" | "listening" | "thinking" | "speaking" | "error";
 
@@ -42,6 +44,55 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const isSetupDoneRef = useRef(false);
   const stateRef = useRef<VoiceState>("idle");
 
+  // PCM accumulator: merge tiny chunks into larger buffers for smooth playback
+  const pcmAccumRef = useRef<Float32Array[]>([]);
+  const pcmAccumLenRef = useRef(0);
+
+  // ─── Transcript batching (avoid re-render per chunk) ───
+  const transcriptBatchRef = useRef<{ user: string; ai: string }>({ user: "", ai: "" });
+  const transcriptFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flushTranscript = useCallback(() => {
+    transcriptFlushTimerRef.current = null;
+    const batch = transcriptBatchRef.current;
+    if (!batch.user && !batch.ai) return;
+
+    setTranscript(prev => {
+      let updated = prev;
+      if (batch.ai) {
+        const last = updated[updated.length - 1];
+        if (last && last.role === "ai") {
+          updated = [...updated.slice(0, -1), { role: "ai" as const, text: last.text + batch.ai }];
+        } else {
+          updated = [...updated, { role: "ai" as const, text: batch.ai }];
+        }
+      }
+      if (batch.user) {
+        const last = updated[updated.length - 1];
+        if (last && last.role === "user") {
+          updated = [...updated.slice(0, -1), { role: "user" as const, text: last.text + batch.user }];
+        } else {
+          updated = [...updated, { role: "user" as const, text: batch.user }];
+        }
+      }
+      return updated.length > 50 ? updated.slice(-50) : updated;
+    });
+
+    transcriptBatchRef.current = { user: "", ai: "" };
+  }, []);
+
+  const addTranscript = useCallback((text: string, isUser: boolean) => {
+    if (isUser) {
+      transcriptBatchRef.current.user += text;
+    } else {
+      transcriptBatchRef.current.ai += text;
+    }
+    if (transcriptFlushTimerRef.current === null) {
+      transcriptFlushTimerRef.current = setTimeout(flushTranscript, 200);
+    }
+    opts.onTranscript?.(text, isUser);
+  }, [flushTranscript, opts]);
+
   // Keep stateRef in sync
   const updateState = useCallback((s: VoiceState) => {
     stateRef.current = s;
@@ -49,25 +100,10 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     opts.onStateChange?.(s);
   }, [opts]);
 
-  const addTranscript = useCallback((text: string, isUser: boolean) => {
-    setTranscript(prev => {
-      const role: "user" | "ai" = isUser ? "user" : "ai";
-      // Accumulate into the last bubble if same role — no forced space
-      // (Gemini sends partial chunks; Korean/CJK doesn't use spaces between words)
-      if (prev.length > 0 && prev[prev.length - 1].role === role) {
-        const last = prev[prev.length - 1];
-        return [...prev.slice(0, -1), { role, text: last.text + text }];
-      }
-      // New bubble
-      const updated = [...prev, { role, text }];
-      return updated.length > 50 ? updated.slice(-50) : updated;
-    });
-    opts.onTranscript?.(text, isUser);
-  }, [opts]);
-
   // ─── Playback queue processor (gapless scheduling) ───
   const processPlaybackQueue = useCallback(() => {
     if (!outputAudioCtxRef.current) return;
+    if (playbackQueueRef.current.length === 0) return;
 
     // Schedule all queued buffers back-to-back with no gaps
     while (playbackQueueRef.current.length > 0) {
@@ -75,10 +111,8 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       const ctx = outputAudioCtxRef.current;
       const now = ctx.currentTime;
 
-      // Start time: now if queue was empty, otherwise chain after last buffer
       const startTime = Math.max(now, nextStartTimeRef.current);
       if (nextStartTimeRef.current <= now) {
-        // First buffer in this burst — update state
         updateState("speaking");
       }
 
@@ -86,7 +120,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       src.buffer = buffer;
       src.connect(ctx.destination);
       src.onended = () => {
-        // If everything has played, go back to listening
         if (nextStartTimeRef.current <= ctx.currentTime + 0.05 && playbackQueueRef.current.length === 0) {
           isPlayingRef.current = false;
           nextStartTimeRef.current = 0;
@@ -99,6 +132,60 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     }
   }, [updateState]);
 
+  // ─── PCM accumulator: merge tiny chunks → larger buffers → playback queue ───
+  const flushPcmAccumulator = useCallback(() => {
+    if (pcmAccumLenRef.current === 0 || !outputAudioCtxRef.current) return;
+
+    const ctx = outputAudioCtxRef.current;
+    const merged = new Float32Array(pcmAccumLenRef.current);
+    let offset = 0;
+    for (const chunk of pcmAccumRef.current) {
+      merged.set(chunk, offset);
+      offset += chunk.length;
+    }
+
+    const audioBuffer = ctx.createBuffer(1, merged.length, OUTPUT_SAMPLE_RATE);
+    audioBuffer.copyToChannel(merged, 0);
+
+    if (playbackQueueRef.current.length >= MAX_PLAYBACK_QUEUE) {
+      playbackQueueRef.current.shift();
+    }
+    playbackQueueRef.current.push(audioBuffer);
+
+    pcmAccumRef.current = [];
+    pcmAccumLenRef.current = 0;
+
+    processPlaybackQueue();
+  }, [processPlaybackQueue]);
+
+  const pushPcmAudio = useCallback((float32: Float32Array, sampleRate: number) => {
+    // Resample if needed (Gemini sends 24kHz, our output ctx is 24kHz so usually no-op)
+    let audio = float32;
+    if (sampleRate !== OUTPUT_SAMPLE_RATE) {
+      const ratio = OUTPUT_SAMPLE_RATE / sampleRate;
+      const newLen = Math.round(float32.length * ratio);
+      audio = new Float32Array(newLen);
+      for (let i = 0; i < newLen; i++) {
+        const srcIdx = i / ratio;
+        const idx0 = Math.floor(srcIdx);
+        const frac = srcIdx - idx0;
+        if (idx0 + 1 < float32.length) {
+          audio[i] = float32[idx0] * (1 - frac) + float32[idx0 + 1] * frac;
+        } else {
+          audio[i] = float32[idx0] || 0;
+        }
+      }
+    }
+
+    pcmAccumRef.current.push(audio);
+    pcmAccumLenRef.current += audio.length;
+
+    // Once we have ~0.5s of audio, flush to playback queue
+    if (pcmAccumLenRef.current >= PCM_ACCUM_TARGET) {
+      flushPcmAccumulator();
+    }
+  }, [flushPcmAccumulator]);
+
   // ─── Handle incoming WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
     // ── Text messages (JSON control messages) ──
@@ -107,14 +194,13 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     if (typeof event.data === "string") {
       dataStr = event.data;
     } else if (event.data instanceof ArrayBuffer) {
-      // Some browsers deliver text frames as ArrayBuffer — try decoding as UTF-8
       try {
         const decoded = new TextDecoder().decode(event.data);
         if (decoded.startsWith("{") || decoded.startsWith("[")) {
           dataStr = decoded;
         }
       } catch {
-        // Not text — it's binary audio
+        // Not text
       }
     } else if (event.data instanceof Blob) {
       try {
@@ -130,20 +216,17 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     if (dataStr !== null) {
       try {
         const msg = JSON.parse(dataStr);
-        // Setup complete — Gemini is ready for audio
+
         if (msg.setupComplete) {
           isSetupDoneRef.current = true;
           updateState("listening");
           return;
         }
 
-        // Tool call — Gemini wants to call get_parenting_advice
         if (msg.toolCall?.functionCalls) {
           updateState("thinking");
           for (const tc of msg.toolCall.functionCalls) {
             opts.onToolCall?.(tc.name, tc.args);
-
-            // Execute tool via our API
             try {
               const result = await fetch("/api/voice-tools", {
                 method: "POST",
@@ -158,8 +241,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                 setActiveSources(sources);
               }
 
-              // Send tool response back to Gemini
-              const toolResponse = {
+              wsRef.current?.send(JSON.stringify({
                 toolResponse: {
                   functionResponses: [{
                     id: tc.id,
@@ -167,11 +249,9 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                     response: { output: JSON.stringify(data) },
                   }],
                 },
-              };
-              wsRef.current?.send(JSON.stringify(toolResponse));
+              }));
             } catch (e) {
               console.error("[voice] Tool call failed:", e);
-              // Send error response so Gemini doesn't hang
               wsRef.current?.send(JSON.stringify({
                 toolResponse: {
                   functionResponses: [{
@@ -185,12 +265,12 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           }
         }
 
-        // AI transcript (output transcription)
+        // AI transcript
         if (msg.serverContent?.outputTranscription?.text) {
           addTranscript(msg.serverContent.outputTranscription.text, false);
         }
 
-        // User transcript (input transcription)
+        // User transcript
         if (msg.serverContent?.inputTranscription?.text) {
           addTranscript(msg.serverContent.inputTranscription.text, true);
         }
@@ -199,32 +279,24 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         const parts = msg.serverContent?.modelTurn?.parts;
         if (parts && Array.isArray(parts)) {
           for (const part of parts) {
-            // Audio can be in inlineData (base64) or text
             if (part.inlineData?.data) {
               try {
                 const base64 = part.inlineData.data;
                 const mimeType = part.inlineData.mimeType || "audio/pcm;rate=24000";
                 const sampleRate = mimeType.includes("24000") ? 24000 : 16000;
 
-                // base64 → Uint8Array
-                const binary = atob(base64);
-                const bytes = new Uint8Array(binary.length);
-                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                // base64 → ArrayBuffer (faster than atob loop)
+                const resp = await fetch(`data:application/octet-stream;base64,${base64}`);
+                const arrBuf = await resp.arrayBuffer();
+                const pcmData = new Int16Array(arrBuf);
 
-                // Uint8Array → Int16 PCM → Float32
-                const pcmData = new Int16Array(bytes.buffer);
+                // Int16 PCM → Float32
                 const float32 = new Float32Array(pcmData.length);
                 for (let i = 0; i < pcmData.length; i++) {
                   float32[i] = pcmData[i] / 32768;
                 }
 
-                const ctx = outputAudioCtxRef.current;
-                if (!ctx) continue;
-
-                const audioBuffer = ctx.createBuffer(1, float32.length, sampleRate);
-                audioBuffer.copyToChannel(float32, 0);
-                playbackQueueRef.current.push(audioBuffer);
-                processPlaybackQueue();
+                pushPcmAudio(float32, sampleRate);
               } catch (e) {
                 console.error("[voice] Audio extraction failed:", e);
               }
@@ -232,8 +304,9 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           }
         }
 
-        // Turn complete
+        // Turn complete — flush any remaining PCM
         if (msg.serverContent?.turnComplete) {
+          flushPcmAccumulator();
           if (!isPlayingRef.current && playbackQueueRef.current.length === 0) {
             updateState("listening");
           }
@@ -244,40 +317,31 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           playbackQueueRef.current = [];
           isPlayingRef.current = false;
           nextStartTimeRef.current = 0;
+          pcmAccumRef.current = [];
+          pcmAccumLenRef.current = 0;
           updateState("listening");
         }
       } catch {
-        // Non-JSON text message — ignore
+        // Non-JSON
       }
       return;
     }
 
     // ── Binary messages (audio from Gemini) ──
-    // With binaryType = "arraybuffer", both JSON and audio arrive as ArrayBuffer
-    // JSON was already handled above via TextDecoder. Anything reaching here is audio.
     if (event.data instanceof ArrayBuffer) {
-      // Check if it looks like PCM audio (not JSON)
       const testStr = new TextDecoder().decode(event.data.slice(0, 4));
-      if (!testStr.startsWith("{")) {
-      }
+      if (testStr.startsWith("{")) return;
+
       try {
         const pcmData = new Int16Array(event.data);
         if (pcmData.length === 0) return;
 
-        // Convert Int16 PCM → Float32
         const float32 = new Float32Array(pcmData.length);
         for (let i = 0; i < pcmData.length; i++) {
           float32[i] = pcmData[i] / 32768;
         }
 
-        // Use output AudioContext at Gemini's output sample rate
-        const ctx = outputAudioCtxRef.current;
-        if (!ctx) return;
-
-        const audioBuffer = ctx.createBuffer(1, float32.length, OUTPUT_SAMPLE_RATE);
-        audioBuffer.copyToChannel(float32, 0);
-        playbackQueueRef.current.push(audioBuffer);
-        processPlaybackQueue();
+        pushPcmAudio(float32, OUTPUT_SAMPLE_RATE);
       } catch (e) {
         console.error("[voice] Audio decode error:", e);
       }
@@ -292,18 +356,12 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           float32[i] = pcmData[i] / 32768;
         }
 
-        const ctx = outputAudioCtxRef.current;
-        if (!ctx) return;
-
-        const audioBuffer = ctx.createBuffer(1, float32.length, OUTPUT_SAMPLE_RATE);
-        audioBuffer.copyToChannel(float32, 0);
-        playbackQueueRef.current.push(audioBuffer);
-        processPlaybackQueue();
+        pushPcmAudio(float32, OUTPUT_SAMPLE_RATE);
       } catch (e) {
         console.error("[voice] Audio decode error:", e);
       }
     }
-  }, [addTranscript, opts, processPlaybackQueue, updateState]);
+  }, [addTranscript, flushPcmAccumulator, opts, processPlaybackQueue, pushPcmAudio, updateState]);
 
   // ─── Audio capture: mic → PCM 16-bit → WebSocket ───
   const startAudioCapture = useCallback(async () => {
@@ -319,22 +377,14 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       });
       streamRef.current = stream;
 
-      // Input context for mic capture
       const inputCtx = new AudioContext({ sampleRate: INPUT_SAMPLE_RATE });
-      // Safari starts AudioContext suspended — must resume explicitly
-      if (inputCtx.state === "suspended") {
-        await inputCtx.resume();
-      }
+      if (inputCtx.state === "suspended") await inputCtx.resume();
       inputAudioCtxRef.current = inputCtx;
 
-      // Output context for playback (Gemini sends 24kHz audio)
       const outputCtx = new AudioContext({ sampleRate: OUTPUT_SAMPLE_RATE });
-      if (outputCtx.state === "suspended") {
-        await outputCtx.resume();
-      }
+      if (outputCtx.state === "suspended") await outputCtx.resume();
       outputAudioCtxRef.current = outputCtx;
 
-      // AudioWorklet for PCM capture
       const workletCode = `
         class PCMProcessor extends AudioWorkletProcessor {
           process(inputs) {
@@ -362,30 +412,36 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       const source = inputCtx.createMediaStreamSource(stream);
       const workletNode = new AudioWorkletNode(inputCtx, "pcm-capture");
 
-      // Batch audio chunks before sending (~64ms batches instead of 8ms)
-      let audioBatch: number[] = [];
-      const BATCH_BYTES = 2048; // ~1024 frames = 64ms at 16kHz Int16
+      // Batch audio using Uint8Array chunks (not number[] — avoids GC pressure)
+      const chunks: Uint8Array[] = [];
+      let chunksTotalLen = 0;
+      const BATCH_BYTES = 2048; // ~64ms at 16kHz Int16
 
       workletNode.port.onmessage = (e: MessageEvent) => {
         if (wsRef.current?.readyState === WebSocket.OPEN && isSetupDoneRef.current) {
-          const bytes = new Uint8Array(e.data as ArrayBuffer);
-          for (let i = 0; i < bytes.length; i++) audioBatch.push(bytes[i]);
+          const chunk = new Uint8Array(e.data as ArrayBuffer);
+          chunks.push(chunk);
+          chunksTotalLen += chunk.length;
 
-          if (audioBatch.length >= BATCH_BYTES) {
-            const batchBytes = new Uint8Array(audioBatch);
+          if (chunksTotalLen >= BATCH_BYTES) {
+            const merged = new Uint8Array(chunksTotalLen);
+            let off = 0;
+            for (const c of chunks) { merged.set(c, off); off += c.length; }
+
             let binary = "";
-            for (let i = 0; i < batchBytes.length; i += 8192) {
-              binary += String.fromCharCode.apply(null, Array.from(batchBytes.subarray(i, i + 8192)));
+            for (let i = 0; i < merged.length; i += 8192) {
+              binary += String.fromCharCode.apply(null, Array.from(merged.subarray(i, i + 8192)) as unknown as number[]);
             }
             wsRef.current.send(JSON.stringify({
               realtimeInput: { audio: { data: btoa(binary), mimeType: "audio/pcm;rate=16000" } },
             }));
-            audioBatch = [];
+
+            chunks.length = 0;
+            chunksTotalLen = 0;
           }
         }
       };
       source.connect(workletNode);
-      // Don't connect to destination — avoid hearing ourselves
       workletNodeRef.current = workletNode;
     } catch (e) {
       console.error("[voice] Audio capture failed:", e);
@@ -417,7 +473,14 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     isPlayingRef.current = false;
     isSetupDoneRef.current = false;
     nextStartTimeRef.current = 0;
-  }, []);
+    pcmAccumRef.current = [];
+    pcmAccumLenRef.current = 0;
+    if (transcriptFlushTimerRef.current !== null) {
+      clearTimeout(transcriptFlushTimerRef.current);
+      transcriptFlushTimerRef.current = null;
+      flushTranscript();
+    }
+  }, [flushTranscript]);
 
   // ─── Start session ───
   const startSession = useCallback(async (childProfile?: {
@@ -429,9 +492,9 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     setErrorMsg("");
     setTranscript([]);
     setActiveSources([]);
+    transcriptBatchRef.current = { user: "", ai: "" };
 
     try {
-      // 1. Get session config from our API
       const res = await fetch("/api/voice-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -441,30 +504,22 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       if (config.error) throw new Error(config.error);
 
       const apiKey = config.apiKey;
-      if (!apiKey) {
-        throw new Error("Gemini API key not configured");
-      }
+      if (!apiKey) throw new Error("Gemini API key not configured");
 
-      // 2. Open WebSocket to Gemini Live
       const wsUrl = `${GEMINI_LIVE_URL}?key=${apiKey}`;
       const ws = new WebSocket(wsUrl);
       ws.binaryType = "arraybuffer";
       wsRef.current = ws;
 
       ws.onopen = () => {
-        // Send setup message
         const setup = {
           setup: {
             model: MODEL,
-            systemInstruction: {
-              parts: [{ text: config.systemInstruction }],
-            },
+            systemInstruction: { parts: [{ text: config.systemInstruction }] },
             generationConfig: {
               responseModalities: ["AUDIO"],
               speechConfig: {
-                voiceConfig: {
-                  prebuiltVoiceConfig: { voiceName: config.voiceName },
-                },
+                voiceConfig: { prebuiltVoiceConfig: { voiceName: config.voiceName } },
               },
             },
             tools: config.tools,
@@ -473,20 +528,17 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           },
         };
         ws.send(JSON.stringify(setup));
-
-        // Start mic capture (will only send audio after setupComplete)
         startAudioCapture();
       };
 
       ws.onmessage = handleWsMessage;
 
-      ws.onerror = (e) => {
-        console.error("[voice] WS error:", e);
+      ws.onerror = () => {
         setErrorMsg("Connection error — please try again");
         updateState("error");
       };
 
-      ws.onclose = (e) => {
+      ws.onclose = () => {
         stopAudioCapture();
         wsRef.current = null;
         if (stateRef.current !== "error" && stateRef.current !== "idle") {
