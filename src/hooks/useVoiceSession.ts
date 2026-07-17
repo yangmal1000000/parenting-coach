@@ -24,113 +24,81 @@ interface TranscriptEntry {
   text: string;
 }
 
-// Output worklet with pre-buffering and ring buffer for gapless playback
+// Output worklet: minimal ring buffer, no state machine
+// Once started, never stops — just reads what's available, zero-fills gaps
 const OUTPUT_WORKLET_CODE = `
 class PlaybackProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
-    this._bufferSize = 24000 * 10; // 10s ring buffer
-    this._buffer = new Float32Array(this._bufferSize);
-    this._writePos = 0;
-    this._readPos = 0;
-    this._state = 'waiting'; // 'waiting' | 'playing' | 'draining'
-    this._preBufferTarget = 4800;  // 200ms before starting playback
-    this._drainSilenceCount = 0;
+    this._buf = new Float32Array(24000 * 10); // 10s ring
+    this._w = 0; // write pos
+    this._r = 0; // read pos
+    this._started = false;
+    this._silenceCount = 0;
 
     this.port.onmessage = (e) => {
-      const msg = e.data;
-      if (msg.type === 'audio') {
-        const samples = msg.samples;
-        for (let i = 0; i < samples.length; i++) {
-          this._buffer[this._writePos] = samples[i];
-          this._writePos = (this._writePos + 1) % this._bufferSize;
+      const m = e.data;
+      if (m.type === 'audio') {
+        const s = m.samples;
+        for (let i = 0; i < s.length; i++) {
+          this._buf[this._w] = s[i];
+          this._w = (this._w + 1) % this._buf.length;
         }
-        // If we were draining because of a momentary gap, go back to waiting
-        if (this._state === 'draining') {
-          this._state = 'waiting';
-          this._drainSilenceCount = 0;
-        }
-      } else if (msg.type === 'clear') {
-        this._writePos = 0;
-        this._readPos = 0;
-        this._state = 'waiting';
-        this._drainSilenceCount = 0;
+        this._silenceCount = 0;
+      } else if (m.type === 'clear') {
+        this._w = 0;
+        this._r = 0;
+        this._started = false;
+        this._silenceCount = 0;
       }
     };
   }
 
-  _available() {
-    if (this._writePos >= this._readPos) {
-      return this._writePos - this._readPos;
-    }
-    return this._bufferSize - this._readPos + this._writePos;
+  _avail() {
+    return this._w >= this._r
+      ? this._w - this._r
+      : this._buf.length - this._r + this._w;
   }
 
   process(inputs, outputs) {
-    const output = outputs[0];
-    if (!output || !output[0]) return true;
-    const channel = output[0];
-    const frameLen = channel.length;
-    const avail = this._available();
+    const out = outputs[0];
+    if (!out || !out[0]) return true;
+    const ch = out[0];
+    const len = ch.length;
+    const avail = this._avail();
 
-    if (this._state === 'waiting') {
-      // Accumulate until we have enough for smooth start
-      if (avail >= this._preBufferTarget) {
-        this._state = 'playing';
+    // Wait for ~400ms before starting
+    if (!this._started) {
+      if (avail >= 9600) {
+        this._started = true;
         this.port.postMessage({ type: 'playing' });
-      } else {
-        // Silence while pre-buffering
-        for (let i = 0; i < frameLen; i++) channel[i] = 0;
-        return true;
       }
-    }
-
-    if (this._state === 'playing') {
-      const toRead = Math.min(frameLen, this._available());
-      for (let i = 0; i < toRead; i++) {
-        channel[i] = this._buffer[this._readPos];
-        this._readPos = (this._readPos + 1) % this._bufferSize;
-      }
-      // Zero-fill any gap
-      for (let i = toRead; i < frameLen; i++) channel[i] = 0;
-
-      // If we couldn't fill the whole frame, we're running out
-      if (toRead < frameLen) {
-        this._state = 'draining';
-        this._drainSilenceCount = frameLen - toRead;
-        this.port.postMessage({ type: 'underrun' });
-      }
+      for (let i = 0; i < len; i++) ch[i] = 0;
       return true;
     }
 
-    if (this._state === 'draining') {
-      // We ran out mid-response. Try to continue if new data arrived.
-      if (avail > 0) {
-        const toRead = Math.min(frameLen, avail);
-        for (let i = 0; i < toRead; i++) {
-          channel[i] = this._buffer[this._readPos];
-          this._readPos = (this._readPos + 1) % this._bufferSize;
-        }
-        for (let i = toRead; i < frameLen; i++) channel[i] = 0;
-        this._drainSilenceCount = 0;
-        // Go back to waiting so we re-buffer before resuming
-        this._state = 'waiting';
-      } else {
-        // No data — silence
-        for (let i = 0; i < frameLen; i++) channel[i] = 0;
-        this._drainSilenceCount += frameLen;
-        // After ~500ms of silence, signal drained
-        if (this._drainSilenceCount > 12000) {
-          this.port.postMessage({ type: 'drained' });
-          this._state = 'waiting';
-          this._drainSilenceCount = 0;
-        }
-      }
-      return true;
+    // Started — read whatever is available, zero-fill the rest
+    const toRead = Math.min(len, avail);
+    for (let i = 0; i < toRead; i++) {
+      ch[i] = this._buf[this._r];
+      this._r = (this._r + 1) % this._buf.length;
+    }
+    for (let i = toRead; i < len; i++) ch[i] = 0;
+
+    // Track silence for drain detection
+    if (toRead < len) {
+      this._silenceCount += (len - toRead);
+    } else {
+      this._silenceCount = 0;
     }
 
-    // Fallback
-    for (let i = 0; i < frameLen; i++) channel[i] = 0;
+    // After 1s of continuous silence, signal drained
+    if (this._silenceCount > 24000) {
+      this.port.postMessage({ type: 'drained' });
+      this._started = false;
+      this._silenceCount = 0;
+    }
+
     return true;
   }
 }
