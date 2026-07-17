@@ -352,33 +352,25 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       const source = inputCtx.createMediaStreamSource(stream);
       const workletNode = new AudioWorkletNode(inputCtx, "pcm-capture");
 
-      let audioChunkCount = 0;
+      // Batch audio chunks before sending (~64ms batches instead of 8ms)
+      let audioBatch: number[] = [];
+      const BATCH_BYTES = 2048; // ~1024 frames = 64ms at 16kHz Int16
+
       workletNode.port.onmessage = (e: MessageEvent) => {
-        // Only send audio after setup is confirmed
         if (wsRef.current?.readyState === WebSocket.OPEN && isSetupDoneRef.current) {
-          // Gemini Live v1beta expects audio wrapped in JSON with base64
-          const pcmBuffer = e.data as ArrayBuffer;
-          const bytes = new Uint8Array(pcmBuffer);
-          let binary = "";
-          const chunkSize = 8192;
-          for (let i = 0; i < bytes.length; i += chunkSize) {
-            const chunk = bytes.subarray(i, i + chunkSize);
-            binary += String.fromCharCode.apply(null, Array.from(chunk));
-          }
-          const base64 = btoa(binary);
+          const bytes = new Uint8Array(e.data as ArrayBuffer);
+          for (let i = 0; i < bytes.length; i++) audioBatch.push(bytes[i]);
 
-          const audioMsg = {
-            realtimeInput: {
-              audio: {
-                data: base64,
-                mimeType: "audio/pcm;rate=16000",
-              },
-            },
-          };
-          wsRef.current.send(JSON.stringify(audioMsg));
-
-          audioChunkCount++;
-          if (audioChunkCount % 50 === 0) {
+          if (audioBatch.length >= BATCH_BYTES) {
+            const batchBytes = new Uint8Array(audioBatch);
+            let binary = "";
+            for (let i = 0; i < batchBytes.length; i += 8192) {
+              binary += String.fromCharCode.apply(null, Array.from(batchBytes.subarray(i, i + 8192)));
+            }
+            wsRef.current.send(JSON.stringify({
+              realtimeInput: { audio: { data: btoa(binary), mimeType: "audio/pcm;rate=16000" } },
+            }));
+            audioBatch = [];
           }
         }
       };
