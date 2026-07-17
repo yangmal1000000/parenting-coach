@@ -155,6 +155,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const outputWorkletRef = useRef<AudioWorkletNode | null>(null);
   const isSetupDoneRef = useRef(false);
   const stateRef = useRef<VoiceState>("idle");
+  const [diag, setDiag] = useState<string>("");
 
   // Transcript batching
   const transcriptBatchRef = useRef<{ user: string; ai: string }>({ user: "", ai: "" });
@@ -455,16 +456,16 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       outputNode.port.onmessage = (e: MessageEvent) => {
         const data = e.data;
         if (data.type === "init") {
-          console.warn("[voice] Worklet init:", `sr=${data.sampleRate} buf=${data.bufSize}`);
+          setDiag(`sr=${data.sampleRate} buf=${data.bufSize}`);
         } else if (data.type === "playing") {
-          console.warn("[voice] Playing:", `sr=${data.sampleRate} avail=${data.availAtStart} frame=${data.frameLen}`);
+          setDiag(`PLAY sr=${data.sampleRate} avail=${data.availAtStart} frame=${data.frameLen}`);
           if (stateRef.current !== "speaking" && stateRef.current !== "error") {
             updateState("speaking");
           }
         } else if (data.type === "drained") {
           if (stateRef.current === "speaking") updateState("listening");
         } else if (data.type === "stats") {
-          console.warn("[voice] Stats:", `sr=${data.sampleRate} avail=${data.avail} underruns=${data.underruns} chunks=${data.totalChunks} samples=${data.totalSamples} frame=${data.frameLen}`);
+          setDiag(`sr=${data.sampleRate} avail=${data.avail} under=${data.underruns} chunks=${data.totalChunks} frame=${data.frameLen}`);
         }
       };
 
@@ -568,5 +569,5 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     };
   }, [stopAudioCapture]);
 
-  return { state, transcript, activeSources, errorMsg, startSession, stopSession };
+  return { state, transcript, activeSources, errorMsg, startSession, stopSession, diag };
 }

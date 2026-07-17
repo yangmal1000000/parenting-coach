@@ -40,6 +40,7 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
     errorMsg,
     startSession,
     stopSession,
+    diag,
   } = useVoiceSession({
     onToolResult: (result) => {
       if (result && typeof result === "object" && "strategies" in result) {
@@ -270,6 +271,13 @@ export function VoiceModeOverlay({ visible, onClose, childProfile, lang }: Voice
             <X size={14} />
             {isKo ? "종료" : "End Session"}
           </button>
+        )}
+
+        {/* Diagnostics */}
+        {diag && (
+          <p className="text-xs font-mono" style={{ color: "var(--text-muted)", opacity: 0.5 }}>
+            {diag}
+          </p>
         )}
 
         {/* Hint text */}
