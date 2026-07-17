@@ -2,12 +2,11 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 
-// Gemini Live API constants
 const GEMINI_LIVE_URL =
   "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
 const MODEL = "models/gemini-2.5-flash-native-audio-latest";
 const INPUT_SAMPLE_RATE = 16000;
-const OUTPUT_SAMPLE_RATE = 24000;
+const GEMINI_OUTPUT_RATE = 24000;
 
 export type VoiceState = "idle" | "connecting" | "listening" | "thinking" | "speaking" | "error";
 
@@ -24,27 +23,21 @@ interface TranscriptEntry {
   text: string;
 }
 
-// Output worklet: sample-rate-aware ring buffer with diagnostics
+// Minimal ring buffer worklet — uses actual AudioContext sampleRate
 const OUTPUT_WORKLET_CODE = `
 class PlaybackProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
-    // Use the ACTUAL sample rate of the AudioContext, not a hardcoded value
-    this._sr = sampleRate; // global in AudioWorkletGlobalScope
-    this._bufSize = this._sr * 10; // 10s ring
+    this._sr = sampleRate;
+    this._bufSize = this._sr * 10;
     this._buf = new Float32Array(this._bufSize);
     this._w = 0;
     this._r = 0;
     this._started = false;
-    this._silenceCount = 0;
-    this._preBufferTarget = this._sr * 0.4; // 400ms
-    this._drainTarget = this._sr * 1.0; // 1s of silence to signal drain
-    this._logCounter = 0;
-    this._underrunCount = 0;
-    this._totalChunks = 0;
-    this._totalSamples = 0;
-
-    this.port.postMessage({ type: 'init', sampleRate: this._sr, bufSize: this._bufSize });
+    this._silenceFrames = 0;
+    this._preBuffer = this._sr * 0.4; // 400ms pre-buffer
+    this._drainSilence = this._sr * 1.0; // 1s silence = drained
+    this.port.postMessage({ type: 'init', sampleRate: this._sr });
 
     this.port.onmessage = (e) => {
       const m = e.data;
@@ -54,27 +47,15 @@ class PlaybackProcessor extends AudioWorkletProcessor {
           this._buf[this._w] = s[i];
           this._w = (this._w + 1) % this._buf.length;
         }
-        this._silenceCount = 0;
-        this._totalChunks++;
-        this._totalSamples += s.length;
+        this._silenceFrames = 0;
       } else if (m.type === 'clear') {
-        this._w = 0;
-        this._r = 0;
-        this._started = false;
-        this._silenceCount = 0;
-        this._underrunCount = 0;
-        this._totalChunks = 0;
-        this._totalSamples = 0;
+        this._w = 0; this._r = 0; this._started = false; this._silenceFrames = 0;
       }
     };
   }
-
   _avail() {
-    return this._w >= this._r
-      ? this._w - this._r
-      : this._buf.length - this._r + this._w;
+    return this._w >= this._r ? this._w - this._r : this._buf.length - this._r + this._w;
   }
-
   process(inputs, outputs) {
     const out = outputs[0];
     if (!out || !out[0]) return true;
@@ -83,20 +64,14 @@ class PlaybackProcessor extends AudioWorkletProcessor {
     const avail = this._avail();
 
     if (!this._started) {
-      if (avail >= this._preBufferTarget) {
+      if (avail >= this._preBuffer) {
         this._started = true;
-        this.port.postMessage({
-          type: 'playing',
-          sampleRate: this._sr,
-          availAtStart: avail,
-          frameLen: len
-        });
+        this.port.postMessage({ type: 'playing', sampleRate: this._sr });
       }
       for (let i = 0; i < len; i++) ch[i] = 0;
       return true;
     }
 
-    // Read whatever is available
     const toRead = Math.min(len, avail);
     for (let i = 0; i < toRead; i++) {
       ch[i] = this._buf[this._r];
@@ -104,37 +79,14 @@ class PlaybackProcessor extends AudioWorkletProcessor {
     }
     for (let i = toRead; i < len; i++) ch[i] = 0;
 
-    // Track silence for drain detection
-    if (toRead < len) {
-      this._silenceCount += (len - toRead);
-      this._underrunCount++;
-    } else {
-      this._silenceCount = 0;
-    }
+    if (toRead > 0) { this._silenceFrames = 0; }
+    else { this._silenceFrames += len; }
 
-    // Log diagnostics every ~1s (every 750 frames at 128 samples ≈ varies)
-    this._logCounter++;
-    if (this._logCounter >= 250) {
-      this._logCounter = 0;
-      this.port.postMessage({
-        type: 'stats',
-        avail: this._avail(),
-        underruns: this._underrunCount,
-        totalChunks: this._totalChunks,
-        totalSamples: this._totalSamples,
-        frameLen: len,
-        sampleRate: this._sr
-      });
-      this._underrunCount = 0;
-    }
-
-    // After 1s of continuous silence, signal drained
-    if (this._silenceCount > this._drainTarget) {
+    if (this._silenceFrames > this._drainSilence) {
       this.port.postMessage({ type: 'drained' });
       this._started = false;
-      this._silenceCount = 0;
+      this._silenceFrames = 0;
     }
-
     return true;
   }
 }
@@ -146,6 +98,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [activeSources, setActiveSources] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [diag, setDiag] = useState<string>("");
 
   const wsRef = useRef<WebSocket | null>(null);
   const inputAudioCtxRef = useRef<AudioContext | null>(null);
@@ -155,7 +108,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const outputWorkletRef = useRef<AudioWorkletNode | null>(null);
   const isSetupDoneRef = useRef(false);
   const stateRef = useRef<VoiceState>("idle");
-  const [diag, setDiag] = useState<string>("");
 
   // Transcript batching
   const transcriptBatchRef = useRef<{ user: string; ai: string }>({ user: "", ai: "" });
@@ -165,7 +117,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     transcriptFlushTimerRef.current = null;
     const batch = transcriptBatchRef.current;
     if (!batch.user && !batch.ai) return;
-
     setTranscript(prev => {
       let updated = prev;
       if (batch.ai) {
@@ -186,16 +137,12 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       }
       return updated.length > 50 ? updated.slice(-50) : updated;
     });
-
     transcriptBatchRef.current = { user: "", ai: "" };
   }, []);
 
   const addTranscript = useCallback((text: string, isUser: boolean) => {
-    if (isUser) {
-      transcriptBatchRef.current.user += text;
-    } else {
-      transcriptBatchRef.current.ai += text;
-    }
+    if (isUser) transcriptBatchRef.current.user += text;
+    else transcriptBatchRef.current.ai += text;
     if (transcriptFlushTimerRef.current === null) {
       transcriptFlushTimerRef.current = setTimeout(flushTranscript, 200);
     }
@@ -208,12 +155,31 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     opts.onStateChange?.(s);
   }, [opts]);
 
-  // ─── Push PCM to output worklet ───
-  const pushPcmToWorklet = useCallback((float32: Float32Array) => {
-    const node = outputWorkletRef.current;
-    if (!node) return;
-    node.port.postMessage({ type: "audio", samples: float32 }, [float32.buffer]);
+  // ─── Resample to match actual AudioContext sample rate ───
+  const resample = useCallback((float32: Float32Array, sourceRate: number, targetRate: number): Float32Array => {
+    if (sourceRate === targetRate) return float32;
+    const ratio = targetRate / sourceRate;
+    const newLen = Math.round(float32.length * ratio);
+    const out = new Float32Array(newLen);
+    for (let i = 0; i < newLen; i++) {
+      const srcIdx = i / ratio;
+      const idx0 = Math.floor(srcIdx);
+      const frac = srcIdx - idx0;
+      out[i] = idx0 + 1 < float32.length
+        ? float32[idx0] * (1 - frac) + float32[idx0 + 1] * frac
+        : (float32[idx0] || 0);
+    }
+    return out;
   }, []);
+
+  // ─── Push PCM to output worklet ───
+  const pushPcmToWorklet = useCallback((float32: Float32Array, sourceRate: number) => {
+    const node = outputWorkletRef.current;
+    const ctx = outputAudioCtxRef.current;
+    if (!node || !ctx) return;
+    const audio = resample(float32, sourceRate, ctx.sampleRate);
+    node.port.postMessage({ type: "audio", samples: audio }, [audio.buffer]);
+  }, [resample]);
 
   // ─── Handle WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
@@ -289,9 +255,9 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
               try {
                 const base64 = part.inlineData.data;
                 const mimeType = part.inlineData.mimeType || "audio/pcm;rate=24000";
-                const sampleRate = mimeType.includes("24000") ? 24000 : 16000;
+                const sourceRate = mimeType.includes("24000") ? 24000 : 16000;
 
-                // Synchronous base64 decode (avoid async fetch jitter)
+                // Sync base64 decode
                 const binary = atob(base64);
                 const bytes = new Uint8Array(binary.length);
                 for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -299,23 +265,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                 const float32 = new Float32Array(pcmData.length);
                 for (let i = 0; i < pcmData.length; i++) float32[i] = pcmData[i] / 32768;
 
-                // Resample if needed
-                if (sampleRate !== OUTPUT_SAMPLE_RATE) {
-                  const ratio = OUTPUT_SAMPLE_RATE / sampleRate;
-                  const newLen = Math.round(float32.length * ratio);
-                  const resampled = new Float32Array(newLen);
-                  for (let i = 0; i < newLen; i++) {
-                    const srcIdx = i / ratio;
-                    const idx0 = Math.floor(srcIdx);
-                    const frac = srcIdx - idx0;
-                    resampled[i] = idx0 + 1 < float32.length
-                      ? float32[idx0] * (1 - frac) + float32[idx0 + 1] * frac
-                      : (float32[idx0] || 0);
-                  }
-                  pushPcmToWorklet(resampled);
-                } else {
-                  pushPcmToWorklet(float32);
-                }
+                pushPcmToWorklet(float32, sourceRate);
               } catch (e) {
                 console.error("[voice] Audio extraction failed:", e);
               }
@@ -324,7 +274,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         }
 
         if (msg.serverContent?.turnComplete) {
-          // Let the worklet drain naturally — it sends 'drained' when done
+          // Let worklet drain naturally
         }
 
         if (msg.serverContent?.interrupted) {
@@ -343,7 +293,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         if (pcmData.length === 0) return;
         const float32 = new Float32Array(pcmData.length);
         for (let i = 0; i < pcmData.length; i++) float32[i] = pcmData[i] / 32768;
-        pushPcmToWorklet(float32);
+        pushPcmToWorklet(float32, GEMINI_OUTPUT_RATE);
       } catch (e) {
         console.error("[voice] Audio decode error:", e);
       }
@@ -354,7 +304,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         if (pcmData.length === 0) return;
         const float32 = new Float32Array(pcmData.length);
         for (let i = 0; i < pcmData.length; i++) float32[i] = pcmData[i] / 32768;
-        pushPcmToWorklet(float32);
+        pushPcmToWorklet(float32, GEMINI_OUTPUT_RATE);
       } catch (e) {
         console.error("[voice] Audio decode error:", e);
       }
@@ -379,9 +329,12 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       if (inputCtx.state === "suspended") await inputCtx.resume();
       inputAudioCtxRef.current = inputCtx;
 
-      const outputCtx = new AudioContext({ sampleRate: OUTPUT_SAMPLE_RATE });
+      // Don't force output sample rate — let the browser choose
+      const outputCtx = new AudioContext();
       if (outputCtx.state === "suspended") await outputCtx.resume();
       outputAudioCtxRef.current = outputCtx;
+
+      setDiag(`ctx=${outputCtx.sampleRate}Hz`);
 
       // Input worklet
       const inputWorkletCode = `
@@ -420,7 +373,6 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           const chunk = new Uint8Array(e.data as ArrayBuffer);
           chunks.push(chunk);
           chunksTotalLen += chunk.length;
-
           if (chunksTotalLen >= BATCH_BYTES) {
             const merged = new Uint8Array(chunksTotalLen);
             let off = 0;
@@ -456,16 +408,14 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       outputNode.port.onmessage = (e: MessageEvent) => {
         const data = e.data;
         if (data.type === "init") {
-          setDiag(`sr=${data.sampleRate} buf=${data.bufSize}`);
+          setDiag(`worklet=${data.sampleRate}Hz ctx=${outputCtx.sampleRate}Hz`);
         } else if (data.type === "playing") {
-          setDiag(`PLAY sr=${data.sampleRate} avail=${data.availAtStart} frame=${data.frameLen}`);
+          setDiag(`playing sr=${data.sampleRate}Hz`);
           if (stateRef.current !== "speaking" && stateRef.current !== "error") {
             updateState("speaking");
           }
         } else if (data.type === "drained") {
           if (stateRef.current === "speaking") updateState("listening");
-        } else if (data.type === "stats") {
-          setDiag(`sr=${data.sampleRate} avail=${data.avail} under=${data.underruns} chunks=${data.totalChunks} frame=${data.frameLen}`);
         }
       };
 
@@ -500,11 +450,11 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     name?: string; age?: string; temperament?: string[]; notes?: string;
   }, language?: string) => {
     if (wsRef.current) return;
-
     updateState("connecting");
     setErrorMsg("");
     setTranscript([]);
     setActiveSources([]);
+    setDiag("");
     transcriptBatchRef.current = { user: "", ai: "" };
 
     try {
@@ -569,5 +519,5 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     };
   }, [stopAudioCapture]);
 
-  return { state, transcript, activeSources, errorMsg, startSession, stopSession, diag };
+  return { state, transcript, activeSources, errorMsg, diag, startSession, stopSession };
 }
