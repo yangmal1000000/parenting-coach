@@ -24,17 +24,27 @@ interface TranscriptEntry {
   text: string;
 }
 
-// Output worklet: minimal ring buffer, no state machine
-// Once started, never stops — just reads what's available, zero-fills gaps
+// Output worklet: sample-rate-aware ring buffer with diagnostics
 const OUTPUT_WORKLET_CODE = `
 class PlaybackProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
-    this._buf = new Float32Array(24000 * 10); // 10s ring
-    this._w = 0; // write pos
-    this._r = 0; // read pos
+    // Use the ACTUAL sample rate of the AudioContext, not a hardcoded value
+    this._sr = sampleRate; // global in AudioWorkletGlobalScope
+    this._bufSize = this._sr * 10; // 10s ring
+    this._buf = new Float32Array(this._bufSize);
+    this._w = 0;
+    this._r = 0;
     this._started = false;
     this._silenceCount = 0;
+    this._preBufferTarget = this._sr * 0.4; // 400ms
+    this._drainTarget = this._sr * 1.0; // 1s of silence to signal drain
+    this._logCounter = 0;
+    this._underrunCount = 0;
+    this._totalChunks = 0;
+    this._totalSamples = 0;
+
+    this.port.postMessage({ type: 'init', sampleRate: this._sr, bufSize: this._bufSize });
 
     this.port.onmessage = (e) => {
       const m = e.data;
@@ -45,11 +55,16 @@ class PlaybackProcessor extends AudioWorkletProcessor {
           this._w = (this._w + 1) % this._buf.length;
         }
         this._silenceCount = 0;
+        this._totalChunks++;
+        this._totalSamples += s.length;
       } else if (m.type === 'clear') {
         this._w = 0;
         this._r = 0;
         this._started = false;
         this._silenceCount = 0;
+        this._underrunCount = 0;
+        this._totalChunks = 0;
+        this._totalSamples = 0;
       }
     };
   }
@@ -67,17 +82,21 @@ class PlaybackProcessor extends AudioWorkletProcessor {
     const len = ch.length;
     const avail = this._avail();
 
-    // Wait for ~400ms before starting
     if (!this._started) {
-      if (avail >= 9600) {
+      if (avail >= this._preBufferTarget) {
         this._started = true;
-        this.port.postMessage({ type: 'playing' });
+        this.port.postMessage({
+          type: 'playing',
+          sampleRate: this._sr,
+          availAtStart: avail,
+          frameLen: len
+        });
       }
       for (let i = 0; i < len; i++) ch[i] = 0;
       return true;
     }
 
-    // Started — read whatever is available, zero-fill the rest
+    // Read whatever is available
     const toRead = Math.min(len, avail);
     for (let i = 0; i < toRead; i++) {
       ch[i] = this._buf[this._r];
@@ -88,12 +107,29 @@ class PlaybackProcessor extends AudioWorkletProcessor {
     // Track silence for drain detection
     if (toRead < len) {
       this._silenceCount += (len - toRead);
+      this._underrunCount++;
     } else {
       this._silenceCount = 0;
     }
 
+    // Log diagnostics every ~1s (every 750 frames at 128 samples ≈ varies)
+    this._logCounter++;
+    if (this._logCounter >= 250) {
+      this._logCounter = 0;
+      this.port.postMessage({
+        type: 'stats',
+        avail: this._avail(),
+        underruns: this._underrunCount,
+        totalChunks: this._totalChunks,
+        totalSamples: this._totalSamples,
+        frameLen: len,
+        sampleRate: this._sr
+      });
+      this._underrunCount = 0;
+    }
+
     // After 1s of continuous silence, signal drained
-    if (this._silenceCount > 24000) {
+    if (this._silenceCount > this._drainTarget) {
       this.port.postMessage({ type: 'drained' });
       this._started = false;
       this._silenceCount = 0;
@@ -418,12 +454,17 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
 
       outputNode.port.onmessage = (e: MessageEvent) => {
         const data = e.data;
-        if (data.type === "playing") {
+        if (data.type === "init") {
+          console.log("[voice] Output worklet init:", `sr=${data.sampleRate} bufSize=${data.bufSize}`);
+        } else if (data.type === "playing") {
+          console.log("[voice] Playback started:", `sr=${data.sampleRate} avail=${data.availAtStart} frameLen=${data.frameLen}`);
           if (stateRef.current !== "speaking" && stateRef.current !== "error") {
             updateState("speaking");
           }
         } else if (data.type === "drained") {
           if (stateRef.current === "speaking") updateState("listening");
+        } else if (data.type === "stats") {
+          console.log("[voice] Stats:", `sr=${data.sampleRate} avail=${data.avail} underruns=${data.underruns} chunks=${data.totalChunks} samples=${data.totalSamples} frameLen=${data.frameLen}`);
         }
       };
 
