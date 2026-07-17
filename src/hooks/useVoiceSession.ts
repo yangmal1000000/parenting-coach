@@ -8,8 +8,7 @@ const GEMINI_LIVE_URL =
 const MODEL = "models/gemini-2.5-flash-native-audio-latest";
 const INPUT_SAMPLE_RATE = 16000;  // Mic capture rate
 const OUTPUT_SAMPLE_RATE = 24000; // Gemini audio output rate
-const MAX_PLAYBACK_QUEUE = 30;    // Cap to prevent memory growth
-const PCM_ACCUM_TARGET = 12000;   // ~0.5s of 24kHz audio before scheduling a buffer
+const RING_BUFFER_SIZE = 24000 * 10; // 10 seconds of audio buffer
 
 export type VoiceState = "idle" | "connecting" | "listening" | "thinking" | "speaking" | "error";
 
@@ -26,29 +25,96 @@ interface TranscriptEntry {
   text: string;
 }
 
+// Output worklet: reads from a shared ring buffer continuously
+const OUTPUT_WORKLET_CODE = `
+class PlaybackProcessor extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this._buffer = new Float32Array(${RING_BUFFER_SIZE});
+    this._writePos = 0;
+    this._readPos = 0;
+    this._hasData = false;
+
+    this.port.onmessage = (e) => {
+      const data = e.data;
+      if (data.type === 'audio') {
+        const samples = data.samples;
+        for (let i = 0; i < samples.length; i++) {
+          this._buffer[this._writePos] = samples[i];
+          this._writePos = (this._writePos + 1) % this._buffer.length;
+        }
+        this._hasData = true;
+        this.port.postMessage({ type: 'added', count: samples.length });
+      } else if (data.type === 'clear') {
+        this._writePos = 0;
+        this._readPos = 0;
+        this._hasData = false;
+      }
+    };
+  }
+
+  process(inputs, outputs) {
+    const output = outputs[0];
+    if (!output || !output[0]) return true;
+
+    const channel = output[0];
+    const avail = this._hasData ? this._samplesAvailable() : 0;
+
+    if (avail >= channel.length) {
+      for (let i = 0; i < channel.length; i++) {
+        channel[i] = this._buffer[this._readPos];
+        this._readPos = (this._readPos + 1) % this._buffer.length;
+      }
+      this.port.postMessage({ type: 'playing' });
+    } else if (avail > 0) {
+      // Play what we have, silence the rest
+      for (let i = 0; i < avail; i++) {
+        channel[i] = this._buffer[this._readPos];
+        this._readPos = (this._readPos + 1) % this._buffer.length;
+      }
+      for (let i = avail; i < channel.length; i++) {
+        channel[i] = 0;
+      }
+      this._hasData = false;
+      this.port.postMessage({ type: 'underrun' });
+    } else {
+      // No data — silence
+      for (let i = 0; i < channel.length; i++) {
+        channel[i] = 0;
+      }
+    }
+    return true;
+  }
+
+  _samplesAvailable() {
+    if (this._writePos >= this._readPos) {
+      return this._writePos - this._readPos;
+    }
+    return this._buffer.length - this._readPos + this._writePos;
+  }
+}
+registerProcessor('playback-processor', PlaybackProcessor);
+`;
+
 export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const [state, setState] = useState<VoiceState>("idle");
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [activeSources, setActiveSources] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  // Refs for everything that callbacks need (avoids stale closures)
+  // Refs
   const wsRef = useRef<WebSocket | null>(null);
   const inputAudioCtxRef = useRef<AudioContext | null>(null);
   const outputAudioCtxRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const workletNodeRef = useRef<AudioWorkletNode | null>(null);
-  const playbackQueueRef = useRef<AudioBuffer[]>([]);
-  const isPlayingRef = useRef(false);
-  const nextStartTimeRef = useRef(0);
+  const outputWorkletRef = useRef<AudioWorkletNode | null>(null);
   const isSetupDoneRef = useRef(false);
   const stateRef = useRef<VoiceState>("idle");
+  const isSpeakingRef = useRef(false);
+  const underrunCountRef = useRef(0);
 
-  // PCM accumulator: merge tiny chunks into larger buffers for smooth playback
-  const pcmAccumRef = useRef<Float32Array[]>([]);
-  const pcmAccumLenRef = useRef(0);
-
-  // ─── Transcript batching (avoid re-render per chunk) ───
+  // Transcript batching
   const transcriptBatchRef = useRef<{ user: string; ai: string }>({ user: "", ai: "" });
   const transcriptFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -93,102 +159,29 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     opts.onTranscript?.(text, isUser);
   }, [flushTranscript, opts]);
 
-  // Keep stateRef in sync
   const updateState = useCallback((s: VoiceState) => {
     stateRef.current = s;
     setState(s);
     opts.onStateChange?.(s);
   }, [opts]);
 
-  // ─── Playback queue processor (gapless scheduling) ───
-  const processPlaybackQueue = useCallback(() => {
-    if (!outputAudioCtxRef.current) return;
-    if (playbackQueueRef.current.length === 0) return;
+  // ─── Push PCM audio to output worklet ───
+  const pushPcmToWorklet = useCallback((float32: Float32Array) => {
+    const node = outputWorkletRef.current;
+    if (!node) return;
 
-    // Schedule all queued buffers back-to-back with no gaps
-    while (playbackQueueRef.current.length > 0) {
-      const buffer = playbackQueueRef.current.shift()!;
-      const ctx = outputAudioCtxRef.current;
-      const now = ctx.currentTime;
+    // Transfer the Float32Array to the worklet (zero-copy)
+    node.port.postMessage({ type: "audio", samples: float32 }, [float32.buffer]);
 
-      const startTime = Math.max(now, nextStartTimeRef.current);
-      if (nextStartTimeRef.current <= now) {
-        updateState("speaking");
-      }
-
-      const src = ctx.createBufferSource();
-      src.buffer = buffer;
-      src.connect(ctx.destination);
-      src.onended = () => {
-        if (nextStartTimeRef.current <= ctx.currentTime + 0.05 && playbackQueueRef.current.length === 0) {
-          isPlayingRef.current = false;
-          nextStartTimeRef.current = 0;
-          if (stateRef.current === "speaking") updateState("listening");
-        }
-      };
-      src.start(startTime);
-      nextStartTimeRef.current = startTime + buffer.duration;
-      isPlayingRef.current = true;
+    if (!isSpeakingRef.current) {
+      isSpeakingRef.current = true;
+      underrunCountRef.current = 0;
+      updateState("speaking");
     }
   }, [updateState]);
 
-  // ─── PCM accumulator: merge tiny chunks → larger buffers → playback queue ───
-  const flushPcmAccumulator = useCallback(() => {
-    if (pcmAccumLenRef.current === 0 || !outputAudioCtxRef.current) return;
-
-    const ctx = outputAudioCtxRef.current;
-    const merged = new Float32Array(pcmAccumLenRef.current);
-    let offset = 0;
-    for (const chunk of pcmAccumRef.current) {
-      merged.set(chunk, offset);
-      offset += chunk.length;
-    }
-
-    const audioBuffer = ctx.createBuffer(1, merged.length, OUTPUT_SAMPLE_RATE);
-    audioBuffer.copyToChannel(merged, 0);
-
-    if (playbackQueueRef.current.length >= MAX_PLAYBACK_QUEUE) {
-      playbackQueueRef.current.shift();
-    }
-    playbackQueueRef.current.push(audioBuffer);
-
-    pcmAccumRef.current = [];
-    pcmAccumLenRef.current = 0;
-
-    processPlaybackQueue();
-  }, [processPlaybackQueue]);
-
-  const pushPcmAudio = useCallback((float32: Float32Array, sampleRate: number) => {
-    // Resample if needed (Gemini sends 24kHz, our output ctx is 24kHz so usually no-op)
-    let audio = float32;
-    if (sampleRate !== OUTPUT_SAMPLE_RATE) {
-      const ratio = OUTPUT_SAMPLE_RATE / sampleRate;
-      const newLen = Math.round(float32.length * ratio);
-      audio = new Float32Array(newLen);
-      for (let i = 0; i < newLen; i++) {
-        const srcIdx = i / ratio;
-        const idx0 = Math.floor(srcIdx);
-        const frac = srcIdx - idx0;
-        if (idx0 + 1 < float32.length) {
-          audio[i] = float32[idx0] * (1 - frac) + float32[idx0 + 1] * frac;
-        } else {
-          audio[i] = float32[idx0] || 0;
-        }
-      }
-    }
-
-    pcmAccumRef.current.push(audio);
-    pcmAccumLenRef.current += audio.length;
-
-    // Once we have ~0.5s of audio, flush to playback queue
-    if (pcmAccumLenRef.current >= PCM_ACCUM_TARGET) {
-      flushPcmAccumulator();
-    }
-  }, [flushPcmAccumulator]);
-
   // ─── Handle incoming WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
-    // ── Text messages (JSON control messages) ──
     let dataStr: string | null = null;
 
     if (typeof event.data === "string") {
@@ -199,18 +192,14 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         if (decoded.startsWith("{") || decoded.startsWith("[")) {
           dataStr = decoded;
         }
-      } catch {
-        // Not text
-      }
+      } catch {}
     } else if (event.data instanceof Blob) {
       try {
         const text = await event.data.text();
         if (text.startsWith("{") || text.startsWith("[")) {
           dataStr = text;
         }
-      } catch {
-        // Not text
-      }
+      } catch {}
     }
 
     if (dataStr !== null) {
@@ -285,7 +274,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                 const mimeType = part.inlineData.mimeType || "audio/pcm;rate=24000";
                 const sampleRate = mimeType.includes("24000") ? 24000 : 16000;
 
-                // base64 → ArrayBuffer (faster than atob loop)
+                // base64 → ArrayBuffer
                 const resp = await fetch(`data:application/octet-stream;base64,${base64}`);
                 const arrBuf = await resp.arrayBuffer();
                 const pcmData = new Int16Array(arrBuf);
@@ -296,7 +285,25 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                   float32[i] = pcmData[i] / 32768;
                 }
 
-                pushPcmAudio(float32, sampleRate);
+                // Resample if needed
+                if (sampleRate !== OUTPUT_SAMPLE_RATE) {
+                  const ratio = OUTPUT_SAMPLE_RATE / sampleRate;
+                  const newLen = Math.round(float32.length * ratio);
+                  const resampled = new Float32Array(newLen);
+                  for (let i = 0; i < newLen; i++) {
+                    const srcIdx = i / ratio;
+                    const idx0 = Math.floor(srcIdx);
+                    const frac = srcIdx - idx0;
+                    if (idx0 + 1 < float32.length) {
+                      resampled[i] = float32[idx0] * (1 - frac) + float32[idx0 + 1] * frac;
+                    } else {
+                      resampled[i] = float32[idx0] || 0;
+                    }
+                  }
+                  pushPcmToWorklet(resampled);
+                } else {
+                  pushPcmToWorklet(float32);
+                }
               } catch (e) {
                 console.error("[voice] Audio extraction failed:", e);
               }
@@ -304,21 +311,16 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           }
         }
 
-        // Turn complete — flush any remaining PCM
+        // Turn complete
         if (msg.serverContent?.turnComplete) {
-          flushPcmAccumulator();
-          if (!isPlayingRef.current && playbackQueueRef.current.length === 0) {
-            updateState("listening");
-          }
+          // Don't immediately switch to listening — let the worklet drain
+          // The worklet's underrun message will trigger state change
         }
 
         // Interrupted (user barge-in)
         if (msg.serverContent?.interrupted) {
-          playbackQueueRef.current = [];
-          isPlayingRef.current = false;
-          nextStartTimeRef.current = 0;
-          pcmAccumRef.current = [];
-          pcmAccumLenRef.current = 0;
+          outputWorkletRef.current?.port.postMessage({ type: "clear" });
+          isSpeakingRef.current = false;
           updateState("listening");
         }
       } catch {
@@ -341,7 +343,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           float32[i] = pcmData[i] / 32768;
         }
 
-        pushPcmAudio(float32, OUTPUT_SAMPLE_RATE);
+        pushPcmToWorklet(float32);
       } catch (e) {
         console.error("[voice] Audio decode error:", e);
       }
@@ -356,14 +358,14 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
           float32[i] = pcmData[i] / 32768;
         }
 
-        pushPcmAudio(float32, OUTPUT_SAMPLE_RATE);
+        pushPcmToWorklet(float32);
       } catch (e) {
         console.error("[voice] Audio decode error:", e);
       }
     }
-  }, [addTranscript, flushPcmAccumulator, opts, processPlaybackQueue, pushPcmAudio, updateState]);
+  }, [addTranscript, opts, pushPcmToWorklet, updateState]);
 
-  // ─── Audio capture: mic → PCM 16-bit → WebSocket ───
+  // ─── Audio capture + output setup ───
   const startAudioCapture = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -377,15 +379,18 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       });
       streamRef.current = stream;
 
+      // Input context (mic)
       const inputCtx = new AudioContext({ sampleRate: INPUT_SAMPLE_RATE });
       if (inputCtx.state === "suspended") await inputCtx.resume();
       inputAudioCtxRef.current = inputCtx;
 
+      // Output context (playback)
       const outputCtx = new AudioContext({ sampleRate: OUTPUT_SAMPLE_RATE });
       if (outputCtx.state === "suspended") await outputCtx.resume();
       outputAudioCtxRef.current = outputCtx;
 
-      const workletCode = `
+      // ─── Input worklet: mic → PCM 16-bit ───
+      const inputWorkletCode = `
         class PCMProcessor extends AudioWorkletProcessor {
           process(inputs) {
             const input = inputs[0];
@@ -404,18 +409,18 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         registerProcessor('pcm-capture', PCMProcessor);
       `;
 
-      const blob = new Blob([workletCode], { type: "application/javascript" });
-      const workletUrl = URL.createObjectURL(blob);
-      await inputCtx.audioWorklet.addModule(workletUrl);
-      URL.revokeObjectURL(workletUrl);
+      const inputBlob = new Blob([inputWorkletCode], { type: "application/javascript" });
+      const inputUrl = URL.createObjectURL(inputBlob);
+      await inputCtx.audioWorklet.addModule(inputUrl);
+      URL.revokeObjectURL(inputUrl);
 
       const source = inputCtx.createMediaStreamSource(stream);
       const workletNode = new AudioWorkletNode(inputCtx, "pcm-capture");
 
-      // Batch audio using Uint8Array chunks (not number[] — avoids GC pressure)
+      // Batch mic audio using Uint8Array chunks
       const chunks: Uint8Array[] = [];
       let chunksTotalLen = 0;
-      const BATCH_BYTES = 2048; // ~64ms at 16kHz Int16
+      const BATCH_BYTES = 2048; // ~64ms
 
       workletNode.port.onmessage = (e: MessageEvent) => {
         if (wsRef.current?.readyState === WebSocket.OPEN && isSetupDoneRef.current) {
@@ -443,6 +448,37 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       };
       source.connect(workletNode);
       workletNodeRef.current = workletNode;
+
+      // ─── Output worklet: ring buffer → speakers ───
+      const outputBlob = new Blob([OUTPUT_WORKLET_CODE], { type: "application/javascript" });
+      const outputUrl = URL.createObjectURL(outputBlob);
+      await outputCtx.audioWorklet.addModule(outputUrl);
+      URL.revokeObjectURL(outputUrl);
+
+      const outputNode = new AudioWorkletNode(outputCtx, "playback-processor", {
+        numberOfInputs: 0,
+        numberOfOutputs: 1,
+        outputChannelCount: [1],
+      });
+      outputNode.connect(outputCtx.destination);
+
+      // Handle messages from the worklet
+      outputNode.port.onmessage = (e: MessageEvent) => {
+        const data = e.data;
+        if (data.type === "underrun") {
+          // Worklet ran out of data — if we were speaking, go back to listening
+          underrunCountRef.current++;
+          if (underrunCountRef.current >= 2 && isSpeakingRef.current) {
+            isSpeakingRef.current = false;
+            if (stateRef.current === "speaking") updateState("listening");
+          }
+        } else if (data.type === "playing") {
+          // Reset underrun counter when data is flowing
+          underrunCountRef.current = 0;
+        }
+      };
+
+      outputWorkletRef.current = outputNode;
     } catch (e) {
       console.error("[voice] Audio capture failed:", e);
       const msg = e instanceof Error ? e.message : "Microphone access failed";
@@ -451,11 +487,16 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     }
   }, [updateState]);
 
-  // ─── Stop audio capture ───
+  // ─── Stop everything ───
   const stopAudioCapture = useCallback(() => {
     if (workletNodeRef.current) {
       try { workletNodeRef.current.disconnect(); } catch {}
       workletNodeRef.current = null;
+    }
+    if (outputWorkletRef.current) {
+      try { outputWorkletRef.current.port.postMessage({ type: "clear" }); } catch {}
+      try { outputWorkletRef.current.disconnect(); } catch {}
+      outputWorkletRef.current = null;
     }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(t => t.stop());
@@ -469,12 +510,9 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       outputAudioCtxRef.current.close().catch(() => {});
       outputAudioCtxRef.current = null;
     }
-    playbackQueueRef.current = [];
-    isPlayingRef.current = false;
     isSetupDoneRef.current = false;
-    nextStartTimeRef.current = 0;
-    pcmAccumRef.current = [];
-    pcmAccumLenRef.current = 0;
+    isSpeakingRef.current = false;
+    underrunCountRef.current = 0;
     if (transcriptFlushTimerRef.current !== null) {
       clearTimeout(transcriptFlushTimerRef.current);
       transcriptFlushTimerRef.current = null;
