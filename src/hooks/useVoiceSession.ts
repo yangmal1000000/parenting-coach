@@ -254,9 +254,11 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                 const mimeType = part.inlineData.mimeType || "audio/pcm;rate=24000";
                 const sampleRate = mimeType.includes("24000") ? 24000 : 16000;
 
-                const resp = await fetch(`data:application/octet-stream;base64,${base64}`);
-                const arrBuf = await resp.arrayBuffer();
-                const pcmData = new Int16Array(arrBuf);
+                // Synchronous base64 decode (avoid async fetch jitter)
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                const pcmData = new Int16Array(bytes.buffer);
                 const float32 = new Float32Array(pcmData.length);
                 for (let i = 0; i < pcmData.length; i++) float32[i] = pcmData[i] / 32768;
 
