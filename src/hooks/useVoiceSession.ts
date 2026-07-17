@@ -38,6 +38,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const workletNodeRef = useRef<AudioWorkletNode | null>(null);
   const playbackQueueRef = useRef<AudioBuffer[]>([]);
   const isPlayingRef = useRef(false);
+  const nextStartTimeRef = useRef(0);
   const isSetupDoneRef = useRef(false);
   const stateRef = useRef<VoiceState>("idle");
 
@@ -51,10 +52,11 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const addTranscript = useCallback((text: string, isUser: boolean) => {
     setTranscript(prev => {
       const role: "user" | "ai" = isUser ? "user" : "ai";
-      // Accumulate into the last bubble if same role
+      // Accumulate into the last bubble if same role — no forced space
+      // (Gemini sends partial chunks; Korean/CJK doesn't use spaces between words)
       if (prev.length > 0 && prev[prev.length - 1].role === role) {
         const last = prev[prev.length - 1];
-        return [...prev.slice(0, -1), { role, text: last.text + " " + text }];
+        return [...prev.slice(0, -1), { role, text: last.text + text }];
       }
       // New bubble
       const updated = [...prev, { role, text }];
@@ -63,31 +65,38 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     opts.onTranscript?.(text, isUser);
   }, [opts]);
 
-  // ─── Playback queue processor ───
+  // ─── Playback queue processor (gapless scheduling) ───
   const processPlaybackQueue = useCallback(() => {
-    if (isPlayingRef.current) return;
-    const buffer = playbackQueueRef.current.shift();
-    if (!buffer || !outputAudioCtxRef.current) {
-      // Nothing to play — go back to listening if we were speaking
-      if (stateRef.current === "speaking") updateState("listening");
-      return;
-    }
+    if (!outputAudioCtxRef.current) return;
 
-    isPlayingRef.current = true;
-    updateState("speaking");
+    // Schedule all queued buffers back-to-back with no gaps
+    while (playbackQueueRef.current.length > 0) {
+      const buffer = playbackQueueRef.current.shift()!;
+      const ctx = outputAudioCtxRef.current;
+      const now = ctx.currentTime;
 
-    const src = outputAudioCtxRef.current.createBufferSource();
-    src.buffer = buffer;
-    src.connect(outputAudioCtxRef.current.destination);
-    src.onended = () => {
-      isPlayingRef.current = false;
-      if (playbackQueueRef.current.length > 0) {
-        processPlaybackQueue();
-      } else {
-        updateState("listening");
+      // Start time: now if queue was empty, otherwise chain after last buffer
+      const startTime = Math.max(now, nextStartTimeRef.current);
+      if (nextStartTimeRef.current <= now) {
+        // First buffer in this burst — update state
+        updateState("speaking");
       }
-    };
-    src.start();
+
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(ctx.destination);
+      src.onended = () => {
+        // If everything has played, go back to listening
+        if (nextStartTimeRef.current <= ctx.currentTime + 0.05 && playbackQueueRef.current.length === 0) {
+          isPlayingRef.current = false;
+          nextStartTimeRef.current = 0;
+          if (stateRef.current === "speaking") updateState("listening");
+        }
+      };
+      src.start(startTime);
+      nextStartTimeRef.current = startTime + buffer.duration;
+      isPlayingRef.current = true;
+    }
   }, [updateState]);
 
   // ─── Handle incoming WebSocket messages ───
@@ -234,6 +243,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         if (msg.serverContent?.interrupted) {
           playbackQueueRef.current = [];
           isPlayingRef.current = false;
+          nextStartTimeRef.current = 0;
           updateState("listening");
         }
       } catch {
@@ -406,6 +416,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     playbackQueueRef.current = [];
     isPlayingRef.current = false;
     isSetupDoneRef.current = false;
+    nextStartTimeRef.current = 0;
   }, []);
 
   // ─── Start session ───
