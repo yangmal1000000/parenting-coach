@@ -455,16 +455,16 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       outputNode.port.onmessage = (e: MessageEvent) => {
         const data = e.data;
         if (data.type === "init") {
-          console.log("[voice] Output worklet init:", `sr=${data.sampleRate} bufSize=${data.bufSize}`);
+          console.warn("[voice] Worklet init:", `sr=${data.sampleRate} buf=${data.bufSize}`);
         } else if (data.type === "playing") {
-          console.log("[voice] Playback started:", `sr=${data.sampleRate} avail=${data.availAtStart} frameLen=${data.frameLen}`);
+          console.warn("[voice] Playing:", `sr=${data.sampleRate} avail=${data.availAtStart} frame=${data.frameLen}`);
           if (stateRef.current !== "speaking" && stateRef.current !== "error") {
             updateState("speaking");
           }
         } else if (data.type === "drained") {
           if (stateRef.current === "speaking") updateState("listening");
         } else if (data.type === "stats") {
-          console.log("[voice] Stats:", `sr=${data.sampleRate} avail=${data.avail} underruns=${data.underruns} chunks=${data.totalChunks} samples=${data.totalSamples} frameLen=${data.frameLen}`);
+          console.warn("[voice] Stats:", `sr=${data.sampleRate} avail=${data.avail} underruns=${data.underruns} chunks=${data.totalChunks} samples=${data.totalSamples} frame=${data.frameLen}`);
         }
       };
 
