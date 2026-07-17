@@ -37,6 +37,10 @@ class PlaybackProcessor extends AudioWorkletProcessor {
     this._silenceFrames = 0;
     this._preBuffer = this._sr * 0.4; // 400ms pre-buffer
     this._drainSilence = this._sr * 1.0; // 1s silence = drained
+    this._underruns = 0;
+    this._totalChunks = 0;
+    this._totalSamples = 0;
+    this._lastReport = currentTime;
     this.port.postMessage({ type: 'init', sampleRate: this._sr });
 
     this.port.onmessage = (e) => {
@@ -47,6 +51,8 @@ class PlaybackProcessor extends AudioWorkletProcessor {
           this._buf[this._w] = s[i];
           this._w = (this._w + 1) % this._buf.length;
         }
+        this._totalChunks++;
+        this._totalSamples += s.length;
         this._silenceFrames = 0;
       } else if (m.type === 'clear') {
         this._w = 0; this._r = 0; this._started = false; this._silenceFrames = 0;
@@ -63,6 +69,20 @@ class PlaybackProcessor extends AudioWorkletProcessor {
     const len = ch.length;
     const avail = this._avail();
 
+    // Periodic report every 500ms
+    if (currentTime - this._lastReport >= 0.5) {
+      this.port.postMessage({
+        type: 'stats',
+        avail: avail,
+        started: this._started,
+        underruns: this._underruns,
+        chunks: this._totalChunks,
+        samplesIn: this._totalSamples,
+        bufferMs: Math.round(avail / this._sr * 1000),
+      });
+      this._lastReport = currentTime;
+    }
+
     if (!this._started) {
       if (avail >= this._preBuffer) {
         this._started = true;
@@ -78,6 +98,10 @@ class PlaybackProcessor extends AudioWorkletProcessor {
       this._r = (this._r + 1) % this._buf.length;
     }
     for (let i = toRead; i < len; i++) ch[i] = 0;
+
+    if (toRead < len) {
+      this._underruns++;
+    }
 
     if (toRead > 0) { this._silenceFrames = 0; }
     else { this._silenceFrames += len; }
@@ -99,6 +123,12 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
   const [activeSources, setActiveSources] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [diag, setDiag] = useState<string>("");
+
+  // Diagnostics counters
+  const audioChunkCountRef = useRef(0);
+  const audioBytesRef = useRef(0);
+  const lastReportTimeRef = useRef(0);
+  const underrunsRef = useRef(0);
 
   const wsRef = useRef<WebSocket | null>(null);
   const inputAudioCtxRef = useRef<AudioContext | null>(null);
@@ -179,10 +209,15 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
     if (!node || !ctx) return;
     const audio = resample(float32, sourceRate, ctx.sampleRate);
     node.port.postMessage({ type: "audio", samples: audio }, [audio.buffer]);
+
+    // Track stats
+    audioChunkCountRef.current++;
+    audioBytesRef.current += float32.length * 2; // 16-bit = 2 bytes/sample
   }, [resample]);
 
   // ─── Handle WebSocket messages ───
   const handleWsMessage = useCallback(async (event: MessageEvent) => {
+    const msgTime = performance.now();
     let dataStr: string | null = null;
 
     if (typeof event.data === "string") {
@@ -250,7 +285,12 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
         // Extract audio from modelTurn
         const parts = msg.serverContent?.modelTurn?.parts;
         if (parts && Array.isArray(parts)) {
-          for (const part of parts) {
+          const t0 = performance.now();
+          const audioParts = parts.filter(p => p.inlineData?.data);
+          if (audioParts.length > 0) {
+            console.log(`[voice] WS recv: ${audioParts.length} audio parts, sizes=[${audioParts.map(p => Math.round((p.inlineData?.data?.length || 0) * 0.75 / 1024) + 'KB').join(',')}]`);
+          }
+          for (const part of audioParts) {
             if (part.inlineData?.data) {
               try {
                 const base64 = part.inlineData.data;
@@ -270,6 +310,10 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
                 console.error("[voice] Audio extraction failed:", e);
               }
             }
+          }
+          const t1 = performance.now();
+          if (t1 - t0 > 2) {
+            console.warn(`[voice] ⚠️ Audio processing took ${Math.round(t1 - t0)}ms on main thread`);
           }
         }
 
@@ -408,14 +452,30 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
       outputNode.port.onmessage = (e: MessageEvent) => {
         const data = e.data;
         if (data.type === "init") {
+          console.log(`[voice] Output worklet initialized at ${data.sampleRate}Hz, AudioContext: ${outputCtx.sampleRate}Hz`);
           setDiag(`worklet=${data.sampleRate}Hz ctx=${outputCtx.sampleRate}Hz`);
         } else if (data.type === "playing") {
-          setDiag(`playing sr=${data.sampleRate}Hz`);
+          console.log(`[voice] Playback started at ${data.sampleRate}Hz`);
+          setDiag(`▶ sr=${data.sampleRate}Hz`);
           if (stateRef.current !== "speaking" && stateRef.current !== "error") {
             updateState("speaking");
           }
         } else if (data.type === "drained") {
+          console.log(`[voice] Buffer drained, returning to listening`);
           if (stateRef.current === "speaking") updateState("listening");
+        } else if (data.type === "stats") {
+          underrunsRef.current = data.underruns;
+          const now = performance.now();
+          if (lastReportTimeRef.current > 0) {
+            const elapsed = (now - lastReportTimeRef.current) / 1000;
+            const chunkRate = (audioChunkCountRef.current / elapsed).toFixed(1);
+            const byteRate = Math.round(audioBytesRef.current / elapsed / 1024);
+            console.log(`[voice] chunks/s=${chunkRate} bytes/s=${byteRate}KB buf=${data.bufferMs}ms underruns=${data.underruns} started=${data.started}`);
+            setDiag(`▶ ${data.bufferMs}ms buf | ${data.underruns} underruns | ${chunkRate} ch/s`);
+          }
+          lastReportTimeRef.current = now;
+          audioChunkCountRef.current = 0;
+          audioBytesRef.current = 0;
         }
       };
 
@@ -483,7 +543,7 @@ export function useVoiceSession(opts: UseVoiceSessionOptions = {}) {
               speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: config.voiceName } } },
             },
             tools: config.tools,
-            inputAudioTranscription: {},
+            inputAudioTranscription: { languageAuto: {} },
             outputAudioTranscription: {},
           },
         };

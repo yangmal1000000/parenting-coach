@@ -42,7 +42,6 @@ Context about this parent's child:
 - Child: ${childName}, ${childAge}
 - Temperament: ${temperament}
 - Notes: ${notes}
-- Language: English
 
 Your role:
 - Listen actively, show empathy, validate feelings
