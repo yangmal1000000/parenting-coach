@@ -19,8 +19,9 @@ export async function POST(request: NextRequest) {
     // Store email (deduped)
     emailSignups.add(email.toLowerCase());
 
-    // TODO: integrate with Supabase notifications table or mailing list
-    console.log(`[notify] New signup: ${email}`);
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[notify] New signup: ${email}`);
+    }
 
     return Response.json({ ok: true, message: "You're on the list!" });
   } catch {
